@@ -1,0 +1,63 @@
+# ====================================================
+# macOS 관련
+# ====================================================
+.DS_Store
+.DS_*
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+*.icloud
+
+# ====================================================
+# React 및 Node.js 관련
+# ====================================================
+node_modules/
+bower_components/
+dist/
+dist-ssr/
+*.local
+
+# 로그 파일
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# 백업 파일
+**/*.backup.*
+**/*.back.*
+
+# 디자이너 툴 관련
+*.sublime*
+*.psd
+*.thumb
+*.sketch
+
+# ====================================================
+# IDE 및 에디터 관련
+# ====================================================
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
