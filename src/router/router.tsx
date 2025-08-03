@@ -14,4 +14,4 @@ const publicRoutes: RouteConfig[] = [
 
 const authenticateRoutes: RouteConfig[] = [];
 
-export default { publicRoutes, authenticateRoutes };
+export { publicRoutes, authenticateRoutes };
