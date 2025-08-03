@@ -1,9 +1,8 @@
 import Main from "../Pages/Main";
-import type { JSX } from "react";
 
-interface RouteConfig {
+export interface RouteConfig {
   path: string;
-  element: JSX.Element;
+  element: React.ReactNode;
 }
 
 const publicRoutes: RouteConfig[] = [
@@ -13,6 +12,6 @@ const publicRoutes: RouteConfig[] = [
   },
 ];
 
-const AuthenticateRoutes: RouteConfig[] = [];
+const authenticateRoutes: RouteConfig[] = [];
 
-export default { publicRoutes, AuthenticateRoutes };
+export default { publicRoutes, authenticateRoutes };
