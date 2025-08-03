@@ -1,5 +1,5 @@
-const Main = ()=> {
-  return <div>메인페이지</div>;
-};
+import React from 'react';
 
-export default Main;
+const Main: React.FC = () => {
+   return <div>메인페이지</div>;
+ };
