@@ -2,17 +2,16 @@ import "./App.css";
 import { Route, Routes } from "react-router-dom";
 import routes from "./router/router";
 const { publicRoutes, AuthenticateRoutes } = routes;
+import type { RouteConfig } from "./router/router";
 
 function App() {
+  const allRoutes: RouteConfig[] = [...publicRoutes, ...authenticatedRoutes];
+  
   return (
     <Routes>
-      {publicRoutes.map((route, index) => {
+      {allRoutes.map((route) => {
         const { path, element } = route;
-        return <Route key={index} path={path} element={element} />;
-      })}
-      {AuthenticateRoutes.map((route, index) => {
-        const { path, element } = route;
-        return <Route key={index} path={path} element={element} />;
+        return <Route key={path} path={path} element={element} />;
       })}
     </Routes>
   );
