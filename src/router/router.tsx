@@ -1,4 +1,5 @@
 import Main from "../Pages/Main";
+import Map from "../Pages/Map";
 
 export interface RouteConfig {
   path: string;
@@ -12,6 +13,6 @@ const publicRoutes: RouteConfig[] = [
   },
 ];
 
-const authenticateRoutes: RouteConfig[] = [];
+const authenticateRoutes: RouteConfig[] = [{ path: "/map", element: <Map /> }];
 
 export default { publicRoutes, authenticateRoutes };
