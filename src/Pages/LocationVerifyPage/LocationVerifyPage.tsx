@@ -23,23 +23,27 @@ const LocationVerifyPage = () => {
       return;
     }
 
-    await new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          onSuccess(pos);
-          resolve(pos);
-        },
-        (err) => {
-          onError(err);
-          reject(err);
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 5000,
-          maximumAge: 0,
-        }
-      );
-    });
+    try {
+      await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            onSuccess(pos);
+            resolve(pos);
+          },
+          (err) => {
+            onError(err);
+            reject(err);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0,
+          }
+        );
+      });
+    } catch (e) {
+      console.log(e);
+    }
 
     return;
   };

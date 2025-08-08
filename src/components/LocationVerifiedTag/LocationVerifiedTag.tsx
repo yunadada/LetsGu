@@ -4,7 +4,7 @@ import Mark from "../../assets/MarkIcon.svg";
 const LocationVerifiedTag = () => {
   return (
     <div className={style.tag}>
-      <img src={Mark}></img>
+      <img src={Mark} alt=""></img>
       <p>위치인증 완료!</p>
     </div>
   );

@@ -40,12 +40,12 @@ const PhotoVerifyPage = () => {
       setModalMode("analyzing");
     }
 
-    try {
-      // TODO: 서버에 이미지 전송
-      setModalMode("success");
-    } catch (error) {
-      setModalMode("fail");
-    }
+    // try {
+    //   // TODO: 서버에 이미지 전송
+    //   setModalMode("success");
+    // } catch (error) {
+    //   setModalMode("fail");
+    // }
   };
 
   const retryUpload = () => {
