@@ -1,0 +1,54 @@
+.wrapper {
+  position: relative;
+  width: 402px;
+  height: 874px;
+  display: flex;
+  flex-direction: column;
+  background-color: #f6f6f6;
+}
+
+.subTitle {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  padding: 30px;
+  padding-bottom: 0;
+}
+
+.subTitle p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.content h4 {
+  margin: 0;
+}
+
+.content p {
+  color: #787878;
+  font-size: 16px;
+}
+
+.map {
+  margin: 50px 0;
+}
+
+.statusBox {
+  margin-top: 50px;
+  height: 55px;
+}
+
+.loading {
+  width: 55px;
+  height: 55px;
+}

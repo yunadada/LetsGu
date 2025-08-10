@@ -1,0 +1,71 @@
+@keyframes scanDownUp {
+  0% {
+    top: 0%;
+  }
+  50% {
+    top: 100%;
+  }
+  100% {
+    top: 0%;
+  }
+}
+
+.modalOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  padding-top: 226px;
+  box-sizing: border-box;
+}
+
+.photoBox {
+  background-color: white;
+  border: 3px solid #ff672b;
+  width: 306px;
+  height: 470px;
+  position: relative;
+}
+
+.photoBox img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.scanBar {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 347px;
+  height: 4px;
+  background-color: #ff672b;
+  animation: scanDownUp 4s infinite;
+}
+
+.description {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.description p {
+  margin: 0;
+  color: white;
+}
+
+.description p:first-child {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.description p:last-child {
+  font-size: 13px;
+}

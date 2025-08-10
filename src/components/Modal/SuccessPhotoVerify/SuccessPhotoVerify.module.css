@@ -1,0 +1,84 @@
+.modalOverlay {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.confetti {
+  position: absolute;
+  top: 35%;
+  left: 50%;
+}
+
+.wrapper {
+  width: 312px;
+  height: 290px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border-radius: 10px;
+}
+
+.checkIcon {
+  border-radius: 50%;
+  background-color: #ff672b;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+
+.checkIcon svg {
+  color: white;
+  width: 30px;
+  height: 30px;
+}
+
+.wrapper h4 {
+  margin: 0;
+  margin-bottom: 7px;
+}
+
+.wrapper p {
+  font-size: 13px;
+  color: #787878;
+  margin: 0;
+  margin-bottom: 48px;
+}
+
+.button {
+  display: flex;
+  gap: 8px;
+  width: 230px;
+}
+
+.button button {
+  flex: 1;
+  font-size: 12px;
+  border-radius: 16px;
+  border: none;
+  width: 106px;
+  height: 32px;
+}
+
+.button button:first-child {
+  border: 1px solid #ff672b;
+  background-color: white;
+}
+
+.button button:last-child {
+  background-color: #ff672b;
+  color: white;
+}
