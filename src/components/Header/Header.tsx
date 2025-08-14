@@ -1,4 +1,4 @@
-import style from "./MissionVerificationHeader.module.css";
+import style from "./Header.module.css";
 import { IoChevronBackOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
 
