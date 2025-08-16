@@ -1,0 +1,149 @@
+/* Backdrop */
+.bs-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 4999;
+  background: rgba(0, 0, 0, 0.28);
+  transition: opacity 0.2s ease;
+  opacity: 1;
+}
+
+/* Bottom Sheet (closed 기본) */
+.bs-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 40px; /* closed: 손잡이만 */
+  transition: height 0.22s ease;
+  z-index: 5000;
+  background: #ffecd4;
+  border-top-left-radius: 30px;
+  border-top-right-radius: 30px;
+  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.16);
+  display: flex;
+  flex-direction: column;
+  overscroll-behavior: contain;
+  max-height: 100dvh; /* 안전장치 */
+}
+
+/* 단계별 높이 */
+.bs-sheet.half {
+  height: 50vh;
+} /* 필요시 45~60vh 조절 */
+.bs-sheet.full {
+  height: 90vh;
+}
+
+/* Grab area */
+.bs-grab {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 14px 16px 10px;
+  background: linear-gradient(180deg, #ffecd4 70%, rgba(255, 255, 255, 0) 100%);
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  cursor: grab;
+}
+.bs-grab:active {
+  cursor: grabbing;
+}
+
+/* Handle */
+.bs-bar {
+  width: 34px;
+  height: 3px;
+  border-radius: 999px;
+  background: #7c7c7c;
+}
+
+/* Content */
+.bs-content {
+  flex: 1;
+  overflow: auto;
+  padding: 8px 16px 16px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Safe area */
+.bs-safe {
+  height: env(safe-area-inset-bottom, 16px);
+}
+
+/* Alert (그대로 사용) */
+.alert {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  padding: 12px 40px 12px 52px;
+  background: #fffaf0;
+  color: #7a4e00;
+  font-size: 13px;
+  line-height: 1.35;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  animation: alert-in 0.24s ease;
+}
+.alert::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #f59e0b;
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.08);
+}
+.alert::after {
+  content: "!";
+  position: absolute;
+  left: 22px;
+  top: 50%;
+  transform: translateY(-51%);
+  font-weight: 800;
+  color: #fff;
+  font-size: 16px;
+}
+.alert__close {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  border: 0;
+  background: transparent;
+  color: #7a4e00;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.7;
+}
+.alert__close:hover {
+  opacity: 1;
+}
+@keyframes alert-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+.alert--hide {
+  opacity: 0;
+  transform: translate(-50%, -8px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}

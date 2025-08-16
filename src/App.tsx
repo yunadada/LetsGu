@@ -5,7 +5,7 @@ import type { RouteConfig } from "./router/router";
 import routes from "./router/router";
 const { publicRoutes, authenticateRoutes } = routes;
 import "./App.css";
-import Map from "./Pages/Map";
+import Map from "./Pages/MapPage/Map";
 
 const render = (status: Status) => {
   switch (status) {
