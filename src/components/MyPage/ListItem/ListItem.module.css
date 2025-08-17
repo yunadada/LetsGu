@@ -1,0 +1,12 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  height: 70px;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.container > p {
+  margin: 0;
+}
