@@ -3,7 +3,7 @@ import ActivityImg from "../../assets/ActivityImg.svg";
 import RewardImg from "../../assets/RewardImg.svg";
 import WalletImg from "../../assets/WalletImg.svg";
 import Header from "../../components/Header/Header";
-import Profile from "../../components/MyPage/Profile/Profille";
+import Profile from "../../components/MyPage/Profile/Profile";
 import { IoChevronForwardOutline } from "react-icons/io5";
 import TabBarItem from "../../components/MyPage/TabBarItem/TabBarItem";
 import ListItem from "../../components/MyPage/ListItem/ListItem";
@@ -43,7 +43,7 @@ const MyPage = () => {
         </div>
         <div className={style.footer}>
           <p>이용약관</p>
-          <div className={style.verticleLine}></div>
+          <div className={style.verticalLine}></div>
           <p>운영정책</p>
         </div>
       </div>

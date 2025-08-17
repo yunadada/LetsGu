@@ -1,6 +1,6 @@
 import style from "./EditProfile.module.css";
 import Header from "../../components/Header/Header";
-import Profile from "../../components/MyPage/Profile/Profille";
+import Profile from "../../components/MyPage/Profile/Profile";
 import InfoItem from "../../components/EditProfile/InfoItem/InfoItem";
 
 const EditProfile = () => {
