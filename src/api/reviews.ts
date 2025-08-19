@@ -20,7 +20,7 @@ export const fetchMissionReviews = async (
 ): Promise<{ list: Review[]; notFound: boolean }> => {
   try {
     const { data } = await api.get<ReviewsResponse>(
-      `/api/v1/missions/${missionId}/reviews`
+      `/api/v1/missions/${missionId}/reviews/preview`
     );
     return { list: data?.data ?? [], notFound: false };
   } catch (e) {

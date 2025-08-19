@@ -27,5 +27,6 @@ type MissionsResponse = {
 /** 미션 목록 조회 */
 export const fetchMissions = async (): Promise<Mission[]> => {
   const { data } = await api.get<MissionsResponse>("/api/v1/missions");
+  
   return data?.data ?? [];
 };

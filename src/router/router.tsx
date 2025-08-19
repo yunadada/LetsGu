@@ -1,6 +1,7 @@
 import LocationVerifyPage from "../Pages/LocationVerifyPage/LocationVerifyPage";
 import Main from "../Pages/Main";
 import Map from "../Pages/MapPage/Map";
+
 import PhotoVerifyPage from "../Pages/PhotoVerifyPage/PhotoVerifyPage";
 
 export interface RouteConfig {
