@@ -99,49 +99,51 @@ const MapPage: React.FC = () => {
 
   //간이 로그인
 
-  const DEV_EMAIL = import.meta.env.VITE_DEV_EMAIL
-  const DEV_PASSWORD = import.meta.env.VITE_DEV_PASSWORD
+  const DEV_EMAIL = import.meta.env.VITE_DEV_EMAIL;
+  const DEV_PASSWORD = import.meta.env.VITE_DEV_PASSWORD;
 
+  useEffect(() => {
+    let cancelled = false;
 
-
-useEffect(() => {
-  let cancelled = false;
-
-  const run = async () => {
-    try {
-      if (import.meta.env.DEV) {
-        if (!localStorage.getItem("ACCESS_TOKEN")) {
-          const res = await api.post("/api/v1/auth/login", {
-            email: DEV_EMAIL,
-            password: DEV_PASSWORD,
-          });
-          const headers = res.headers as unknown as Record<string, string | undefined>;
-          const auth = headers["authorization"] ?? headers["Authorization"];
-          if (!auth?.startsWith("Bearer ")) {
-            throw new Error("Authorization 헤더 노출 필요");
+    const run = async () => {
+      try {
+        if (import.meta.env.DEV) {
+          if (!localStorage.getItem("ACCESS_TOKEN")) {
+            const res = await api.post("/api/v1/auth/login", {
+              email: DEV_EMAIL,
+              password: DEV_PASSWORD,
+            });
+            const headers = res.headers as unknown as Record<
+              string,
+              string | undefined
+            >;
+            const auth = headers["authorization"] ?? headers["Authorization"];
+            if (!auth?.startsWith("Bearer ")) {
+              throw new Error("Authorization 헤더 노출 필요");
+            }
+            localStorage.setItem("ACCESS_TOKEN", auth.slice(7));
           }
-          localStorage.setItem("ACCESS_TOKEN", auth.slice(7));
         }
+        const list = await fetchMissions();
+        if (!cancelled) setMissions(list);
+      } catch (e) {
+        console.error("초기 로그인/미션 실패:", e);
       }
-      const list = await fetchMissions();
-      if (!cancelled) setMissions(list);
-    } catch (e) {
-      console.error("초기 로그인/미션 실패:", e);
-    }
-  };
+    };
 
-  run();
-  return () => { cancelled = true; };
-}, [DEV_EMAIL, DEV_PASSWORD]); // 인라인이면 이 두 값만 의존
+    run();
+    return () => {
+      cancelled = true;
+    };
+  }, [DEV_EMAIL, DEV_PASSWORD]); // 인라인이면 이 두 값만 의존
 
-  // (Re)build markers when missions change
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !window.google?.maps || missions.length === 0) return;
-
-    // remove old
+    if (!map || !window.google?.maps) return;
+    // 항상 이전 마커 정리
     markersRef.current.forEach((m) => m.setMap(null));
     markersRef.current = [];
+    if (missions.length === 0) return;
 
     const icons = getMarkerIcons(window.google);
     const bounds = new google.maps.LatLngBounds();
@@ -167,9 +169,18 @@ useEffect(() => {
       bounds.extend({ lat: m.latitude, lng: m.longitude });
     });
 
-    if (!bounds.isEmpty()) map.fitBounds(bounds);
+    if (!bounds.isEmpty()) {
+      if (missions.length === 1) {
+        map.setCenter({
+          lat: missions[0].latitude,
+          lng: missions[0].longitude,
+        });
+        map.setZoom(16);
+      } else {
+        map.fitBounds(bounds);
+      }
+    }
   }, [missions]);
-
   // Load reviews when: tab=review && selectedMission
   useEffect(() => {
     if (tab !== "review" || !selectedMission) return;
