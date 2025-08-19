@@ -17,6 +17,7 @@ const ActivityLog = () => {
           className={`${style.unwritten} ${
             activeTab === "unwritten" ? style.active : ""
           }`}
+          onClick={() => setActiveTab("unwritten")}
         >
           작성 가능한 리뷰(0)
         </button>
@@ -24,6 +25,7 @@ const ActivityLog = () => {
           className={`${style.written} ${
             activeTab === "written" ? style.active : ""
           }`}
+          onClick={() => setActiveTab("written")}
         >
           작성한 리뷰(0)
         </button>
@@ -31,12 +33,8 @@ const ActivityLog = () => {
       <div className={style.contents}>
         {/* <EmptyText type={activeTab} /> */}
         <div className={style.hasItem}>
-          <MissionHistoryItem />
-          <MissionHistoryItem />
-          <MissionHistoryItem />
-          <MissionHistoryItem />
-          <MissionHistoryItem />
-          <MissionHistoryItem />
+          <MissionHistoryItem status={activeTab} />
+          <MissionHistoryItem status={activeTab} />
         </div>
       </div>
     </div>
