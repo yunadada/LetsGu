@@ -1,9 +1,12 @@
+import ActivityLog from "../Pages/ActivityLog/ActivityLog";
 import EditProfile from "../Pages/EditProfile/EditProfile";
 import LocationVerifyPage from "../Pages/LocationVerifyPage/LocationVerifyPage";
 import Main from "../Pages/Main";
 import MapPage from "../Pages/MapPage/MapPage";
 import MyPage from "../Pages/MyPage/MyPage";
 import PhotoVerifyPage from "../Pages/PhotoVerifyPage/PhotoVerifyPage";
+import ReviewDetail from "../Pages/Review/ReviewDetail/ReviewDetail";
+import ReviewWrite from "../Pages/Review/ReviewWrite/ReviewWrite";
 
 export interface RouteConfig {
   path: string;
@@ -30,6 +33,18 @@ const publicRoutes: RouteConfig[] = [
   {
     path: "/editProfile",
     element: <EditProfile />,
+  },
+  {
+    path: "/activityLog",
+    element: <ActivityLog />,
+  },
+  {
+    path: "/reviewDetail",
+    element: <ReviewDetail />,
+  },
+  {
+    path: "/reviewWrite",
+    element: <ReviewWrite />,
   },
 ];
 
