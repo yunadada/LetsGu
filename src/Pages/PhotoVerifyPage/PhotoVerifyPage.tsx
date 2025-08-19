@@ -88,6 +88,7 @@ const PhotoVerifyPage = () => {
           )}
 
           <input
+            className={style.input}
             type="file"
             accept="image/*"
             ref={fileInputRef}
