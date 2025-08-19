@@ -8,12 +8,16 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FailLocationVerifyModal from "../../components/Modal/FailLocationVerifyModal/FailLocationVerifyModal";
 import type { UserLocation } from "../../types/location";
-import axios from "axios";
+import { verifyLocation } from "../../api/MissionVerification";
 
 const LocationVerifyPage = () => {
   const [isLocationVerified, setIsLocationVerified] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
+  const [errorSentences, setErrorSentences] = useState({
+    sentence1: "앗, 현재 위치를 파악할 수 없어요.",
+    sentence2: "위치정보서비스(GPS)를 켜야 합니다.",
+  });
   const navigate = useNavigate();
 
   const getLocation = async () => {
@@ -55,19 +59,7 @@ const LocationVerifyPage = () => {
   };
 
   const onError = (error: GeolocationPositionError) => {
-    switch (error.code) {
-      case error.PERMISSION_DENIED:
-        console.log("오류: 사용자가 위치 정보 제공을 거부했습니다.");
-        break;
-      case error.POSITION_UNAVAILABLE:
-        console.log("오류: 위치 정보를 사용할 수 없습니다.");
-        break;
-      case error.TIMEOUT:
-        console.log("오류: 요청 시간이 초과되었습니다.");
-        break;
-      default:
-        console.log("오류: 알 수 없는 오류가 발생했습니다.");
-    }
+    console.log(error.code);
 
     setIsModalOpen(true);
   };
@@ -81,13 +73,14 @@ const LocationVerifyPage = () => {
 
     const sendLocation = async () => {
       try {
-        const res = await axios.post(
-          `{SERVER}/api/v1/missions/{missionId}/gps`,
-          userLocation
-        );
+        const res = await verifyLocation(userLocation);
         console.log(res);
         setIsLocationVerified(true);
       } catch (error) {
+        setErrorSentences({
+          sentence1: "앗, 미션 위치 범위에서 벗어났어요.",
+          sentence2: "미션장소로 가볼까요?",
+        });
         setIsLocationVerified(false);
         setIsModalOpen(true);
       }
@@ -137,6 +130,7 @@ const LocationVerifyPage = () => {
         <FailLocationVerifyModal
           handleModal={setIsModalOpen}
           retryLocationVerification={getLocation}
+          errorSentences={errorSentences}
         />
       )}
     </div>
