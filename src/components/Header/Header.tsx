@@ -1,4 +1,4 @@
-import style from "./MissionVerificationHeader.module.css";
+import style from "./Header.module.css";
 import { IoChevronBackOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
 
@@ -6,7 +6,7 @@ type Props = {
   title: string;
 };
 
-const MissionVerificationHeader = ({ title }: Props) => {
+const Header = ({ title }: Props) => {
   return (
     <header className={style.header}>
       <Link to="/">
@@ -17,4 +17,4 @@ const MissionVerificationHeader = ({ title }: Props) => {
   );
 };
 
-export default MissionVerificationHeader;
+export default Header;

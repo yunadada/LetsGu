@@ -3,7 +3,7 @@ import style from "./LocationVerifyPage.module.css";
 import Spinner from "../../assets/Spinner.gif";
 import MapImg from "../../assets/MapImg.svg";
 import Mark from "../../assets/MarkIcon.svg";
-import MissionVerificationHeader from "../../components/Header/MissionVerificationHeader";
+import Header from "../../components/Header/Header";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FailLocationVerifyModal from "../../components/Modal/FailLocationVerifyModal/FailLocationVerifyModal";
@@ -107,7 +107,7 @@ const LocationVerifyPage = () => {
 
   return (
     <div className={style.wrapper}>
-      <MissionVerificationHeader title={"미션 인증하기"} />
+      <Header title={"미션 인증하기"} />
       <div className={style.subTitle}>
         <img src={Mark}></img>
         <p>위치 인증하기</p>

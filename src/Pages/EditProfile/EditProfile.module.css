@@ -1,0 +1,31 @@
+.wrapper {
+  width: 402px;
+  height: 874px;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+}
+
+.contents {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.profile {
+  margin-top: 48px;
+  margin-bottom: 70px;
+}
+
+.infoSection {
+  width: 340px;
+  border: 1px solid #eaeaea;
+  border-radius: 18px;
+  overflow: hidden;
+  margin-bottom: 22px;
+}
+
+.infoSection > :last-child {
+  border-bottom: none;
+}

@@ -1,5 +1,5 @@
 import style from "./PhotoVerifyPage.module.css";
-import MissionVerificationHeader from "../../components/Header/MissionVerificationHeader";
+import Header from "../../components/Header/Header";
 import { HiOutlinePlus } from "react-icons/hi";
 import CameraIcon from "../../assets/CameraIcon.svg";
 import { useRef, useState } from "react";
@@ -66,7 +66,7 @@ const PhotoVerifyPage = () => {
 
   return (
     <div className={style.wrapper}>
-      <MissionVerificationHeader title={"미션 인증하기"} />
+      <Header title={"미션 인증하기"} />
       <div className={style.contents}>
         <div className={style.subTitle}>
           <img src={CameraIcon}></img>

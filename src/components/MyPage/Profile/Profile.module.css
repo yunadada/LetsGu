@@ -1,0 +1,13 @@
+.profile {
+  width: 118px;
+  height: 118px;
+  border-radius: 50%;
+  border: 3px solid #ff672b;
+  overflow: hidden;
+}
+
+.profile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
