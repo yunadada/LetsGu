@@ -5,6 +5,7 @@ import Main from "../Pages/Main";
 import MyPage from "../Pages/MyPage/MyPage";
 import PhotoVerifyPage from "../Pages/PhotoVerifyPage/PhotoVerifyPage";
 import ReviewDetail from "../Pages/Review/ReviewDetail/ReviewDetail";
+import ReviewWrite from "../Pages/Review/ReviewWrite/ReviewWrite";
 
 export interface RouteConfig {
   path: string;
@@ -39,6 +40,10 @@ const publicRoutes: RouteConfig[] = [
   {
     path: "/reviewDetail",
     element: <ReviewDetail />,
+  },
+  {
+    path: "/reviewWrite",
+    element: <ReviewWrite />,
   },
 ];
 
