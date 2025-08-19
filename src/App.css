@@ -7,11 +7,6 @@
   box-sizing: border-box;
 }
 
-/* 2. 스크롤바 감추기 (옵션) */
-::-webkit-scrollbar {
-  display: none;
-}
-
 /* 3. 기본 html, body 설정 */
 html,
 body,
@@ -89,4 +84,12 @@ textarea:focus-visible {
 
 * {
   font-family: "Pretendard-Regular";
+}
+/* 필요 컨테이너에서만 적용: <div class="hide-scrollbar"> */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE/Edge 구버전 */
+  scrollbar-width: none; /* Firefox */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chromium/Safari */
 }
