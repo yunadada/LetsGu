@@ -5,7 +5,7 @@ import type { RouteConfig } from "./router/router";
 import routes from "./router/router";
 const { publicRoutes, authenticateRoutes } = routes;
 import "./App.css";
-import Map from "./Pages/MapPage/Map";
+import MapPage from "./Pages/MapPage/MapPage";
 
 const render = (status: Status) => {
   switch (status) {
@@ -14,7 +14,7 @@ const render = (status: Status) => {
     case Status.FAILURE:
       return <h1>Error loading map</h1>;
     case Status.SUCCESS:
-      return <Map></Map>; // No need to render anything here, as the map is handled in the
+      return <MapPage></MapPage>; // No need to render anything here, as the map is handled in the
   }
 };
 

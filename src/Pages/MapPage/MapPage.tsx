@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import "./Map.css";
+import "./MapPage.css";
 import BottomSlider from "../../components/BottomSlider/BottomSlider";
 import MissionActiveCard from "../../components/MissionActiveCard/MissionActiveCard";
 import { getMarkerIcons, categoryIcons } from "../../assets/icons/markerIcons";
@@ -15,7 +15,7 @@ import alert from "../../assets/alert.png";
 type SliderLevel = "closed" | "half" | "full";
 type Tab = "mission" | "review";
 
-const Map: React.FC = () => {
+const MapPage: React.FC = () => {
   // Refs
   const mapDivRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
@@ -99,8 +99,8 @@ const Map: React.FC = () => {
 
   //간이 로그인
 
-  const DEV_EMAIL = import.meta.env.VITE_DEV_EMAIL ?? "kyoung0161@naver.com";
-  const DEV_PASSWORD = import.meta.env.VITE_DEV_PASSWORD ?? "cowngur5460";
+  const DEV_EMAIL = import.meta.env.VITE_DEV_EMAIL
+  const DEV_PASSWORD = import.meta.env.VITE_DEV_PASSWORD
 
 
 
@@ -456,7 +456,7 @@ useEffect(() => {
   );
 };
 
-export default Map;
+export default MapPage;
 
 // utils
 function toIconCategory(c: Mission["placeCategory"]): MarkerCategory {
