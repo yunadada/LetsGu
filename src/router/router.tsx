@@ -1,5 +1,6 @@
 import LocationVerifyPage from "../Pages/LocationVerifyPage/LocationVerifyPage";
-import Main from "../Pages/Main";
+import Login from "../Pages/Login/Login";
+import Main from "../Pages/Main/Main";
 import PhotoVerifyPage from "../Pages/PhotoVerifyPage/PhotoVerifyPage";
 
 export interface RouteConfig {
@@ -16,10 +17,13 @@ const publicRoutes: RouteConfig[] = [
     path: "/locationVerification",
     element: <LocationVerifyPage />,
   },
-
   {
     path: "/photoVerification",
     element: <PhotoVerifyPage />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
   },
 ];
 
