@@ -63,3 +63,5 @@ lerna-debug.log*
 *.sln
 *.sw?
 
+.env
+.env*.local

@@ -6,7 +6,7 @@ type Props = {
   title: string;
 };
 
-const MissionVerificationHeader = ({ title }: Props) => {
+const Header = ({ title }: Props) => {
   return (
     <header className={style.header}>
       <Link to="/">
@@ -17,4 +17,4 @@ const MissionVerificationHeader = ({ title }: Props) => {
   );
 };
 
-export default MissionVerificationHeader;
+export default Header;

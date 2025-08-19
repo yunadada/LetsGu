@@ -1,3 +1,79 @@
+/* ===== Global CSS: global.css or index.css ===== */
+
+/* 1. Reset 기본 설정 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 3. 기본 html, body 설정 */
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+  background-color: #fff;
+  color: #333;
+}
+
+/* 4. 기본 링크 스타일 */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* 5. 버튼 초기화 */
+button {
+  background: none;
+  border: none;
+  /* outline: none; */
+  cursor: pointer;
+}
+
+/* 접근성: 키보드 포커스 표시 */
+button:focus-visible {
+  outline: 2px solid #5b9dff;
+  outline-offset: 2px;
+}
+
+/* 6. 이미지 반응형 */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* 7. 리스트 초기화 */
+ul,
+ol,
+li {
+  list-style: none;
+}
+
+/* 8. 인풋 초기화 */
+input,
+textarea {
+  border: none;
+  outline: none;
+  font-family: inherit;
+  background: none;
+  color: inherit;
+}
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #5b9dff;
+  outline-offset: 2px;
+}
+
+/* 9. 앱 기본 배경 및 정렬 구조 (선택) */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f8f8f8;
+}
 @font-face {
   font-family: "Pretendard-Regular";
   src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
@@ -8,4 +84,12 @@
 
 * {
   font-family: "Pretendard-Regular";
+}
+/* 필요 컨테이너에서만 적용: <div class="hide-scrollbar"> */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE/Edge 구버전 */
+  scrollbar-width: none; /* Firefox */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chromium/Safari */
 }
