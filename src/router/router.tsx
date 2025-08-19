@@ -1,6 +1,7 @@
 import EditProfile from "../Pages/EditProfile/EditProfile";
 import LocationVerifyPage from "../Pages/LocationVerifyPage/LocationVerifyPage";
 import Main from "../Pages/Main";
+import MapPage from "../Pages/MapPage/MapPage";
 import MyPage from "../Pages/MyPage/MyPage";
 import PhotoVerifyPage from "../Pages/PhotoVerifyPage/PhotoVerifyPage";
 
@@ -32,6 +33,6 @@ const publicRoutes: RouteConfig[] = [
   },
 ];
 
-const authenticateRoutes: RouteConfig[] = [];
+const authenticateRoutes: RouteConfig[] = [{ path: "/map", element: <MapPage /> }];
 
 export default { publicRoutes, authenticateRoutes };
