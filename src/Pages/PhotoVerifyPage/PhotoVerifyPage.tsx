@@ -7,14 +7,25 @@ import PhotoVerifyModal from "../../components/Modal/PhotoVerifyModal/PhotoVerif
 import SuccessPhotoVerify from "../../components/Modal/SuccessPhotoVerify/SuccessPhotoVerify";
 import FailPhotoVerify from "../../components/Modal/FailPhotoVerify/FailPhotoVerify";
 import ToggleBox from "../../components/ToggleBox/ToggleBox";
-import { warningToast } from "../../utils/ToastUtil/toastUtil";
+import { errorToast, warningToast } from "../../utils/ToastUtil/toastUtil";
+import { useLocation } from "react-router-dom";
+import {
+  getImgUploadUrl,
+  postUploadUrl,
+  uploadImageToPresignedUrl,
+  verifyImage,
+} from "../../api/MissionVerification/MissionVerification";
 
 type ModalMode = "none" | "analyzing" | "success" | "fail";
 
 const PhotoVerifyPage = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewPhoto, setPreviewPhoto] = useState<string>("");
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [modalMode, setModalMode] = useState<ModalMode>("none");
+
+  const location = useLocation();
+  const { missionId } = location.state as { missionId: number };
 
   const clickUploadBox = () => {
     fileInputRef.current?.click();
@@ -27,6 +38,7 @@ const PhotoVerifyPage = () => {
       warningToast("사진 촬영에 실패했습니다. 다시 시도해주세요.");
       return;
     }
+    setPhotoFile(file);
 
     if (previewPhoto) {
       URL.revokeObjectURL(previewPhoto);
@@ -34,6 +46,7 @@ const PhotoVerifyPage = () => {
 
     const imgUrl = URL.createObjectURL(file);
     setPreviewPhoto(imgUrl);
+
     setModalMode("none");
   };
 
@@ -42,12 +55,46 @@ const PhotoVerifyPage = () => {
       setModalMode("analyzing");
     }
 
-    // try {
-    //   // TODO: 서버에 이미지 전송
-    //   setModalMode("success");
-    // } catch (error) {
-    //   setModalMode("fail");
-    // }
+    try {
+      if (!photoFile) {
+        errorToast("업로드된 사진이 존재하지 않습니다.");
+        return;
+      }
+
+      const res = await getImgUploadUrl(missionId);
+      if (!res.data.success) throw new Error("업로드 URL 발급 실패");
+
+      const { uploadUrl, uploadKey, uploadPreset } = res.data.data;
+
+      const formData = new FormData();
+      formData.append("file", photoFile);
+      formData.append("uploadPreset", uploadPreset);
+      formData.append("uploadKey", uploadKey);
+
+      const response = await uploadImageToPresignedUrl({
+        uploadUrl,
+        formData,
+      });
+      console.log("uploadUrl: ", response.data);
+      const imageUrl = response.data;
+
+      const imageResource = {
+        imageUrl: imageUrl,
+        uploadKey: uploadKey,
+      };
+      const jobResponse = await postUploadUrl({ missionId, imageResource });
+
+      const resultResponse = await verifyImage(jobResponse.data.jobId);
+      console.log(resultResponse);
+      if (resultResponse === "COMPLETED") {
+        setModalMode("success");
+      } else {
+        setModalMode("fail");
+      }
+    } catch (error) {
+      console.log(error);
+      setModalMode("fail");
+    }
   };
 
   const retryUpload = () => {
