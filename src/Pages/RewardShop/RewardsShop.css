@@ -467,3 +467,23 @@
   padding: 12px 14px;
   font-size: 14px;
 }
+
+/* 이미지 썸네일 */
+.card-media {
+  position: relative;
+  height: 136px;
+  overflow: hidden;
+}
+.card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* ✅ 꽉 차게 */
+  display: block;
+}
+
+/* onError로 이미지 숨겼을 때 배경색 보이도록 */
+.card-media--fallback {
+  background: #f7f7f9;
+  display: grid;
+  place-items: center;
+}

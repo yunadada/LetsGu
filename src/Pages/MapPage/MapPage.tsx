@@ -125,6 +125,7 @@ const MapPage: React.FC = () => {
           }
         }
         const list = await fetchMissions();
+        console.log(list);
         if (!cancelled) setMissions(list);
       } catch (e) {
         console.error("초기 로그인/미션 실패:", e);
@@ -448,6 +449,7 @@ const MapPage: React.FC = () => {
               </h3>
 
               <p className="mission-address">{selectedMission.placeName}</p>
+              <p className="mission-address">{selectedMission.address}</p>
             </div>
           ) : (
             <div className="mission-card">

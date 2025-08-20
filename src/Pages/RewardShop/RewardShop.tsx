@@ -11,6 +11,7 @@ interface Item {
   itemName: string;
   price: number;
   count: number;
+  imageUrl?: string;
 }
 interface ApiListRes {
   success: boolean;
@@ -62,7 +63,7 @@ const RewardShop: React.FC = () => {
         });
         if (!mounted) return;
         if (data.success) {
-          console.log("아이템:", data.data);
+          // console.log("아이템:", data.data);
           setItems(data.data);
         } else setError("아이템을 불러오지 못했습니다.");
       } catch (err: unknown) {
@@ -182,6 +183,7 @@ const RewardShop: React.FC = () => {
         {filtered.map((item, idx) => {
           const voucher = isVoucher(item.itemName);
           const hot = tab === "voucher" && idx === 1;
+
           return (
             <div
               key={item.itemId}
@@ -190,7 +192,24 @@ const RewardShop: React.FC = () => {
               role="button"
             >
               <div className="card-media">
-                {voucher ? (
+                {/* ✅ 이미지가 있으면 우선 표시 */}
+                {item.imageUrl ? (
+                  <img
+                    className="card-img"
+                    src={item.imageUrl}
+                    alt={item.itemName}
+                    loading="lazy"
+                    onError={(e) => {
+                      // 이미지 로드 실패 시 플레이스홀더로 전환
+                      (e.currentTarget as HTMLImageElement).style.display =
+                        "none";
+                      (
+                        e.currentTarget.parentElement as HTMLElement
+                      )?.classList.add("card-media--fallback");
+                    }}
+                  />
+                ) : voucher ? (
+                  // ✅ 이미지가 없고 상품권이면 기존 파란 면
                   <div className="voucher-face">
                     <div className="voucher-title">구미사랑</div>
                     <div className="voucher-sub">
@@ -198,10 +217,13 @@ const RewardShop: React.FC = () => {
                     </div>
                   </div>
                 ) : (
+                  // ✅ 이미지가 없고 제휴쿠폰이면 회색 플레이스홀더
                   <div className="thumb">
                     <div className="note" />
                   </div>
                 )}
+
+                {/* 가격/뱃지 오버레이는 그대로 */}
                 <div className="price-pill">
                   <span className="coin" />
                   {item.price.toLocaleString()}

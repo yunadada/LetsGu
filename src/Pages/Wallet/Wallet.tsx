@@ -88,7 +88,32 @@ const Wallet: React.FC = () => {
 
         // 지갑
         if ("success" in wRes.data && wRes.data.success) {
-          setWallet(wRes.data.data);
+          const raw: any = wRes.data.data;
+
+          const allItems = raw.items ?? []; // 혹시 단일 리스트로 올 때
+          const byNameIsVoucher = (n: string) => /상품권/.test(n);
+
+          const giftCards =
+            raw.giftCards ??
+            allItems.filter((i: any) => byNameIsVoucher(i.itemName)) ??
+            [];
+
+          const partnerItems =
+            raw.partnerItems ??
+            raw.parentItems ?? // ← 오타 대비
+            allItems.filter((i: any) => !byNameIsVoucher(i.itemName)) ??
+            [];
+
+          const consumedItems = raw.consumedItems ?? raw.usedItems ?? [];
+
+          setWallet({
+            giftCardCount: raw.giftCardCount ?? giftCards.length,
+            partnerItemCount: raw.partnerItemCount ?? partnerItems.length,
+            consumedItemCount: raw.consumedItemCount ?? consumedItems.length,
+            giftCards,
+            partnerItems,
+            consumedItems,
+          });
         } else {
           setErrMsg(
             (wRes.data as ApiErr).message || "지갑을 불러올 수 없어요."
