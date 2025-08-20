@@ -1,9 +1,10 @@
 import { Status, Wrapper } from "@googlemaps/react-wrapper";
 import { Route, Routes } from "react-router-dom";
 import type { RouteConfig } from "./router/router";
-
 import routes from "./router/router";
 const { publicRoutes, authenticateRoutes } = routes;
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 import "./App.css";
 import MapPage from "./Pages/MapPage/MapPage";
 
@@ -23,6 +24,7 @@ function App() {
 
   return (
     <Wrapper apiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY} render={render}>
+      <ToastContainer position="top-center" autoClose={3000} limit={1} />
       <Routes>
         {allRoutes.map((route) => {
           const { path, element } = route;

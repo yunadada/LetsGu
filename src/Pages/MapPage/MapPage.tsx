@@ -8,9 +8,9 @@ import { fetchMissionReviews, type Review } from "../../api/reviews";
 import { fetchMissions, type Mission } from "../../api/mission";
 import duck from "../../assets/duck.png";
 import { ReviewHero } from "./Review";
-import { api } from "../../api/client";
 import { useNavigate } from "react-router-dom";
 import alert from "../../assets/alert.png";
+import axiosInstance from "../../lib/axiosInstance";
 
 type SliderLevel = "closed" | "half" | "full";
 type Tab = "mission" | "review";
@@ -119,7 +119,7 @@ const MapPage: React.FC = () => {
       try {
         if (import.meta.env.DEV) {
           if (!localStorage.getItem("ACCESS_TOKEN")) {
-            const res = await api.post("/api/v1/auth/login", {
+            const res = await axiosInstance.post("/api/v1/auth/login", {
               email: DEV_EMAIL,
               password: DEV_PASSWORD,
             });

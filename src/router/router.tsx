@@ -1,7 +1,8 @@
 import ActivityLog from "../Pages/ActivityLog/ActivityLog";
 import EditProfile from "../Pages/EditProfile/EditProfile";
 import LocationVerifyPage from "../Pages/LocationVerifyPage/LocationVerifyPage";
-import Main from "../Pages/Main";
+import Login from "../Pages/Login/Login";
+import Main from "../Pages/Main/Main";
 import MapPage from "../Pages/MapPage/MapPage";
 import MyPage from "../Pages/MyPage/MyPage";
 import PhotoVerifyPage from "../Pages/PhotoVerifyPage/PhotoVerifyPage";
@@ -15,9 +16,17 @@ export interface RouteConfig {
 
 const publicRoutes: RouteConfig[] = [
   {
+    path: "/login",
+    element: <Login />,
+  },
+];
+
+const authenticateRoutes: RouteConfig[] = [
+  {
     path: "/",
     element: <Main />,
   },
+  { path: "/map", element: <MapPage /> },
   {
     path: "/locationVerification",
     element: <LocationVerifyPage />,
@@ -47,7 +56,5 @@ const publicRoutes: RouteConfig[] = [
     element: <ReviewWrite />,
   },
 ];
-
-const authenticateRoutes: RouteConfig[] = [{ path: "/map", element: <MapPage /> }];
 
 export default { publicRoutes, authenticateRoutes };

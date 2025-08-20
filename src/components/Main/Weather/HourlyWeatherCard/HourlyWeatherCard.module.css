@@ -1,0 +1,19 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.container > p {
+  font-size: 10px;
+  color: white;
+  margin: 0;
+}
+
+.weather {
+  width: 18px;
+  height: 18px;
+  background-color: aqua;
+}

@@ -6,6 +6,8 @@ import { useRef, useState } from "react";
 import PhotoVerifyModal from "../../components/Modal/PhotoVerifyModal/PhotoVerifyModal";
 import SuccessPhotoVerify from "../../components/Modal/SuccessPhotoVerify/SuccessPhotoVerify";
 import FailPhotoVerify from "../../components/Modal/FailPhotoVerify/FailPhotoVerify";
+import ToggleBox from "../../components/ToggleBox/ToggleBox";
+import { warningToast } from "../../utils/ToastUtil/toastUtil";
 
 type ModalMode = "none" | "analyzing" | "success" | "fail";
 
@@ -18,11 +20,11 @@ const PhotoVerifyPage = () => {
     fileInputRef.current?.click();
   };
 
-  const uploadFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
     if (!file) {
-      alert("사진을 선택해주세요.");
+      warningToast("사진 촬영에 실패했습니다. 다시 시도해주세요.");
       return;
     }
 
@@ -67,6 +69,7 @@ const PhotoVerifyPage = () => {
   return (
     <div className={style.wrapper}>
       <Header title={"미션 인증하기"} />
+      <ToggleBox title="사진 가이드" />
       <div className={style.contents}>
         <div className={style.subTitle}>
           <img src={CameraIcon}></img>
@@ -79,8 +82,9 @@ const PhotoVerifyPage = () => {
             <>
               <p>장소 인증을 위해 </p>
               <p>
-                <strong>사진을 추가</strong>해 주세요.
+                상단의 <strong>사진 가이드</strong>를 참고하여
               </p>
+              <p>사진을 업로드해 주세요.</p>
               <div className={style.plusIcon}>
                 <HiOutlinePlus />
               </div>
@@ -88,10 +92,12 @@ const PhotoVerifyPage = () => {
           )}
 
           <input
+            className={style.input}
             type="file"
+            capture="environment"
             accept="image/*"
             ref={fileInputRef}
-            onChange={uploadFile}
+            onChange={handleCapture}
           />
         </div>
         {modalMode !== "analyzing" && (
