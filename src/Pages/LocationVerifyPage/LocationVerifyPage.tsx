@@ -22,40 +22,42 @@ const LocationVerifyPage = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  // const { missionId } = location.state as { missionId: number };
-  const missionId = 9;
-  console.log("미션 id:", typeof missionId, missionId);
+  const { missionId } = location.state as { missionId: number };
+  // const missionId = 9;
+  // console.log("미션 id:", typeof missionId, missionId);
 
   const getLocation = async () => {
-    if (!navigator.geolocation) {
-      errorToast("Geolocation API를 지원하지 않는 브라우저입니다.");
-      setIsModalOpen(true);
-      return;
-    }
+    setUserLocation({ latitude: 36.3534358, longitude: 128.267985 });
 
-    try {
-      await new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            onSuccess(pos);
-            resolve(pos);
-          },
-          (err) => {
-            onError(err);
-            reject(err);
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: 5000,
-            maximumAge: 0,
-          }
-        );
-      });
-    } catch (e) {
-      console.log(e);
-    }
+    // if (!navigator.geolocation) {
+    //   errorToast("Geolocation API를 지원하지 않는 브라우저입니다.");
+    //   setIsModalOpen(true);
+    //   return;
+    // }
 
-    return;
+    // try {
+    //   await new Promise((resolve, reject) => {
+    //     navigator.geolocation.getCurrentPosition(
+    //       (pos) => {
+    //         onSuccess(pos);
+    //         resolve(pos);
+    //       },
+    //       (err) => {
+    //         onError(err);
+    //         reject(err);
+    //       },
+    //       {
+    //         enableHighAccuracy: true,
+    //         timeout: 5000,
+    //         maximumAge: 0,
+    //       }
+    //     );
+    //   });
+    // } catch (e) {
+    //   console.log(e);
+    // }
+
+    // return;
   };
 
   const onSuccess = (position: GeolocationPosition) => {
@@ -79,10 +81,12 @@ const LocationVerifyPage = () => {
 
     const sendLocation = async () => {
       try {
+        console.log("userLocation", userLocation);
         const res = await verifyLocation({ missionId, userLocation });
         console.log(res);
         setIsLocationVerified(true);
       } catch (error) {
+        console.log(error);
         setErrorSentences({
           sentence1: "앗, 미션 위치 범위에서 벗어났어요.",
           sentence2: "미션장소로 가볼까요?",

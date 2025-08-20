@@ -25,7 +25,12 @@ const PhotoVerifyPage = () => {
   const [modalMode, setModalMode] = useState<ModalMode>("none");
 
   const location = useLocation();
-  const { missionId } = location.state as { missionId: number };
+  const missionId = location.state?.missionId as number | undefined;
+
+  if (!missionId) {
+    errorToast("미션 정보를 찾을 수 없습니다.");
+    return null;
+  }
 
   const clickUploadBox = () => {
     fileInputRef.current?.click();
@@ -68,15 +73,14 @@ const PhotoVerifyPage = () => {
 
       const formData = new FormData();
       formData.append("file", photoFile);
-      formData.append("uploadPreset", uploadPreset);
-      formData.append("uploadKey", uploadKey);
+      formData.append("upload_preset", uploadPreset);
 
       const response = await uploadImageToPresignedUrl({
         uploadUrl,
         formData,
       });
-      console.log("uploadUrl: ", response.data);
-      const imageUrl = response.data;
+
+      const imageUrl = response.data.secure_url;
 
       const imageResource = {
         imageUrl: imageUrl,
@@ -84,15 +88,19 @@ const PhotoVerifyPage = () => {
       };
       const jobResponse = await postUploadUrl({ missionId, imageResource });
 
-      const resultResponse = await verifyImage(jobResponse.data.jobId);
-      console.log(resultResponse);
+      const accessToken = localStorage.getItem("accessToken");
+      const resultResponse = await verifyImage(
+        jobResponse.data.data.jobId,
+        accessToken as string
+      );
+
       if (resultResponse === "COMPLETED") {
         setModalMode("success");
       } else {
         setModalMode("fail");
       }
     } catch (error) {
-      console.log(error);
+      console.log("에러", error);
       setModalMode("fail");
     }
   };
