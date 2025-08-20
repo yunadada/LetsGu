@@ -49,7 +49,7 @@ const MapPage: React.FC = () => {
     navigate("/locationVerification", {
       state: { missionId: mission.missionId },
     }); // ✅ state로 전달
-    console.log(mission.missionId);
+    //console.log(mission.missionId);
   };
 
   const hasReviews = Array.isArray(reviews) && reviews.length > 0;
