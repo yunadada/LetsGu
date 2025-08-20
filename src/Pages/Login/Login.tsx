@@ -14,7 +14,9 @@ const Login = () => {
     setUserInfo({ ...userInfo, [name]: value });
   };
 
-  const handleLogin = async () => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     if (!userInfo.email) {
       warningToast("이메일을 입력해주세요.");
       return;
@@ -27,8 +29,12 @@ const Login = () => {
       const res = await requestLogin(userInfo);
 
       if (res.data.success) {
-        const token = res.headers["authorization"];
+        const authHeader = res.headers["authorization"];
+        const token = authHeader.startsWith("Bearer ")
+          ? authHeader.slice(7)
+          : authHeader;
 
+        console.log("토큰", token);
         if (token) {
           localStorage.setItem("accessToken", token);
           navigate("/");
@@ -45,10 +51,10 @@ const Login = () => {
     <div className={style.wrapper}>
       <p>구미, AI 미션형 지역 탐방</p>
       <img className={style.logo} src={LogoImg} />
-      <div className={style.formBox}>
-        <form className={style.form}>
+      <form className={style.formBox} onSubmit={handleLogin}>
+        <div className={style.form}>
           <input
-            type="text"
+            type="email"
             name="email"
             placeholder="이메일"
             value={userInfo.email}
@@ -61,11 +67,11 @@ const Login = () => {
             value={userInfo.password}
             onChange={handleChange}
           />
-        </form>
-        <button className={style.loginButton} onClick={handleLogin}>
+        </div>
+        <button className={style.loginButton} type="submit">
           로그인
         </button>
-      </div>
+      </form>
     </div>
   );
 };
