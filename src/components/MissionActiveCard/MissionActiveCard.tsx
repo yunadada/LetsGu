@@ -51,7 +51,7 @@ export default function MissionActiveCard({
               미션 그만두기
             </button>
             <i className="mac-divider" />
-            <button className="mac-ghost" type="button" onClick={onCertify}>
+            <button className="mac-ghost" type="button" onClick={onCertify} >
               미션 인증하기
             </button>
           </div>
