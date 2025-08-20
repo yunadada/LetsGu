@@ -61,8 +61,10 @@ const RewardShop: React.FC = () => {
           headers: { Accept: "application/json" },
         });
         if (!mounted) return;
-        if (data.success) setItems(data.data);
-        else setError("아이템을 불러오지 못했습니다.");
+        if (data.success) {
+          console.log("아이템:", data.data);
+          setItems(data.data);
+        } else setError("아이템을 불러오지 못했습니다.");
       } catch (err: unknown) {
         setError(getAxiosMessage(err));
       } finally {
