@@ -1,7 +1,7 @@
 import style from "./Login.module.css";
 import LogoImg from "../../assets/Logo.svg";
 import { useState } from "react";
-import { requestLogin } from "../../api/Auth";
+import { requestLogin } from "../../api/auth";
 import { useNavigate } from "react-router-dom";
 import { errorToast, warningToast } from "../../utils/ToastUtil/toastUtil";
 
