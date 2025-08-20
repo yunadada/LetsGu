@@ -4,17 +4,18 @@ import { useState } from "react";
 import { requestLogin } from "../../api/auth";
 import { useNavigate } from "react-router-dom";
 import { errorToast, warningToast } from "../../utils/ToastUtil/toastUtil";
+import type { ChangeEvent, FormEvent } from "react";
 
 const Login = () => {
   const [userInfo, setUserInfo] = useState({ email: "", password: "" });
   const navigate = useNavigate();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setUserInfo({ ...userInfo, [name]: value });
   };
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!userInfo.email) {

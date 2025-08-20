@@ -1,5 +1,4 @@
 // src/api/auth.ts
-import { api } from "../api/client";
 import axiosInstance from "../lib/axiosInstance";
 import type { UserInfo } from "../types/userInfo";
 
@@ -20,7 +19,7 @@ export interface SignupRes {
 }
 
 export const signup = async (payload: SignupReq): Promise<SignupRes> => {
-  const { data } = await api.post("/api/v1/auth/signup", payload);
+  const { data } = await axiosInstance.post("/api/v1/auth/signup", payload);
   return data;
 };
 
