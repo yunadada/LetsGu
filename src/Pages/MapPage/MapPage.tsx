@@ -42,6 +42,16 @@ const MapPage: React.FC = () => {
     {}
   );
 
+  const dropMission = () => {
+    const mission = activeMission ?? selectedMission;
+
+    if (!mission) return;
+    navigate("/locationVerification", {
+      state: { missionId: mission.missionId },
+    }); // ✅ state로 전달
+    console.log(mission.missionId);
+  };
+
   const hasReviews = Array.isArray(reviews) && reviews.length > 0;
   const navigate = useNavigate();
   const toggleExpand = (id: string | number) =>
@@ -306,7 +316,9 @@ const MapPage: React.FC = () => {
               collapsed={activeCollapsed}
               onToggle={() => setActiveCollapsed((v) => !v)}
               onQuit={() => setActiveMission(null)}
-              onCertify={() => {}}
+              onCertify={() => {
+                dropMission();
+              }}
               selectedMission={activeMission ?? selectedMission} // ✅ 이게 더 안전
             />
           </div>
