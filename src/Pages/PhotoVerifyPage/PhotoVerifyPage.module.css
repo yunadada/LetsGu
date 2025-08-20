@@ -4,6 +4,7 @@
   height: 874px;
   display: flex;
   flex-direction: column;
+  align-items: center;
   background-color: white;
 }
 
@@ -12,7 +13,8 @@
   display: flex;
   align-items: center;
   flex-direction: column;
-  justify-content: center;
+  padding: 40px 0;
+  box-sizing: border-box;
 }
 
 .subTitle {
@@ -72,13 +74,14 @@
 }
 
 .verifyButton {
-  width: 306px;
-  height: 67px;
-  border-radius: 33px;
+  margin-top: auto;
+  width: 320px;
+  height: 50px;
+  border-radius: 30px;
   border: none;
   background-color: #ff672b;
   color: white;
-  font-size: 20px;
+  font-size: 18px;
 }
 
 .verifyButton:disabled {
