@@ -17,22 +17,28 @@
   background-color: aqua;
 }
 
-.title {
+.navButton {
+  all: unset;
   display: flex;
+  align-items: flex-end;
+  justify-content: center;
   gap: 8px;
+  margin: 16px 0;
+  cursor: pointer;
 }
 
-.title > p {
+.navButton > p {
   font-size: 16px;
   font-weight: bolder;
 }
 
-.navButton {
-  all: unset;
+.navButton > img {
+  width: 18px;
+  height: 12px;
+  flex: 0 0 auto;
 }
 
 .contents {
-  margin-top: 6px;
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
