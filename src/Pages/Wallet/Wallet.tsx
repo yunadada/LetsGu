@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./Wallet.css"; // 아래 CSS 함께 추가
 import "../RewardShop/RewardsShop.css"; // topbar/tabs 등 재사용
-import { api } from "../../api/client";
+import axiosInstance from "../../lib/axiosInstance";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import RewardHistorySheet from "./RewardHistorySheet";
@@ -67,10 +67,10 @@ const Wallet: React.FC = () => {
       try {
         setLoading(true);
         const [pRes, wRes] = await Promise.all([
-          api.get<ApiOk<MyPoint> | ApiErr>("/api/v1/wallet/my-point", {
+          axiosInstance.get<ApiOk<MyPoint> | ApiErr>("/api/v1/wallet/my-point", {
             headers: { Accept: "application/json" },
           }),
-          api.get<ApiOk<WalletPayload> | ApiErr>("/api/v1/wallet/my-wallet", {
+          axiosInstance.get<ApiOk<WalletPayload> | ApiErr>("/api/v1/wallet/my-wallet", {
             headers: { Accept: "application/json" },
           }),
         ]);
@@ -138,7 +138,7 @@ const Wallet: React.FC = () => {
     (async () => {
       try {
         setHistoryLoading(true);
-        const { data } = await api.get<ApiOk<RewardHistoryRow[]> | ApiErr>(
+        const { data } = await axiosInstance.get<ApiOk<RewardHistoryRow[]> | ApiErr>(
           "/api/v1/wallet/reward-history",
           { headers: { Accept: "application/json" } }
         );
@@ -183,7 +183,7 @@ const Wallet: React.FC = () => {
   // 교체해주세요
   const handleUse = async (it: OwnedItem) => {
     try {
-      const { data } = await api.post<ApiOk<null> | ApiErr>(
+      const { data } = await axiosInstance.post<ApiOk<null> | ApiErr>(
         `/api/v1/wallet/my-wallet/${it.orderItemId}`,
         undefined, // 본문 없음
         { headers: { Accept: "application/json" } }

@@ -1,7 +1,7 @@
 // src/Pages/RewardShop/RewardShop.tsx
 import React, { useEffect, useMemo, useState } from "react";
 import "./RewardsShop.css";
-import { api } from "../../api/client";
+import axiosInstance from "../../lib/axiosInstance";
 import axios from "axios";
 import ExchangeSheet from "./ExchangeSheet";
 import { useNavigate } from "react-router-dom";
@@ -59,7 +59,7 @@ const RewardShop: React.FC = () => {
     (async () => {
       try {
         setLoading(true);
-        const { data } = await api.get<ApiListRes>("/api/v1/items", {
+        const { data } = await axiosInstance.get<ApiListRes>("/api/v1/items", {
           headers: { Accept: "application/json" },
         });
         if (!mounted) return;
@@ -98,7 +98,7 @@ const RewardShop: React.FC = () => {
   const submitExchange = async (count: number) => {
     if (!selected) return;
     try {
-      const { data } = await api.post<ApiActionRes>(
+      const { data } = await axiosInstance.post<ApiActionRes>(
         `/api/v1/items/${selected.itemId}`,
         { count },
         { headers: { "Content-Type": "application/json" } }

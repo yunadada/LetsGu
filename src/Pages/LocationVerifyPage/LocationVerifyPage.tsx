@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FailLocationVerifyModal from "../../components/Modal/FailLocationVerifyModal/FailLocationVerifyModal";
 import type { UserLocation } from "../../types/location";
-import { verifyLocation } from "../../api/MissionVerification/MissionVerification";
+// import { verifyLocation } from "../../api/MissionVerification/MissionVerification";
 
 const LocationVerifyPage = () => {
   const [isLocationVerified, setIsLocationVerified] = useState<boolean>(false);

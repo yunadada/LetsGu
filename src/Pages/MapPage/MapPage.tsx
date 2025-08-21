@@ -10,7 +10,7 @@ import duck from "../../assets/duck.png";
 import { ReviewHero } from "./Review";
 import { useNavigate } from "react-router-dom";
 import alert from "../../assets/alert.png";
-import axiosInstance from "../../lib/axiosInstance";
+// import axiosInstance from "../../lib/axiosInstance";
 
 type SliderLevel = "closed" | "half" | "full";
 type Tab = "mission" | "review";
@@ -109,31 +109,31 @@ const MapPage: React.FC = () => {
 
   //간이 로그인
 
-  const DEV_EMAIL = import.meta.env.VITE_DEV_EMAIL;
-  const DEV_PASSWORD = import.meta.env.VITE_DEV_PASSWORD;
+  // const DEV_EMAIL = import.meta.env.VITE_DEV_EMAIL;
+  // const DEV_PASSWORD = import.meta.env.VITE_DEV_PASSWORD;
 
   useEffect(() => {
     let cancelled = false;
 
     const run = async () => {
       try {
-        if (import.meta.env.DEV) {
-          if (!localStorage.getItem("ACCESS_TOKEN")) {
-            const res = await axiosInstance.post("/api/v1/auth/login", {
-              email: DEV_EMAIL,
-              password: DEV_PASSWORD,
-            });
-            const headers = res.headers as unknown as Record<
-              string,
-              string | undefined
-            >;
-            const auth = headers["authorization"] ?? headers["Authorization"];
-            if (!auth?.startsWith("Bearer ")) {
-              throw new Error("Authorization 헤더 노출 필요");
-            }
-            localStorage.setItem("ACCESS_TOKEN", auth.slice(7));
-          }
-        }
+        // if (import.meta.env.DEV) {
+        //   if (!localStorage.getItem("ACCESS_TOKEN")) {
+        //     const res = await axiosInstance.post("/api/v1/auth/login", {
+        //       email: DEV_EMAIL,
+        //       password: DEV_PASSWORD,
+        //     });
+        //     const headers = res.headers as unknown as Record<
+        //       string,
+        //       string | undefined
+        //     >;
+        //     const auth = headers["authorization"] ?? headers["Authorization"];
+        //     if (!auth?.startsWith("Bearer ")) {
+        //       throw new Error("Authorization 헤더 노출 필요");
+        //     }
+        //     localStorage.setItem("ACCESS_TOKEN", auth.slice(7));
+        //   }
+        // }
         const list = await fetchMissions();
         console.log(list);
         if (!cancelled) setMissions(list);
@@ -146,7 +146,8 @@ const MapPage: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [DEV_EMAIL, DEV_PASSWORD]); // 인라인이면 이 두 값만 의존
+  }, []); // 인라인이면 이 두 값만 의존
+  // }, [DEV_EMAIL, DEV_PASSWORD]); // 인라인이면 이 두 값만 의존
 
   useEffect(() => {
     const map = mapRef.current;
