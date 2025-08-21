@@ -19,27 +19,23 @@
   margin: 8px;
 }
 
-.editProfile {
+.nav {
   display: flex;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
   gap: 6px;
   margin-top: 20px;
+  cursor: pointer;
 }
 
-.editProfile > p {
+.nav > p {
   font-size: 18px;
   margin: 0;
 }
 
-.editProfile p span {
+.nav p span {
   font-weight: 600;
-}
-
-.navButton {
-  all: unset;
-  display: flex;
-  justify-content: center;
 }
 
 .tabBar {
