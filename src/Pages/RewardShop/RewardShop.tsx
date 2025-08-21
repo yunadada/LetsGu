@@ -6,7 +6,9 @@ import axios from "axios";
 import ExchangeSheet from "./ExchangeSheet";
 import { useNavigate } from "react-router-dom";
 import coin from "../../assets/coin.png";
+import giftbox from "../../assets/giftbox.png";
 
+/** ===== 타입 ===== */
 interface Item {
   itemId: number;
   itemName: string;
@@ -15,38 +17,60 @@ interface Item {
   imageUrl?: string;
 }
 interface ApiListRes {
-  success: boolean;
+  success: boolean | "true" | "false";
   data: Item[];
 }
+interface ApiPointRes {
+  success: boolean | "true" | "false";
+  data: { point: number };
+}
 interface ApiActionRes {
-  success: boolean;
+  success: boolean | "true" | "false";
   code?: string;
   message?: string;
+  msg?: string;
   data?: unknown;
 }
+type ServerErr = { message?: string; code?: string; msg?: string };
 
+/** ===== 헬퍼 ===== */
 const isVoucher = (name: string) => name.includes("상품권");
 
-// 전자/지류형 추론 (이름 기준 휴리스틱)
-const getVoucherType = (name: string) => {
-  const s = name.toLowerCase();
-  return /(전자|모바일|e-?gift|카드|app|앱)/i.test(s) ? "전자상품권" : "지류형";
-};
 // “구미사랑상품권” 접두사 제거
 const cleanVoucherName = (name: string) =>
   name.replace(/구미사랑상품권/gi, "").trim() || name;
 
-type ServerErr = { message?: string };
-const getAxiosMessage = (err: unknown, fb = "네트워크 오류가 발생했습니다.") =>
+const truthy = (v: boolean | "true" | "false" | undefined): boolean =>
+  v === true || v === "true";
+
+const getAxiosMessage = (
+  err: unknown,
+  fb: string = "네트워크 오류가 발생했습니다."
+): string =>
   axios.isAxiosError<ServerErr>(err) ? err.response?.data?.message ?? fb : fb;
 
+// 응답 객체(성공/에러 공통)에서 서버 메시지 뽑기
+const pickServerMsg = (v: unknown): string | null => {
+  if (typeof v !== "object" || v === null) return null;
+  const r = v as Record<string, unknown>;
+  if (typeof r["msg"] === "string" && (r["msg"] as string).trim())
+    return r["msg"] as string;
+  if (typeof r["message"] === "string" && (r["message"] as string).trim())
+    return r["message"] as string;
+  if (r["code"] === "U002") return "아이템 교환에 필요한 포인트가 부족합니다.";
+  return null;
+};
+
+/** ===== 컴포넌트 ===== */
 const RewardShop: React.FC = () => {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [points, setPoints] = useState<number>(5000);
-  const [tab, setTab] = useState<"voucher" | "partner">("voucher");
 
+  // 🔸 서버에서 포인트 받아옴
+  const [points, setPoints] = useState<number>(0);
+
+  const [tab, setTab] = useState<"voucher" | "partner">("voucher");
   const [sheetOpen, setSheetOpen] = useState(false);
   const [selected, setSelected] = useState<Item | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -54,20 +78,36 @@ const RewardShop: React.FC = () => {
 
   const navigate = useNavigate();
 
+  /** 목록 + 포인트 동시 조회 */
   useEffect(() => {
     let mounted = true;
     (async () => {
       try {
         setLoading(true);
-        const { data } = await axiosInstance.get<ApiListRes>("/api/v1/items", {
-          headers: { Accept: "application/json" },
-        });
+        const [{ data: itemsData }, { data: pointData }] = await Promise.all([
+          axiosInstance.get<ApiListRes>("/api/v1/items", {
+            headers: { Accept: "application/json" },
+          }),
+          axiosInstance.get<ApiPointRes>("/api/v1/wallet/my-point", {
+            headers: { Accept: "application/json" },
+          }),
+        ]);
+
         if (!mounted) return;
-        if (data.success) {
-          console.log(data.data);
-          setItems(data.data);
-        } else setError("아이템을 불러오지 못했습니다.");
+
+        // 아이템
+        if (truthy(itemsData?.success)) setItems(itemsData.data ?? []);
+        else setError("아이템을 불러오지 못했습니다.");
+
+        // 포인트
+        if (truthy(pointData?.success)) {
+          setPoints(pointData.data?.point ?? 0);
+        } else {
+          // 포인트만 실패해도 전체 막진 않고 토스트만
+          setMessage("포인트를 불러오지 못했습니다.");
+        }
       } catch (err) {
+        if (!mounted) return;
         setError(getAxiosMessage(err));
       } finally {
         if (mounted) setLoading(false);
@@ -78,6 +118,7 @@ const RewardShop: React.FC = () => {
     };
   }, []);
 
+  /** 탭 필터 */
   const filtered = useMemo(
     () =>
       items.filter((it) =>
@@ -86,6 +127,7 @@ const RewardShop: React.FC = () => {
     [items, tab]
   );
 
+  /** 교환 시트 열기/닫기 */
   const openExchange = (item: Item) => {
     setSelected(item);
     setSheetOpen(true);
@@ -95,16 +137,16 @@ const RewardShop: React.FC = () => {
     setTimeout(() => setSelected(null), 240);
   };
 
+  /** 교환 요청 */
   const submitExchange = async (count: number) => {
     if (!selected) return;
     try {
       const { data } = await axiosInstance.post<ApiActionRes>(
         `/api/v1/items/${selected.itemId}`,
-        { count },
-        { headers: { "Content-Type": "application/json" } }
+        { count }
       );
 
-      if (data.success) {
+      if (truthy(data?.success)) {
         setPoints((p) => p - selected.price * count);
         setItems((prev) =>
           prev.map((it) =>
@@ -116,13 +158,24 @@ const RewardShop: React.FC = () => {
         closeExchange();
         setSuccessOpen(true);
       } else {
-        setMessage(data.message || "교환 실패");
+        setMessage(pickServerMsg(data) ?? "교환 실패");
       }
-    } catch (err) {
-      setMessage(getAxiosMessage(err, "교환 실패"));
+    } catch (err: unknown) {
+      if (axios.isAxiosError<ApiActionRes | ServerErr>(err)) {
+        const d = err.response?.data;
+        const msg =
+          pickServerMsg(d) ??
+          (err.response?.status === 404
+            ? "해당 상품을 찾을 수 없거나 교환할 수 없습니다."
+            : "교환 실패");
+        setMessage(msg);
+      } else {
+        setMessage("교환 실패");
+      }
     }
   };
 
+  /** 토스트 자동 닫힘 */
   useEffect(() => {
     if (!message) return;
     const t = setTimeout(() => setMessage(null), 2500);
@@ -131,6 +184,7 @@ const RewardShop: React.FC = () => {
 
   return (
     <div className="shop-container">
+      {/* 헤더 */}
       <header className="shop-header">
         <div className="topbar">
           <button
@@ -176,10 +230,10 @@ const RewardShop: React.FC = () => {
       {loading && <p className="meta">불러오는 중…</p>}
       {error && <p className="error">{error}</p>}
 
+      {/* 카드 그리드 */}
       <div className="card-grid">
         {filtered.map((item) => {
           const voucher = isVoucher(item.itemName);
-          const vType = voucher ? getVoucherType(item.itemName) : null;
 
           return (
             <div
@@ -197,12 +251,10 @@ const RewardShop: React.FC = () => {
                     src={item.imageUrl}
                     alt={item.itemName}
                     loading="lazy"
-                    onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).style.display =
-                        "none";
-                      (
-                        e.currentTarget.parentElement as HTMLElement
-                      )?.classList.add("card-media--fallback");
+                    onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                      const img = e.currentTarget;
+                      img.style.display = "none";
+                      img.parentElement?.classList.add("card-media--fallback");
                     }}
                   />
                 ) : voucher ? (
@@ -218,7 +270,7 @@ const RewardShop: React.FC = () => {
                   </div>
                 )}
 
-                {/* 가격 알약만 유지 */}
+                {/* 가격 알약 */}
                 <div className="price-pill">
                   <img src={coin} alt="" className="coin-img" aria-hidden />
                   {item.price.toLocaleString()}
@@ -228,17 +280,14 @@ const RewardShop: React.FC = () => {
               {/* 본문 */}
               <div className="card-body">
                 <div className="card-name">{item.itemName}</div>
-                <div className="card-meta">
-                  {voucher
-                    ? `${vType} · 구미사랑상품권`
-                    : "제휴쿠폰 · 교환 가능"}
-                </div>
+                {/* 카드 메타/재고는 시트에서만 노출 */}
               </div>
             </div>
           );
         })}
       </div>
 
+      {/* 성공 모달 */}
       {successOpen && (
         <div
           className="modal-root"
@@ -254,15 +303,20 @@ const RewardShop: React.FC = () => {
             >
               ×
             </button>
+
             <div className="success-illus" aria-hidden>
-              🎁
+              <img src={giftbox} alt="" />
             </div>
+
             <div className="success-title">교환 완료!</div>
+
             <div className="success-msg">
-              교환이 바로 되었습니다.
-              <br />
-              교환한 상품은 내 지갑에서 확인해보세요.
+              <p>교환이 완료 되었어요.</p>
+              <p>
+                교환된 상품권은 <strong>내 지갑</strong>에서 확인해보세요.
+              </p>
             </div>
+
             <div className="success-actions">
               <button
                 className="btn-ghost lg"
@@ -287,6 +341,7 @@ const RewardShop: React.FC = () => {
         </div>
       )}
 
+      {/* 하단 시트 */}
       <ExchangeSheet
         open={sheetOpen}
         item={selected}
@@ -295,6 +350,7 @@ const RewardShop: React.FC = () => {
         onSubmit={submitExchange}
       />
 
+      {/* 토스트 */}
       {message && (
         <div className="toast" onClick={() => setMessage(null)} role="status">
           {message}
