@@ -16,14 +16,11 @@
 .container span {
   font-size: 48px;
   color: white;
-  margin-bottom: 16px;
 }
 
-.weatherIcon {
-  width: 30px;
-  height: 30px;
-  background-color: aqua;
-  margin-bottom: 16px;
+.weatherIcon > img {
+  width: 60px;
+  height: 60px;
 }
 
 .temperature {

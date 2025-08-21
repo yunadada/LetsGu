@@ -3,17 +3,16 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  gap: 14px;
+  gap: 4px;
 }
 
 .container > p {
-  font-size: 10px;
+  font-size: 10px !important;
   color: white;
-  margin: 0;
+  margin: 0 !important;
 }
 
-.weather {
-  width: 18px;
-  height: 18px;
-  background-color: aqua;
+.weather > img {
+  width: 32px;
+  height: 32px;
 }

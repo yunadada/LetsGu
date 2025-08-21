@@ -1,11 +1,20 @@
+import type { HourlyWeather } from "../../../../types/weather";
 import style from "./HourlyWeatherCard.module.css";
 
-const HourlyWeatherCard = () => {
+type Props = {
+  hourlyWeather: HourlyWeather;
+};
+
+const HourlyWeatherCard = ({ hourlyWeather }: Props) => {
   return (
     <div className={style.container}>
-      <p>오후 1시</p>
-      <div className={style.weather}></div>
-      <p>22도</p>
+      <p>{hourlyWeather?.time}</p>
+      <div className={style.weather}>
+        <img
+          src={`https://openweathermap.org/img/wn/${hourlyWeather?.icon}@2x.png`}
+        />
+      </div>
+      <p>{Math.round(hourlyWeather?.temp)}°</p>
     </div>
   );
 };
