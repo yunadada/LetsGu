@@ -1,8 +1,21 @@
 import Header from "../../../components/Header/Header";
 import style from "./ReviewWrite.module.css";
 import Mark from "../../../assets/MarkIcon.svg";
+import { useState } from "react";
 
 const ReviewWrite = () => {
+  const [reviewContent, setReviewContent] = useState("");
+
+  const handleSaveReviewConten = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setReviewContent(e.target.value);
+  };
+
+  const registerReview = () => {
+    // TODO: 리뷰 등록 api 연결
+  };
+
   return (
     <div className={style.wrapper}>
       <Header title="리뷰 남기기" />
@@ -18,10 +31,17 @@ const ReviewWrite = () => {
           <p>금오공과대학교</p>
         </div>
         <div className={style.textareaWrapper}>
-          <textarea maxLength={3000} className={style.input} />
-          <div className={style.textLength}>0/3000</div>
+          <textarea
+            maxLength={3000}
+            className={style.input}
+            value={reviewContent}
+            onChange={handleSaveReviewConten}
+          />
+          <div className={style.textLength}>{reviewContent.length}/3000</div>
         </div>
-        <button className={style.submitButton}>리뷰 등록하기</button>
+        <button className={style.submitButton} onClick={registerReview}>
+          리뷰 등록하기
+        </button>
       </div>
     </div>
   );
