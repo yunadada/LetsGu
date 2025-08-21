@@ -5,37 +5,54 @@ import { requestLogin } from "../../api/auth";
 import { useNavigate } from "react-router-dom";
 import { errorToast, warningToast } from "../../utils/ToastUtil/toastUtil";
 import type { ChangeEvent, FormEvent } from "react";
+import type { LoginInput, UserInfo } from "../../types/userInfo";
 
 const Login = () => {
-  const [userInfo, setUserInfo] = useState({ email: "", password: "" });
+  const [inputValue, setInputValue] = useState<LoginInput>({
+    email: "",
+    password: "",
+  });
+  const [userInfo, setUserInfo] = useState<UserInfo>({
+    memberId: 0,
+    email: "",
+    nickname: "",
+    imageUrl: "",
+  });
   const navigate = useNavigate();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setUserInfo({ ...userInfo, [name]: value });
+    setInputValue({ ...inputValue, [name]: value });
   };
 
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!userInfo.email) {
+    if (!inputValue.email) {
       warningToast("이메일을 입력해주세요.");
       return;
-    } else if (!userInfo.password) {
+    } else if (!inputValue.password) {
       warningToast("비밀번호를 입력해주세요.");
       return;
     }
 
     try {
-      const res = await requestLogin(userInfo);
+      const res = await requestLogin(inputValue);
 
       if (res.data.success) {
+        const info = res.data.data;
+
+        // 임시로 프로필 이미지 로컬 스토리지에 저장
+        if (info) {
+          localStorage.setItem("profileImg", info.imageUrl);
+        }
+        setUserInfo(info);
+
         const authHeader = res.headers["authorization"];
         const token = authHeader.startsWith("Bearer ")
           ? authHeader.slice(7)
           : authHeader;
 
-        console.log("토큰", token);
         if (token) {
           localStorage.setItem("accessToken", token);
           navigate("/");
@@ -44,7 +61,7 @@ const Login = () => {
       }
     } catch (e) {
       errorToast("이메일 또는 비밀번호가 올바르지 않습니다.");
-      setUserInfo({ email: "", password: "" });
+      setInputValue({ email: "", password: "" });
     }
   };
 
@@ -58,14 +75,14 @@ const Login = () => {
             type="email"
             name="email"
             placeholder="이메일"
-            value={userInfo.email}
+            value={inputValue.email}
             onChange={handleChange}
           />
           <input
             type="password"
             name="password"
             placeholder="비밀번호"
-            value={userInfo.password}
+            value={inputValue.password}
             onChange={handleChange}
           />
         </div>
