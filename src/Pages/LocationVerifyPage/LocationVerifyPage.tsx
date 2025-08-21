@@ -5,7 +5,7 @@ import MapImg from "../../assets/MapImg.svg";
 import Mark from "../../assets/MarkIcon.svg";
 import Header from "../../components/Header/Header";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import FailLocationVerifyModal from "../../components/Modal/FailLocationVerifyModal/FailLocationVerifyModal";
 import type { UserLocation } from "../../types/location";
 import { verifyLocation } from "../../api/MissionVerification/MissionVerification";
@@ -21,9 +21,9 @@ const LocationVerifyPage = () => {
   });
 
   const navigate = useNavigate();
-  const location = useLocation();
-  const { missionId } = location.state as { missionId: number };
-  // const missionId = 9;
+  // const location = useLocation();
+  // const { missionId } = location.state as { missionId: number };
+  const missionId = 9;
   // console.log("미션 id:", typeof missionId, missionId);
 
   const getLocation = async () => {
@@ -60,17 +60,17 @@ const LocationVerifyPage = () => {
     // return;
   };
 
-  const onSuccess = (position: GeolocationPosition) => {
-    const lat = position.coords.latitude;
-    const lon = position.coords.longitude;
-    setUserLocation({ latitude: lat, longitude: lon });
-  };
+  // const onSuccess = (position: GeolocationPosition) => {
+  //   const lat = position.coords.latitude;
+  //   const lon = position.coords.longitude;
+  //   setUserLocation({ latitude: lat, longitude: lon });
+  // };
 
-  const onError = (error: GeolocationPositionError) => {
-    console.log(error.code);
+  // const onError = (error: GeolocationPositionError) => {
+  //   console.log(error.code);
 
-    setIsModalOpen(true);
-  };
+  //   setIsModalOpen(true);
+  // };
 
   useEffect(() => {
     getLocation();
