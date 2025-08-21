@@ -1,15 +1,13 @@
 import Header from "../../../components/Header/Header";
 import style from "./ReviewWrite.module.css";
 import Mark from "../../../assets/MarkIcon.svg";
-import { useState } from "react";
+import { useState, type ChangeEvent } from "react";
 
 const ReviewWrite = () => {
   const [reviewContent, setReviewContent] = useState("");
 
-  const handleSaveReviewConten = (
-    e: React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    setReviewContent(e.target.value);
+  const handleSaveReviewContent = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setReviewContent(e.currentTarget.value);
   };
 
   const registerReview = () => {
@@ -35,7 +33,7 @@ const ReviewWrite = () => {
             maxLength={3000}
             className={style.input}
             value={reviewContent}
-            onChange={handleSaveReviewConten}
+            onChange={handleSaveReviewContent}
           />
           <div className={style.textLength}>{reviewContent.length}/3000</div>
         </div>
