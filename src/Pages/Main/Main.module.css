@@ -1,0 +1,73 @@
+.wrapper {
+  width: 402px;
+  height: 874px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: radial-gradient(
+    191.22% 58.7% at 86.94% 94.51%,
+    #ffffff 0%,
+    #0068d7 99.99%
+  );
+  box-sizing: border-box;
+}
+
+.header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 30px 20px;
+  box-sizing: border-box;
+}
+
+.coin {
+  padding: 10px 16px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 26px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 22px;
+}
+
+.coin > p {
+  margin: 0;
+  font-size: 16px;
+  color: white;
+}
+
+.profileImg {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.date {
+  color: white;
+  font-size: 16px;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+.navBar {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.tag {
+  background-color: rgba(255, 255, 255, 0.7);
+  font-size: 10px;
+  border-radius: 14px;
+  padding: 6px 10px;
+  text-align: center;
+  margin: 0;
+}
+
+.description {
+  font-size: 12px;
+  margin: 0;
+}

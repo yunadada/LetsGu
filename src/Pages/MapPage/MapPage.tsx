@@ -8,9 +8,9 @@ import { fetchMissionReviews, type Review } from "../../api/reviews";
 import { fetchMissions, type Mission } from "../../api/mission";
 import duck from "../../assets/duck.png";
 import { ReviewHero } from "./Review";
-import { api } from "../../api/client";
 import { useNavigate } from "react-router-dom";
 import alert from "../../assets/alert.png";
+import axiosInstance from "../../lib/axiosInstance";
 
 type SliderLevel = "closed" | "half" | "full";
 type Tab = "mission" | "review";
@@ -41,6 +41,16 @@ const MapPage: React.FC = () => {
   const [expanded, setExpanded] = useState<Record<string | number, boolean>>(
     {}
   );
+
+  const dropMission = () => {
+    const mission = activeMission ?? selectedMission;
+
+    if (!mission) return;
+    navigate("/locationVerification", {
+      state: { missionId: mission.missionId },
+    }); // ✅ state로 전달
+    //console.log(mission.missionId);
+  };
 
   const hasReviews = Array.isArray(reviews) && reviews.length > 0;
   const navigate = useNavigate();
@@ -109,7 +119,7 @@ const MapPage: React.FC = () => {
       try {
         if (import.meta.env.DEV) {
           if (!localStorage.getItem("ACCESS_TOKEN")) {
-            const res = await api.post("/api/v1/auth/login", {
+            const res = await axiosInstance.post("/api/v1/auth/login", {
               email: DEV_EMAIL,
               password: DEV_PASSWORD,
             });
@@ -307,7 +317,9 @@ const MapPage: React.FC = () => {
               collapsed={activeCollapsed}
               onToggle={() => setActiveCollapsed((v) => !v)}
               onQuit={() => setActiveMission(null)}
-              onCertify={() => {}}
+              onCertify={() => {
+                dropMission();
+              }}
               selectedMission={activeMission ?? selectedMission} // ✅ 이게 더 안전
             />
           </div>

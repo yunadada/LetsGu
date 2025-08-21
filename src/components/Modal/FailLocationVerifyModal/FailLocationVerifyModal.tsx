@@ -3,11 +3,16 @@ import style from "./FailLocationVerifyModal.module.css";
 type Props = {
   handleModal: React.Dispatch<React.SetStateAction<boolean>>;
   retryLocationVerification: () => Promise<void>;
+  errorSentences: {
+    sentence1: string;
+    sentence2: string;
+  };
 };
 
 const FailLocationVerifyModal = ({
   handleModal,
   retryLocationVerification,
+  errorSentences,
 }: Props) => {
   const handleRetryLocationVerification = async () => {
     handleModal(false);
@@ -18,8 +23,8 @@ const FailLocationVerifyModal = ({
     <div className={style.modalOverlay}>
       <div className={style.modal}>
         <h4>위치인증 실패</h4>
-        <p>위치인증을 하려면 설정에서</p>
-        <p>위치정보서비스(GPS)를 켜야 합니다.</p>
+        <p>{errorSentences.sentence1}</p>
+        <p>{errorSentences.sentence2}</p>
         <div className={style.button}>
           <button
             className={style.cancelButton}

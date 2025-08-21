@@ -1,5 +1,5 @@
 // src/api/reviews.ts
-import { api } from "./client";
+import axiosInstance from "../lib/axiosInstance";
 import axios from "axios";
 
 export type Review = {
@@ -19,7 +19,7 @@ export const fetchMissionReviews = async (
   missionId: number
 ): Promise<{ list: Review[]; notFound: boolean }> => {
   try {
-    const { data } = await api.get<ReviewsResponse>(
+    const { data } = await axiosInstance.get<ReviewsResponse>(
       `/api/v1/missions/${missionId}/reviews/preview`
     );
     return { list: data?.data ?? [], notFound: false };

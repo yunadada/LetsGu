@@ -1,0 +1,41 @@
+.wrapper {
+  width: 402px;
+  height: 874px;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+}
+
+.navBar {
+  display: flex;
+  border-bottom: 1px solid #e3e3e3;
+}
+
+.unwritten,
+.written {
+  all: unset;
+  flex: 1;
+  text-align: center;
+  color: #787878;
+  padding: 14px;
+  font-size: 16px;
+}
+
+.active {
+  border-bottom: 2px solid #ff672b;
+  color: black;
+}
+
+.contents {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.hasItem {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  padding: 10px 0;
+}

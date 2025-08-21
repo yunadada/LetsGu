@@ -1,5 +1,5 @@
 // src/api/mission.ts
-import { api } from "./client";
+import axiosInstance from "../lib/axiosInstance";
 
 /** 서버가 내려주는 미션 타입 */
 export type Mission = {
@@ -27,7 +27,9 @@ type MissionsResponse = {
 
 /** 미션 목록 조회 */
 export const fetchMissions = async (): Promise<Mission[]> => {
-  const { data } = await api.get<MissionsResponse>("/api/v1/missions");
-  
+  const { data } = await axiosInstance.get<MissionsResponse>(
+    "/api/v1/missions"
+  );
+
   return data?.data ?? [];
 };

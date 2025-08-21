@@ -1,0 +1,45 @@
+.container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.container p {
+  font-size: 14px;
+  color: white;
+  margin: 0;
+  margin-bottom: 10px;
+}
+
+.container span {
+  font-size: 48px;
+  color: white;
+  margin-bottom: 16px;
+}
+
+.weatherIcon {
+  width: 30px;
+  height: 30px;
+  background-color: aqua;
+  margin-bottom: 16px;
+}
+
+.temperature {
+  display: flex;
+  gap: 20px;
+}
+
+.container > hr {
+  width: 346px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  margin: 20px 0;
+}
+
+.hourlyWeather {
+  width: 336px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
