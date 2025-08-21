@@ -3,6 +3,12 @@ export type LoginInput = {
   password: string;
 };
 
+export type UserProfileData = {
+  email: string;
+  imageUrl: string;
+  nickname: string;
+};
+
 export type UserInfo = {
   memberId: number;
   email: string;

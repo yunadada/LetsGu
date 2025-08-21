@@ -1,10 +1,16 @@
 import style from "./Profile.module.css";
-import ProfileImg from "../../../assets/ProfileImg.svg";
+import defaultProfileImg from "../../../assets/defaultProfileImg.svg";
 
-const Profile = () => {
+type Props = {
+  imageUrl?: string;
+};
+
+const Profile = ({ imageUrl }: Props) => {
+  const imgUrl = imageUrl;
+
   return (
     <div className={style.profile}>
-      <img src={ProfileImg} alt="사진" />
+      <img src={imgUrl ?? defaultProfileImg} alt="프로필 사진" loading="lazy" />
     </div>
   );
 };

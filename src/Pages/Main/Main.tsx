@@ -1,5 +1,6 @@
 import style from "./Main.module.css";
 import Coin from "../../assets/Coin.svg";
+import defaultProfileImg from "../../assets/defaultProfileImg.svg";
 import Weather from "../../components/Main/Weather/Weather";
 import NavItem from "../../components/Main/NavItem/NavItem";
 import MyPageThumbnail from "../../assets/MyPageThumbnail.svg";
@@ -60,7 +61,7 @@ const Main = () => {
           <p>{point}</p>
         </div>
         <div className={style.profileImg}>
-          <img src={profileUrl} alt="프로필" />
+          <img src={profileUrl ?? defaultProfileImg} alt="프로필" />
         </div>
       </div>
       <p className={style.date}>
