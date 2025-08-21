@@ -1,10 +1,15 @@
 import style from "./Profile.module.css";
-import ProfileImg from "../../../assets/ProfileImg.svg";
 
-const Profile = () => {
+type Props = {
+  imageUrl?: string;
+};
+
+const Profile = ({ imageUrl }: Props) => {
+  const imgUrl = imageUrl;
+
   return (
     <div className={style.profile}>
-      <img src={ProfileImg} alt="사진" />
+      <img src={imgUrl} alt="사진" />
     </div>
   );
 };
