@@ -1,4 +1,5 @@
 import style from "./Profile.module.css";
+import defaultProfileImg from "../../../assets/defaultProfileImg.svg";
 
 type Props = {
   imageUrl?: string;
@@ -9,7 +10,7 @@ const Profile = ({ imageUrl }: Props) => {
 
   return (
     <div className={style.profile}>
-      <img src={imgUrl} alt="사진" />
+      <img src={imgUrl ?? defaultProfileImg} alt="프로필 사진" loading="lazy" />
     </div>
   );
 };

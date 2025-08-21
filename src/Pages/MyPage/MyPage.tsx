@@ -6,7 +6,7 @@ import Header from "../../components/Header/Header";
 import Profile from "../../components/MyPage/Profile/Profile";
 import { IoChevronForwardOutline } from "react-icons/io5";
 import TabBarItem from "../../components/MyPage/TabBarItem/TabBarItem";
-import ListItem from "../../components/MyPage/ListItem/ListItem";
+// import ListItem from "../../components/MyPage/ListItem/ListItem";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getMypageData } from "../../api/user";
@@ -25,7 +25,9 @@ const MyPage = () => {
     const getUserProfileData = async () => {
       try {
         const res = await getMypageData();
-        setUserProfileData(res.data.data);
+        if (res.data.success) {
+          setUserProfileData(res.data.data);
+        }
       } catch (e) {
         console.log(e);
       }

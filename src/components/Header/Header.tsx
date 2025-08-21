@@ -1,6 +1,6 @@
 import style from "./Header.module.css";
 import { IoChevronBackOutline } from "react-icons/io5";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   title: string;

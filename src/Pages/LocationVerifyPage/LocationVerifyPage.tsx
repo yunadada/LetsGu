@@ -9,7 +9,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import FailLocationVerifyModal from "../../components/Modal/FailLocationVerifyModal/FailLocationVerifyModal";
 import type { UserLocation } from "../../types/location";
 import { verifyLocation } from "../../api/MissionVerification/MissionVerification";
-import { errorToast } from "../../utils/ToastUtil/toastUtil";
+// import { errorToast } from "../../utils/ToastUtil/toastUtil";
 
 const LocationVerifyPage = () => {
   const [isLocationVerified, setIsLocationVerified] = useState<boolean>(false);

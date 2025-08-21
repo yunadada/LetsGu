@@ -1,6 +1,6 @@
 import style from "./Main.module.css";
 import Coin from "../../assets/Coin.svg";
-import ProfileImg from "../../assets/ProfileImg.svg";
+import defaultProfileImg from "../../assets/deFaultProfileImg.svg";
 import Weather from "../../components/Main/Weather/Weather";
 import NavItem from "../../components/Main/NavItem/NavItem";
 import MyPageThumbnail from "../../assets/MyPageThumbnail.svg";
@@ -17,7 +17,7 @@ const Main = () => {
           <p>1000</p>
         </div>
         <div className={style.profileImg}>
-          <img src={ProfileImg} />
+          <img src={defaultProfileImg} />
         </div>
       </div>
       <p className={style.date}>2025년 08월 26일</p>

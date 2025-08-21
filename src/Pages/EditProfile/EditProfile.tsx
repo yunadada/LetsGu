@@ -8,7 +8,7 @@ import type { UserProfileData } from "../../types/userInfo";
 const EditProfile = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const userData: UserProfileData = location.state.userProfileData;
+  const userData: UserProfileData = location.state?.userProfileData;
 
   const onLogout = () => {
     localStorage.removeItem("accessToken");
@@ -20,11 +20,11 @@ const EditProfile = () => {
       <Header title="내 프로필" />
       <div className={style.contents}>
         <div className={style.profile}>
-          <Profile imageUrl={userData.imageUrl} />
+          <Profile imageUrl={userData?.imageUrl} />
         </div>
         <div className={style.infoSection}>
-          <InfoItem label="이름" value={userData.nickname} />
-          <InfoItem label="이메일" value={userData.email} />
+          <InfoItem label="이름" value={userData?.nickname} />
+          <InfoItem label="이메일" value={userData?.email} />
         </div>
         <div className={style.infoSection}>
           <InfoItem label="로그아웃" value="" handler={onLogout} />
