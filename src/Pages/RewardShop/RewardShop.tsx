@@ -2,9 +2,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./RewardsShop.css";
 import { api } from "../../api/client";
-import axios from "axios"; // ✅ isAxiosError 사용
-import ExchangeSheet from "./ExchangeSheet"; // 경로 맞춰줘
+import axios from "axios";
+import ExchangeSheet from "./ExchangeSheet";
 import { useNavigate } from "react-router-dom";
+import coin from "../../assets/coin.png";
 
 interface Item {
   itemId: number;
@@ -26,17 +27,18 @@ interface ApiActionRes {
 
 const isVoucher = (name: string) => name.includes("상품권");
 
-/** ✅ any 금지: 에러 메시지 안전 추출 */
-type ServerErr = { message?: string };
-const getAxiosMessage = (
-  err: unknown,
-  fallback = "네트워크 오류가 발생했습니다."
-): string => {
-  if (axios.isAxiosError<ServerErr>(err)) {
-    return err.response?.data?.message ?? fallback;
-  }
-  return fallback;
+// 전자/지류형 추론 (이름 기준 휴리스틱)
+const getVoucherType = (name: string) => {
+  const s = name.toLowerCase();
+  return /(전자|모바일|e-?gift|카드|app|앱)/i.test(s) ? "전자상품권" : "지류형";
 };
+// “구미사랑상품권” 접두사 제거
+const cleanVoucherName = (name: string) =>
+  name.replace(/구미사랑상품권/gi, "").trim() || name;
+
+type ServerErr = { message?: string };
+const getAxiosMessage = (err: unknown, fb = "네트워크 오류가 발생했습니다.") =>
+  axios.isAxiosError<ServerErr>(err) ? err.response?.data?.message ?? fb : fb;
 
 const RewardShop: React.FC = () => {
   const [items, setItems] = useState<Item[]>([]);
@@ -45,7 +47,6 @@ const RewardShop: React.FC = () => {
   const [points, setPoints] = useState<number>(5000);
   const [tab, setTab] = useState<"voucher" | "partner">("voucher");
 
-  // ✅ 드로어 상태
   const [sheetOpen, setSheetOpen] = useState(false);
   const [selected, setSelected] = useState<Item | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -63,10 +64,10 @@ const RewardShop: React.FC = () => {
         });
         if (!mounted) return;
         if (data.success) {
-          // console.log("아이템:", data.data);
+          console.log(data.data);
           setItems(data.data);
         } else setError("아이템을 불러오지 못했습니다.");
-      } catch (err: unknown) {
+      } catch (err) {
         setError(getAxiosMessage(err));
       } finally {
         if (mounted) setLoading(false);
@@ -89,7 +90,6 @@ const RewardShop: React.FC = () => {
     setSelected(item);
     setSheetOpen(true);
   };
-
   const closeExchange = () => {
     setSheetOpen(false);
     setTimeout(() => setSelected(null), 240);
@@ -97,7 +97,6 @@ const RewardShop: React.FC = () => {
 
   const submitExchange = async (count: number) => {
     if (!selected) return;
-
     try {
       const { data } = await api.post<ApiActionRes>(
         `/api/v1/items/${selected.itemId}`,
@@ -114,29 +113,24 @@ const RewardShop: React.FC = () => {
               : it
           )
         );
-        // ✅ 성공 시 토스트 대신 모달만
         closeExchange();
         setSuccessOpen(true);
       } else {
-        // ❗ 실패 시만 토스트
         setMessage(data.message || "교환 실패");
       }
-    } catch (err: unknown) {
-      // ❗ 네트워크/예외 에러도 토스트
+    } catch (err) {
       setMessage(getAxiosMessage(err, "교환 실패"));
     }
   };
 
-  // 컴포넌트 상단쪽에 추가
   useEffect(() => {
     if (!message) return;
-    const t = setTimeout(() => setMessage(null), 2500); // 2.5초 후 자동 닫힘
+    const t = setTimeout(() => setMessage(null), 2500);
     return () => clearTimeout(t);
   }, [message]);
 
   return (
     <div className="shop-container">
-      {/* 헤더 */}
       <header className="shop-header">
         <div className="topbar">
           <button
@@ -159,15 +153,19 @@ const RewardShop: React.FC = () => {
           <div className="topbar-spacer" aria-hidden />
         </div>
 
-        <nav className="tabs">
+        <nav className="tabs" role="tablist" aria-label="상품 유형">
           <button
             className={`tab-btn ${tab === "voucher" ? "active" : ""}`}
+            role="tab"
+            aria-selected={tab === "voucher"}
             onClick={() => setTab("voucher")}
           >
             구미사랑상품권
           </button>
           <button
             className={`tab-btn ${tab === "partner" ? "active" : ""}`}
+            role="tab"
+            aria-selected={tab === "partner"}
             onClick={() => setTab("partner")}
           >
             제휴 쿠폰
@@ -178,11 +176,10 @@ const RewardShop: React.FC = () => {
       {loading && <p className="meta">불러오는 중…</p>}
       {error && <p className="error">{error}</p>}
 
-      {/* 그리드 */}
       <div className="card-grid">
-        {filtered.map((item, idx) => {
+        {filtered.map((item) => {
           const voucher = isVoucher(item.itemName);
-          const hot = tab === "voucher" && idx === 1;
+          const vType = voucher ? getVoucherType(item.itemName) : null;
 
           return (
             <div
@@ -190,9 +187,10 @@ const RewardShop: React.FC = () => {
               className={`card ${voucher ? "card-blue" : "card-plain"}`}
               onClick={() => openExchange(item)}
               role="button"
+              tabIndex={0}
             >
+              {/* 썸네일 */}
               <div className="card-media">
-                {/* ✅ 이미지가 있으면 우선 표시 */}
                 {item.imageUrl ? (
                   <img
                     className="card-img"
@@ -200,7 +198,6 @@ const RewardShop: React.FC = () => {
                     alt={item.itemName}
                     loading="lazy"
                     onError={(e) => {
-                      // 이미지 로드 실패 시 플레이스홀더로 전환
                       (e.currentTarget as HTMLImageElement).style.display =
                         "none";
                       (
@@ -209,47 +206,32 @@ const RewardShop: React.FC = () => {
                     }}
                   />
                 ) : voucher ? (
-                  // ✅ 이미지가 없고 상품권이면 기존 파란 면
                   <div className="voucher-face">
                     <div className="voucher-title">구미사랑</div>
                     <div className="voucher-sub">
-                      {item.itemName.replace("구미사랑상품권", "").trim()}
+                      {cleanVoucherName(item.itemName)}
                     </div>
                   </div>
                 ) : (
-                  // ✅ 이미지가 없고 제휴쿠폰이면 회색 플레이스홀더
                   <div className="thumb">
                     <div className="note" />
                   </div>
                 )}
 
-                {/* 가격/뱃지 오버레이는 그대로 */}
+                {/* 가격 알약만 유지 */}
                 <div className="price-pill">
-                  <span className="coin" />
+                  <img src={coin} alt="" className="coin-img" aria-hidden />
                   {item.price.toLocaleString()}
                 </div>
-                {hot && <div className="hot-badge">HOT</div>}
               </div>
 
+              {/* 본문 */}
               <div className="card-body">
                 <div className="card-name">{item.itemName}</div>
                 <div className="card-meta">
                   {voucher
-                    ? "전자상품권 · 구미사랑상품권"
+                    ? `${vType} · 구미사랑상품권`
                     : "제휴쿠폰 · 교환 가능"}
-                </div>
-                <div className="card-actions">
-                  <button
-                    className="btn-primary"
-                    disabled={item.count <= 0}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openExchange(item);
-                    }}
-                  >
-                    {item.count > 0 ? "교환" : "품절"}
-                  </button>
-                  <span className="stock">재고 {Math.max(item.count, 0)}</span>
                 </div>
               </div>
             </div>
@@ -257,7 +239,6 @@ const RewardShop: React.FC = () => {
         })}
       </div>
 
-      {/* 성공 모달 */}
       {successOpen && (
         <div
           className="modal-root"
@@ -287,7 +268,6 @@ const RewardShop: React.FC = () => {
                 className="btn-ghost lg"
                 onClick={() => {
                   setSuccessOpen(false);
-                  // TODO: 홈 경로가 있다면 여기서 이동
                   navigate("/");
                 }}
               >
@@ -306,7 +286,6 @@ const RewardShop: React.FC = () => {
           </div>
         </div>
       )}
-      {/* ✅ 분리된 컴포넌트만 사용 */}
 
       <ExchangeSheet
         open={sheetOpen}

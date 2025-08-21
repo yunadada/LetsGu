@@ -15,7 +15,7 @@
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial,
     sans-serif;
   color: var(--text);
-  background: var(--bg);
+  background: #fff; /* 배경 화이트 고정 */
 }
 
 /* ========== Header (Topbar + Tabs) ========== */
@@ -44,7 +44,6 @@
   width: 40px;
 }
 
-/* back button (SVG uses currentColor) */
 .back-btn {
   width: 40px;
   height: 40px;
@@ -94,7 +93,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: -2px;
+  bottom: -1px; /* 경계선과 정확히 맞춤 */
   height: 2px;
   border-radius: 2px;
   background: var(--accent);
@@ -108,27 +107,54 @@
   padding: 14px 16px 28px;
 }
 
+/* 카드: 보더 제거, 외곽은 자르지 않음(이미지에만 곡률 주기 위함) */
 .card {
   background: #fff;
   border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid var(--line-soft);
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
+  border: 0; /* ← 설명란 주변 보더 안 보이게 */
+
   cursor: pointer;
+  /* overflow: hidden; */ /* ← 지움! (이미지만 곡률 적용하려고) */
+  gap: 8px;
 }
+
 .card-media {
   position: relative;
   height: 136px;
   display: grid;
   place-items: center;
+  overflow: hidden;
+  border-radius: 8px;
 }
 .card-plain .card-media {
   background: #f7f7f9;
 }
+/* 상품권 카드의 썸네일 영역만 곡률 적용 */
 .card-blue .card-media {
-  background: #1648ff;
+  border-radius: 8px; /* ← 곡률(값 더 줄이고 싶으면 6px 등으로) */
+  overflow: hidden; /* 모서리 밖 내용 클립 */
 }
 
+/* 썸네일이 실제 img여도 동일하게 */
+.card-blue .card-img {
+  border-radius: 8px;
+}
+
+/* 이미지 썸네일 */
+.card-img {
+  width: 163px;
+  height: 141px;
+  object-fit: cover;
+  display: block;
+}
+/* 이미지 로드 실패 시 fallback 배경 */
+.card-media--fallback {
+  background: #f7f7f9;
+  display: grid;
+  place-items: center;
+}
+
+/* 상품권 파란 면(이미지 없을 때) */
 .voucher-face {
   color: #fff;
   text-align: left;
@@ -145,6 +171,7 @@
   font-weight: 800;
 }
 
+/* 제휴 썸네일 더미 */
 .thumb .note {
   width: 84px;
   height: 64px;
@@ -152,7 +179,7 @@
   background: linear-gradient(135deg, #e9ecf1, #dfe3ea);
 }
 
-/* price pill */
+/* 가격 알약 + 코인 이미지 */
 .price-pill {
   position: absolute;
   left: 10px;
@@ -167,34 +194,27 @@
   align-items: center;
   gap: 6px;
 }
-.price-pill .coin {
+.price-pill .coin-img {
+  /* <img class="coin-img" src={coin} /> */
   width: 14px;
   height: 14px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, #ffe58a, #ffc300);
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
-}
-
-/* HOT */
-.hot-badge {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  background: var(--accent);
-  color: #fff;
-  font-size: 10px;
-  font-weight: 800;
-  padding: 4px 8px;
-  border-radius: 999px;
+  display: block;
+  object-fit: contain;
 }
 
 .card-body {
-  padding: 10px 12px 12px;
+  background: #fff; /* 배경 화이트로 통일 */
+  /* 보더는 카드에서 이미 제거됨 */
 }
+
 .card-name {
   font-size: 14px;
   font-weight: 700;
   line-height: 1.3;
+  display: -webkit-box; /* 두 줄 말줄임 */
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .card-meta {
   margin-top: 4px;
@@ -209,19 +229,9 @@
   justify-content: space-between;
   margin-top: 8px;
 }
-.btn-primary {
-  background: #111;
-  color: #fff;
-  border: 0;
-  padding: 8px 12px;
-  border-radius: 10px;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-}
-.btn-primary:disabled {
-  opacity: 0.4;
-  cursor: default;
+/* 버튼 제거 버전: 재고만 우측 정렬 */
+.card-actions.no-btn {
+  justify-content: flex-end;
 }
 .stock {
   font-size: 12px;
@@ -331,7 +341,7 @@
   align-items: flex-end;
 }
 
-/* shared buttons */
+/* Buttons */
 .btn-orange {
   background: var(--brand);
   color: #fff;
@@ -361,7 +371,7 @@
   font-size: 14px;
 }
 
-/* messages */
+/* ========== Messages ========== */
 .meta {
   padding: 10px 16px;
   color: #666;
@@ -466,24 +476,4 @@
 .btn-ghost.lg {
   padding: 12px 14px;
   font-size: 14px;
-}
-
-/* 이미지 썸네일 */
-.card-media {
-  position: relative;
-  height: 136px;
-  overflow: hidden;
-}
-.card-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* ✅ 꽉 차게 */
-  display: block;
-}
-
-/* onError로 이미지 숨겼을 때 배경색 보이도록 */
-.card-media--fallback {
-  background: #f7f7f9;
-  display: grid;
-  place-items: center;
 }

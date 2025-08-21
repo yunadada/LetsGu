@@ -5,11 +5,11 @@ import { api } from "../../api/client";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import RewardHistorySheet from "./RewardHistorySheet";
+import coin from "../../assets/coin.png";
 
 /** ===== 타입 ===== */
 type ApiOk<T> = { success: true; data: T };
 type ApiErr = { success: false; code?: string; message?: string };
-
 type MyPoint = { point: number };
 
 // 타입
@@ -268,7 +268,7 @@ const Wallet: React.FC = () => {
           <div className="ws-card">
             <div className="ws-title">보유 리워드</div>
             <div className="ws-point">
-              <span className="coin" />
+              <img src={coin} alt="" className="coin-img" aria-hidden />
               {point.toLocaleString()} P
             </div>
           </div>
