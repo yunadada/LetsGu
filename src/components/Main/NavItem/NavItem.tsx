@@ -29,12 +29,10 @@ const NavItem = ({ thumbnail, title, contents }: Props) => {
       <div className={style.img}>
         <img src={thumbnail} />
       </div>
-      <div className={style.title}>
+      <button className={style.navButton} onClick={routePage}>
         <p>{title}</p>
-        <button className={style.navButton} onClick={routePage}>
-          <img src={Arrow} />
-        </button>
-      </div>
+        <img src={Arrow} />
+      </button>
       <div className={style.contents}>{contents}</div>
     </div>
   );
