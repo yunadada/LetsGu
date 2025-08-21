@@ -49,9 +49,9 @@ const Login = () => {
         setUserInfo(info);
 
         const authHeader = res.headers["authorization"];
-        const token = authHeader.startsWith("Bearer ")
+        const token = authHeader?.startsWith("Bearer ")
           ? authHeader.slice(7)
-          : authHeader;
+          : authHeader ?? "";
 
         if (token) {
           localStorage.setItem("accessToken", token);

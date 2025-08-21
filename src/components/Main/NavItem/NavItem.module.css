@@ -35,6 +35,7 @@
 .navButton > img {
   width: 18px;
   height: 12px;
+  flex: 0 0 auto;
 }
 
 .contents {

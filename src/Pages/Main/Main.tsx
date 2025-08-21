@@ -27,7 +27,7 @@ const Main = () => {
 
   useEffect(() => {
     const img = localStorage.getItem("profileImg");
-    setProfileUrl(img as string);
+    setProfileUrl(img ?? "");
 
     const getTodayWeather = async () => {
       try {

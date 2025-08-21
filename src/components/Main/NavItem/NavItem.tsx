@@ -27,9 +27,9 @@ const NavItem = ({ thumbnail, title, contents }: Props) => {
   return (
     <div className={style.container}>
       <div className={style.img}>
-        <img src={thumbnail} />
+        <img src={thumbnail} alt="썸네일" />
       </div>
-      <button className={style.navButton} onClick={routePage}>
+      <button type="button" className={style.navButton} onClick={routePage}>
         <p>{title}</p>
         <img src={Arrow} />
       </button>
