@@ -1,6 +1,6 @@
 import style from "./Main.module.css";
 import Coin from "../../assets/Coin.svg";
-import defaultProfileImg from "../../assets/deFaultProfileImg.svg";
+import defaultProfileImg from "../../assets/defaultProfileImg.svg";
 import Weather from "../../components/Main/Weather/Weather";
 import NavItem from "../../components/Main/NavItem/NavItem";
 import MyPageThumbnail from "../../assets/MyPageThumbnail.svg";
