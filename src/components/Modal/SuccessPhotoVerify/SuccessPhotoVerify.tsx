@@ -1,8 +1,11 @@
 import style from "./SuccessPhotoVerify.module.css";
 import { FiCheck } from "react-icons/fi";
 import ConfettiExplosion from "react-confetti-explosion";
+import { useNavigate } from "react-router-dom";
 
 const SuccessPhotoVerify = () => {
+  const navigate = useNavigate();
+
   return (
     <div className={style.modalOverlay}>
       <div className={style.wrapper}>
@@ -14,8 +17,8 @@ const SuccessPhotoVerify = () => {
           <strong>+100 리워드</strong>를 적립해드렸어요.
         </p>
         <div className={style.button}>
-          <button>미션 지도로 이동</button>
-          <button>리뷰 쓰기</button>
+          <button onClick={() => navigate("/map")}>미션 지도로 이동</button>
+          <button onClick={() => navigate("/reviewWrite")}>리뷰 쓰기</button>
         </div>
       </div>
       <div className={style.confetti}>
