@@ -50,9 +50,13 @@ const MyPage = () => {
           <IoChevronForwardOutline />
         </button>
         <div className={style.tabBar}>
-          <TabBarItem img={ActivityImg} text="활동 내역" />
-          <TabBarItem img={RewardImg} text="리워드 샵" />
-          <TabBarItem img={WalletImg} text="내 지갑" />
+          <TabBarItem
+            img={ActivityImg}
+            text="활동 내역"
+            navUrl="/activityLog"
+          />
+          <TabBarItem img={RewardImg} text="리워드 샵" navUrl="/activityLog" />
+          <TabBarItem img={WalletImg} text="내 지갑" navUrl="/activityLog" />
         </div>
         {/* <div className={style.menuList}>
           <ListItem text="공지사항" />
