@@ -1,13 +1,17 @@
+// RewardHistorySheet.tsx
 import React from "react";
 import "./Wallet.css";
+import Giftbox from "../../assets/Giftbox.png";
+import Bag3D from "../../assets/b3D.png";
+import Heart3D from "../../assets/Heart3D.png";
 
 export type RewardHistoryRow = {
   pointTransactionId: number;
-  pointType: string; // "EXCHANGE" | "MISSION_SUCCESS" | "REVIEW_WRITE" ...
-  changeAmount: number; // +/-
+  pointType: string;
+  changeAmount: number;
   balanceAfter: number;
-  createdAt?: string; // ISO
-  title?: string; // 서버에 제목이 있다면 사용(없어도 OK)
+  createdAt?: string;
+  title?: string;
 };
 
 type Props = {
@@ -27,32 +31,27 @@ const fmtDate = (iso?: string) => {
   return `${y}.${m}.${day}`;
 };
 
-// 포인트 유형 → 아이콘/타이틀 (필요 시 여기에서 커스터마이즈)
-const typeMeta = (t: string) => {
-  switch (t) {
+const typeMeta = (t: string): { icon: React.ReactNode; title: string } => {
+  const T = t.toUpperCase();
+  switch (T) {
     case "EXCHANGE":
-      return { icon: "🎁", title: "교환" };
+    case "ITEM_EXCHANGE":
+      return { icon: <img src={Giftbox} alt="" />, title: "리워드 교환" };
     case "MISSION_SUCCESS":
-      return { icon: "👍", title: "미션 성공" };
+      return { icon: <img src={Bag3D} alt="" />, title: "미션 성공" };
     case "REVIEW_WRITE":
-      return { icon: "💗", title: "리뷰 작성" };
+      return { icon: <img src={Heart3D} alt="" />, title: "리뷰 작성" };
     default:
-      return { icon: "🪙", title: t.replaceAll("_", " ") };
+      return { icon: <span aria-hidden="true">🪙</span>, title: T.replaceAll("_", " ") };
   }
 };
 
-const RewardHistorySheet: React.FC<Props> = ({
-  open,
-  onClose,
-  rows,
-  loading,
-  err,
-}) => {
+const RewardHistorySheet: React.FC<Props> = ({ open, onClose, rows, loading, err }) => {
   if (!open) return null;
 
   return (
-    <div className="rhs-root" onClick={onClose} role="dialog" aria-modal="true">
-      <div className="rhs-panel" onClick={(e) => e.stopPropagation()}>
+    <div className="rhs-root" role="dialog" aria-modal="true" onClick={onClose}>
+      <div className="rhs-panel" onClick={(e) => e.stopPropagation()} role="document">
         <div className="rhs-handle" />
         <div className="rhs-titlebar">
           <h3 className="rhs-title">리워드 내역</h3>
@@ -60,26 +59,27 @@ const RewardHistorySheet: React.FC<Props> = ({
         </div>
 
         {loading ? (
-          <p className="meta" style={{ padding: "12px 16px" }}>
-            불러오는 중…
-          </p>
+          <p className="meta rhs-meta-pad">불러오는 중…</p>
         ) : err ? (
-          <p className="error" style={{ padding: "12px 16px" }}>
-            {err}
-          </p>
+          <p className="error rhs-meta-pad">{err}</p>
         ) : rows.length === 0 ? (
-          <p className="meta" style={{ padding: "12px 16px" }}>
-            표시할 내역이 없어요.
-          </p>
+          <p className="meta rhs-meta-pad">표시할 내역이 없어요.</p>
         ) : (
           <ul className="rh-list">
             {rows.map((r) => {
               const { icon, title } = typeMeta(r.pointType);
               const pos = r.changeAmount >= 0;
+
+              // 필요 시 강조(안쪽 점선 테두리) 조건을 여기에 넣으세요.
+              const highlight = false; // 예: r.pointTransactionId === selectedId
+
               return (
-                <li key={r.pointTransactionId} className="rh-item">
+                <li
+                  key={r.pointTransactionId}
+                  className={`rh-item${highlight ? " highlight" : ""}`}
+                >
                   <div className="rh-left" aria-hidden>
-                    {icon}
+                    <span className="rh-icon">{icon}</span>
                   </div>
 
                   <div className="rh-mid">

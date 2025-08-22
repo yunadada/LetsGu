@@ -1,3 +1,4 @@
+// src/pages/Wallet/Wallet.tsx
 import React, { useEffect, useMemo, useState } from "react";
 import "./Wallet.css";
 import "../RewardShop/RewardsShop.css";
@@ -6,14 +7,13 @@ import axios, { type AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import RewardHistorySheet from "./RewardHistorySheet";
 import coin from "../../assets/coin.png";
-import rewardIcon from "../../assets/RewardHistroy.png";
- 
+import rewardIcon from "../../assets/RewardHistory.png";
+
 /** ===== 타입 ===== */
 type ApiOk<T> = { success: true; data: T };
 type ApiErr = { success: false; code?: string; message?: string };
 type MyPoint = { point: number };
 
-/** 백엔드 원시 아이템 응답 (다양한 키를 포괄) */
 type RawItem = {
   orderItemId?: number | string;
   myWalletItemId?: number | string;
@@ -32,28 +32,24 @@ type RawItem = {
   usedAt?: string;
 };
 
-/** my-wallet 원시 응답 */
 type WalletApiRaw = {
   items?: RawItem[];
   giftCards?: RawItem[];
   partnerItems?: RawItem[];
-  parentItems?: RawItem[]; // (오타 대비)
+  parentItems?: RawItem[];
   consumedItems?: RawItem[];
   usedItems?: RawItem[];
-
   giftCardCount?: number;
   partnerItemCount?: number;
   consumedItemCount?: number;
 };
 
 type OwnedItem = {
-  orderItemId: number; // 표준화 필수
+  orderItemId: number;
   itemId: number;
   itemName: string;
   createdAt?: string;
   price?: number;
-
-  // 사용 상태 플래그
   status?: string;
   used?: boolean;
   usedAt?: string;
@@ -76,7 +72,9 @@ type RewardHistoryRow = {
   createdAt?: string;
 };
 
-/** 서버 에러메시지 안전 추출 (no any) */
+type CatalogItem = { itemId: number; imageUrl?: string; itemName?: string };
+
+/** ===== 유틸 ===== */
 const getMsg = (err: unknown, fallback = "네트워크 오류가 발생했습니다.") => {
   if (axios.isAxiosError(err)) {
     const axErr = err as AxiosError<{ message?: string }>;
@@ -85,29 +83,48 @@ const getMsg = (err: unknown, fallback = "네트워크 오류가 발생했습니
   return fallback;
 };
 
-/** ===== 유틸: 표준화 ===== */
 const toNum = (v: unknown): number | undefined => {
-  if (typeof v === "number") return v;
-  if (typeof v === "string" && v.trim() !== "" && !Number.isNaN(Number(v))) {
-    return Number(v);
+  if (typeof v === "number" && Number.isFinite(v)) return v;
+  if (typeof v === "string") {
+    const n = Number(v);
+    if (!Number.isNaN(n) && Number.isFinite(n)) return n;
   }
   return undefined;
 };
 
+// 안정적 해시(문자열 -> 양수 정수). 실제 ID가 없을 때 대체용.
+const stableHash = (s: string) => {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) {
+    h = (h << 5) - h + s.charCodeAt(i);
+    h |= 0;
+  }
+  h = Math.abs(h);
+  return h === 0 ? 1 : h;
+};
+
+// 안전한 orderItemId 계산: 실수치 있으면 그대로, 없으면 음수 해시 사용
 const resolveOrderItemId = (raw: RawItem): number => {
-  return (toNum(raw.orderItemId) ??
-    toNum(raw.myWalletItemId) ??
-    toNum(raw.orderId) ??
-    toNum(raw.id) ??
-    toNum(raw.itemId) ??
-    NaN)!;
+  const candidates = [
+    raw.orderItemId,
+    raw.myWalletItemId,
+    raw.orderId,
+    raw.id,
+    raw.itemId,
+  ];
+  for (const v of candidates) {
+    const n = toNum(v);
+    if (typeof n === "number") return n;
+  }
+  const key = `${raw.itemName ?? raw.name ?? ""}|${raw.createdAt ?? ""}`;
+  return -stableHash(key);
 };
 
 const norm = (arr: RawItem[] | undefined): OwnedItem[] =>
   (arr ?? []).map((raw) => {
     const oid = resolveOrderItemId(raw);
-    const iid = toNum(raw.itemId ?? raw.id ?? oid) ?? oid;
-
+    const iid =
+      toNum(raw.itemId ?? raw.id) ?? (oid > 0 ? oid : stableHash(String(oid)));
     return {
       orderItemId: oid,
       itemId: iid,
@@ -120,30 +137,46 @@ const norm = (arr: RawItem[] | undefined): OwnedItem[] =>
     };
   });
 
-/** 중복 제거 (orderItemId 기준) */
+const isVoucherName = (n?: string) =>
+  /(상품권|지역사랑|모바일\s*상품권|기프트\s*카드|gift\s*card|전자\s*상품권)/i.test(
+    n ?? ""
+  );
+
+const validityText = (name?: string) =>
+  isVoucherName(name) ? "발행일부터 6년" : "발행일부터 1년";
+
+const fmtDate = (iso?: string) => {
+  if (!iso) return "-";
+  const d = new Date(iso);
+  const Y = d.getFullYear();
+  const M = String(d.getMonth() + 1).padStart(2, "0");
+  const D = String(d.getDate()).padStart(2, "0");
+  return `${Y}.${M}.${D}`;
+};
+
 const uniqueById = <T extends { orderItemId: number }>(arr: T[]): T[] => {
   const m = new Map<number, T>();
   for (const it of arr) if (!m.has(it.orderItemId)) m.set(it.orderItemId, it);
   return [...m.values()];
 };
 
+/** ===== 컴포넌트 ===== */
 const Wallet: React.FC = () => {
   const navigate = useNavigate();
 
-  /** ===== 상태 ===== */
   const [point, setPoint] = useState<number>(0);
   const [wallet, setWallet] = useState<WalletPayload | null>(null);
   const [loading, setLoading] = useState(false);
   const [errMsg, setErrMsg] = useState<string | null>(null);
 
   const [tab, setTab] = useState<"gift" | "partner" | "used">("gift");
+  const [images, setImages] = useState<Record<number, string>>({});
 
-  // 리워드 내역(선택)
   const [history, setHistory] = useState<RewardHistoryRow[]>([]);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [historyLoading, setHistoryLoading] = useState(false);
 
-  /** ===== 데이터 로딩 ===== */
+  /** 포인트 + 지갑 (단일 useEffect) */
   useEffect(() => {
     let alive = true;
     (async () => {
@@ -163,12 +196,12 @@ const Wallet: React.FC = () => {
             }
           ),
         ]);
-
         if (!alive) return;
 
         // 포인트
         if ("success" in pRes.data && pRes.data.success) {
           setPoint(pRes.data.data.point ?? 0);
+          console.log(wRes);
         } else {
           setErrMsg(
             (pRes.data as ApiErr).message || "포인트를 불러올 수 없어요."
@@ -179,53 +212,54 @@ const Wallet: React.FC = () => {
         if ("success" in wRes.data && wRes.data.success) {
           const raw = wRes.data.data;
 
-          // 1) 먼저 사용된 아이템 모으기
-          const consumedItems = norm(
-            raw.consumedItems ??
-              raw.usedItems ??
-              (raw.items ?? []).filter(
-                (i) =>
-                  i.status === "USED" || Boolean(i.used) || Boolean(i.usedAt)
-              )
+          // 1) 서버가 준 모든 배열을 합쳐 표준화 후 중복 제거
+          const allRaw: RawItem[] = [
+            ...(raw.items ?? []),
+            ...(raw.giftCards ?? []),
+            ...(raw.partnerItems ?? []),
+            ...(raw.parentItems ?? []),
+            ...(raw.consumedItems ?? []),
+            ...(raw.usedItems ?? []),
+          ];
+          const all = uniqueById(norm(allRaw));
+
+          // 2) "사용됨" ID = usedItems ∪ consumedItems ∪ (플래그 기반)
+          const ids_from_usedItems = new Set(
+            norm(raw.usedItems ?? []).map((i) => i.orderItemId)
+          );
+          const ids_from_consumedItems = new Set(
+            norm(raw.consumedItems ?? []).map((i) => i.orderItemId)
+          );
+          const ids_from_flags = new Set(
+            all
+              .filter((x) => x.used || x.status === "USED" || x.usedAt)
+              .map((x) => x.orderItemId)
+          );
+          const usedId = new Set<number>([
+            ...Array.from(ids_from_usedItems),
+            ...Array.from(ids_from_consumedItems),
+            ...Array.from(ids_from_flags),
+          ]);
+
+          // 3) 분류
+          const usedItems = all.filter((i) => usedId.has(i.orderItemId));
+          const available = all.filter((i) => !usedId.has(i.orderItemId));
+
+          const giftCards = uniqueById(
+            available.filter((i) => isVoucherName(i.itemName))
+          );
+          const partnerItems = uniqueById(
+            available.filter((i) => !isVoucherName(i.itemName))
           );
 
-          // 사용된 ID 집합
-          const usedIdSet = new Set(consumedItems.map((x) => x.orderItemId));
-
-          // 2) 미사용만 분리
-          const allItems = raw.items ?? [];
-          const byNameIsVoucher = (n: string | undefined) =>
-            /상품권/.test(n ?? "");
-
-          const giftCards = norm(
-            raw.giftCards ?? allItems.filter((i) => byNameIsVoucher(i.itemName))
-          ).filter(
-            (x) =>
-              !usedIdSet.has(x.orderItemId) &&
-              !x.used &&
-              x.status !== "USED" &&
-              !x.usedAt
-          );
-
-          const partnerItems = norm(
-            raw.partnerItems ??
-              raw.parentItems ?? // (오타 대비)
-              allItems.filter((i) => !byNameIsVoucher(i.itemName))
-          ).filter(
-            (x) =>
-              !usedIdSet.has(x.orderItemId) &&
-              !x.used &&
-              x.status !== "USED" &&
-              !x.usedAt
-          );
-
+          // 4) 카운트는 실제 목록 길이로
           setWallet({
-            giftCardCount: raw.giftCardCount ?? giftCards.length,
-            partnerItemCount: raw.partnerItemCount ?? partnerItems.length,
-            consumedItemCount: raw.consumedItemCount ?? consumedItems.length,
-            giftCards: uniqueById(giftCards),
-            partnerItems: uniqueById(partnerItems),
-            consumedItems: uniqueById(consumedItems),
+            giftCardCount: giftCards.length,
+            partnerItemCount: partnerItems.length,
+            consumedItemCount: usedItems.length,
+            giftCards,
+            partnerItems,
+            consumedItems: uniqueById(usedItems),
           });
         } else {
           setErrMsg(
@@ -244,6 +278,42 @@ const Wallet: React.FC = () => {
     };
   }, []);
 
+  /** 이미지 카탈로그 로딩 */
+  useEffect(() => {
+    const ids = new Set<number>();
+    const add = (arr?: OwnedItem[]) =>
+      (arr ?? []).forEach((i) => i?.itemId && ids.add(i.itemId));
+    add(wallet?.giftCards);
+    add(wallet?.partnerItems);
+    add(wallet?.consumedItems);
+    if (ids.size === 0) return;
+
+    let alive = true;
+    (async () => {
+      try {
+        const { data } = await axiosInstance.get<{
+          success: boolean | "true" | "false";
+          data: CatalogItem[];
+        }>("/api/v1/items", { headers: { Accept: "application/json" } });
+
+        const ok = data?.success === true || data?.success === "true";
+        if (!alive || !ok) return;
+
+        const map: Record<number, string> = {};
+        for (const it of data.data) {
+          if (it?.itemId && it?.imageUrl) map[it.itemId] = it.imageUrl;
+        }
+        setImages((prev) => ({ ...prev, ...map }));
+      } catch {
+        /* 이미지 없으면 썸네일 그라데이션 유지 */
+      }
+    })();
+
+    return () => {
+      alive = false;
+    };
+  }, [wallet?.giftCards, wallet?.partnerItems, wallet?.consumedItems]);
+
   /** 리워드 내역: 열 때 한번 조회 */
   useEffect(() => {
     if (!historyOpen) return;
@@ -256,6 +326,7 @@ const Wallet: React.FC = () => {
         >("/api/v1/wallet/reward-history", {
           headers: { Accept: "application/json" },
         });
+        console.log(data);
         if (!alive) return;
         if ("success" in data && data.success) {
           setHistory(data.data);
@@ -276,15 +347,18 @@ const Wallet: React.FC = () => {
     };
   }, [historyOpen]);
 
-  /** ===== 파생 값 ===== */
+  /** 파생 */
+  const giftCount = wallet?.giftCards?.length ?? 0;
+  const partnerCount = wallet?.partnerItems?.length ?? 0;
+  const consumedCount = wallet?.consumedItems?.length ?? 0;
+
   const list = useMemo(() => {
     if (!wallet) return [];
-    const { giftCards = [], partnerItems = [], consumedItems = [] } = wallet;
     return tab === "gift"
-      ? giftCards
+      ? wallet.giftCards ?? []
       : tab === "partner"
-      ? partnerItems
-      : consumedItems;
+      ? wallet.partnerItems ?? []
+      : wallet.consumedItems ?? [];
   }, [wallet, tab]);
 
   const consumedIdSet = useMemo(
@@ -292,7 +366,7 @@ const Wallet: React.FC = () => {
     [wallet?.consumedItems]
   );
 
-  /** ===== 핸들러 ===== */
+  /** 핸들러 */
   const handleUse = async (it: OwnedItem) => {
     const id = it.orderItemId || it.itemId;
 
@@ -319,39 +393,30 @@ const Wallet: React.FC = () => {
       );
 
       if ("success" in data && data.success) {
-        // UI 동기화
+        // 로컬 상태 동기화: 해당 아이템을 사용 목록으로 이동
         setWallet((prev) => {
           if (!prev) return prev;
-          const giftCards = prev.giftCards ?? [];
-          const partnerItems = prev.partnerItems ?? [];
-          const consumedItems = prev.consumedItems ?? [];
+          const move = (arr: OwnedItem[] = []) =>
+            arr.filter((x) => x.orderItemId !== id);
 
-          const nextGift =
-            tab === "gift"
-              ? giftCards.filter((x) => x.orderItemId !== id)
-              : giftCards;
-          const nextPartner =
-            tab === "partner"
-              ? partnerItems.filter((x) => x.orderItemId !== id)
-              : partnerItems;
+          const wasVoucher = isVoucherName(it.itemName);
+
+          const nextGift = wasVoucher ? move(prev.giftCards) : prev.giftCards;
+          const nextPartner = wasVoucher
+            ? prev.partnerItems
+            : move(prev.partnerItems);
+
+          const nextConsumed = [
+            { ...it, orderItemId: id, used: true, status: "USED" },
+            ...(prev.consumedItems ?? []),
+          ];
 
           return {
             ...prev,
             giftCards: nextGift,
             partnerItems: nextPartner,
-            consumedItems: [
-              { ...it, orderItemId: id, used: true, status: "USED" },
-              ...consumedItems,
-            ],
-            giftCardCount:
-              tab === "gift"
-                ? Math.max(0, prev.giftCardCount - 1)
-                : prev.giftCardCount,
-            partnerItemCount:
-              tab === "partner"
-                ? Math.max(0, prev.partnerItemCount - 1)
-                : prev.partnerItemCount,
-            consumedItemCount: prev.consumedItemCount + 1,
+            consumedItems: uniqueById(nextConsumed),
+            // 카운트는 렌더 시 파생 계산하므로 그대로 두어도 됨
           };
         });
       } else {
@@ -369,10 +434,9 @@ const Wallet: React.FC = () => {
     return () => clearTimeout(t);
   }, [errMsg]);
 
-  /** ===== 렌더 ===== */
+  /** 렌더 */
   return (
     <div className="shop-container">
-      {/* 헤더 */}
       <header className="shop-header">
         <div className="topbar">
           <button
@@ -391,132 +455,144 @@ const Wallet: React.FC = () => {
               />
             </svg>
           </button>
-          <h1 className="shop-title">내 지갑</h1>
+          <div className="shop-header-title">내 지갑</div>
           <div className="topbar-spacer" />
         </div>
 
-        {/* 상단 카드 (포인트/요약) */}
         <div className="wallet-summary">
           <div className="ws-card">
-            <div className="ws-title">보유 리워드</div>
-            <div className="ws-point">
+            <div className="ws-top">
+              <div className="ws-label">현재 나의 리워드</div>
+              <div className="ws-rule" aria-hidden />
+            </div>
+            <div className="ws-amount">
               <img src={coin} alt="" className="coin-img" aria-hidden />
-              {point.toLocaleString()} P
+              <span className="num">{point.toLocaleString()}</span>
             </div>
+            <button className="ws-history" onClick={() => setHistoryOpen(true)}>
+              <img src={rewardIcon} alt="" aria-hidden />
+              리워드 내역
+            </button>
           </div>
-          {wallet && (
-            <div className="ws-stats">
-              <div className="ws-stat">상품권 {wallet.giftCardCount}</div>
-              <div className="ws-dot" />
-              <div className="ws-stat">제휴 {wallet.partnerItemCount}</div>
-              <div className="ws-dot" />
-              <button className="ws-link" onClick={() => setHistoryOpen(true)}>
-                리워드 내역 보기
-              </button>
-            </div>
-          )}
         </div>
 
-        {/* 탭 */}
+        {/* 탭: 카운트 알약 추가 */}
         <nav className="tabs">
           <button
             className={`tab-btn ${tab === "gift" ? "active" : ""}`}
             onClick={() => setTab("gift")}
           >
-            내 상품권{wallet ? `(${wallet.giftCardCount})` : ""}
+            <span>내 상품권</span>
+            <span className="count-pill">{giftCount}</span>
           </button>
           <button
             className={`tab-btn ${tab === "partner" ? "active" : ""}`}
             onClick={() => setTab("partner")}
           >
-            내 제휴 쿠폰{wallet ? `(${wallet.partnerItemCount})` : ""}
+            <span>내 제휴 쿠폰</span>
+            <span className="count-pill">{partnerCount}</span>
           </button>
           <button
             className={`tab-btn ${tab === "used" ? "active" : ""}`}
             onClick={() => setTab("used")}
           >
-            사용한 아이템{wallet ? `(${wallet.consumedItemCount})` : ""}
+            <span>사용한 아이템</span>
+            <span className="count-pill">{consumedCount}</span>
           </button>
         </nav>
       </header>
 
-      {/* 내역 패널 */}
-      {historyOpen && (
-        <section className="history">
-          {historyLoading ? (
-            <p className="meta">내역 불러오는 중…</p>
-          ) : history.length === 0 ? (
-            <p className="meta">표시할 내역이 없어요.</p>
-          ) : (
-            <ul className="h-list">
-              {history.map((row) => (
-                <li key={row.pointTransactionId} className="h-item">
-                  <div className="h-left">
-                    <div className="h-type">{row.pointType}</div>
-                    <div className="h-sub">
-                      {row.createdAt?.replace("T", " ").slice(0, 16) || ""}
-                    </div>
-                  </div>
-                  <div
-                    className={`h-amount ${
-                      row.changeAmount >= 0 ? "pos" : "neg"
-                    }`}
-                  >
-                    {row.changeAmount >= 0 ? "+" : ""}
-                    {row.changeAmount.toLocaleString()}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      )}
-
-      {/* 리스트 */}
       <main className="wallet-body">
-        {loading && <p className="meta">불러오는 중…</p>}
-        {!loading && !wallet && (
-          <p className="error">지갑 정보를 불러오지 못했어요.</p>
+        {/* 스켈레톤 */}
+        {loading && (
+          <div className="skeleton-list">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="skeleton-card">
+                <div className="s-card">
+                  <div className="s-thumb" />
+                  <div className="s-lines">
+                    <div className="s-line w80" />
+                    <div className="s-line w60" />
+                  </div>
+                </div>
+                <div className="w-stub">
+                  <div className="s-btn" />
+                </div>
+              </div>
+            ))}
+          </div>
         )}
 
+        {!loading && !wallet && (
+          <p className="meta">지갑 정보를 불러오지 못했어요.</p>
+        )}
         {!loading && wallet && (list?.length ?? 0) === 0 && (
           <p className="meta">표시할 아이템이 없어요.</p>
         )}
 
         {!loading && wallet && list.length > 0 && (
           <ul className="w-list">
-            {(list ?? []).map((it, idx) => {
+            {list.map((it, idx) => {
               const base = it.orderItemId ?? it.itemId;
               const key = `${String(base)}-${it.createdAt ?? idx}`;
-
-              const isUsed =
-                consumedIdSet.has(it.orderItemId) ||
-                it.used ||
-                it.status === "USED" ||
-                Boolean(it.usedAt);
+              const isUsed = Boolean(
+                it.used || it.status === "USED" || it.usedAt
+              );
+              const voucher =
+                /(상품권|지역사랑|모바일\s*상품권|기프트\s*카드|gift\s*card|전자\s*상품권)/i.test(
+                  it.itemName
+                );
+              const img = images[it.itemId];
 
               return (
-                <li key={key} className={`w-item ${isUsed ? "is-used" : ""}`}>
-                  <div className="w-thumb" aria-hidden />
-                  <div className="w-main">
-                    <div className="w-name">{it.itemName}</div>
-                    {it.createdAt && (
-                      <div className="w-sub">
-                        {new Date(it.createdAt).toLocaleDateString()}
+                <li
+                  key={key}
+                  className={`w-item w-ticket-row ${
+                    voucher ? "is-voucher" : "is-coupon"
+                  } ${isUsed ? "is-used" : ""}`}
+                >
+                  <div className="w-ticket">
+                    <div className="w-thumb">
+                      {img ? (
+                        <img
+                          src={img}
+                          alt=""
+                          loading="lazy"
+                          onError={(e) =>
+                            (e.currentTarget.style.display = "none")
+                          }
+                        />
+                      ) : null}
+                    </div>
+                    <div className="w-main">
+                      <div className="w-name">{it.itemName}</div>
+                      <div className="w-meta">
+                        <div className="w-meta-row">
+                          <span className="w-dt">발행일</span>
+                          <span className="w-dd">{fmtDate(it.createdAt)}</span>
+                        </div>
+                        <div className="w-meta-row">
+                          <span className="w-dt">사용기간</span>
+                          <span className="w-dd">
+                            {voucher ? "발행일부터 6년" : "발행일부터 1년"}
+                          </span>
+                        </div>
                       </div>
-                    )}
+                    </div>
                   </div>
 
-                  {tab === "used" || isUsed ? (
-                    <span className="badge used">사용됨</span>
-                  ) : (
-                    <button
-                      className="btn-ghost w-use"
-                      onClick={() => handleUse(it)}
-                    >
-                      사용하기
-                    </button>
-                  )}
+                  <div className={`w-stub ${isUsed ? "done" : ""}`}>
+                    {isUsed ? (
+                      <span className="w-stub-text">사용완료</span>
+                    ) : (
+                      <button
+                        className="w-stub-btn"
+                        onClick={() => handleUse(it)}
+                      >
+                        사용하기
+                      </button>
+                    )}
+                  </div>
                 </li>
               );
             })}
@@ -524,7 +600,7 @@ const Wallet: React.FC = () => {
         )}
       </main>
 
-      {/* 하단 리워드 내역 시트 */}
+      {/* 리워드 시트/토스트는 기존 그대로 */}
       <RewardHistorySheet
         open={historyOpen}
         onClose={() => setHistoryOpen(false)}
@@ -532,7 +608,6 @@ const Wallet: React.FC = () => {
         loading={historyLoading}
         err={errMsg}
       />
-
       {errMsg && (
         <div className="toast" role="status" onClick={() => setErrMsg(null)}>
           {errMsg}
