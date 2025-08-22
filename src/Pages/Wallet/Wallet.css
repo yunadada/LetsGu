@@ -12,7 +12,10 @@
 }
 
 .shop-container {
-  width: 100vw;
+  /* width: 100vw; */
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* ---------- Header ---------- */
@@ -169,7 +172,6 @@
   min-width: 20px;
   height: 18px;
   padding: 0 6px;
-  
   border-radius: 999px;
   background: #f2f3f6;
   border: 1px solid #e7e8ec;
@@ -207,11 +209,12 @@
 }
 .w-ticket-row {
   position: relative;
-  display: grid;
-  gap: 1px;
-  grid-template-columns: 1fr 112px; /* widened stub column */
-  width: 100vw;
+  display: flex; /* grid → flex */
+  justify-content: space-between; /* 왼쪽 본체와 오른쪽 stub을 양끝 배치 */
+  gap: 1px; /* 카드와 stub 사이 간격 */
+  align-items: stretch; /* 세로 높이 맞춤 */
 }
+
 .w-ticket-row.is-used {
   opacity: 0.92;
 }
@@ -225,11 +228,10 @@
   background: #fff;
   border: 1px solid var(--line-soft);
   border-radius: 16px;
-
   box-shadow: 0 4px 14px rgba(17, 17, 17, 0.04);
   position: relative;
   min-height: 120px;
-  width: 314px;
+  min-width: 311px;
 }
 
 /* Thumbnail (single source of truth) */
@@ -272,7 +274,7 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  margin-top: 10px;
+  margin-top: 20px;
 }
 .w-meta {
   margin-top: 8px;
@@ -304,7 +306,7 @@
   align-items: center;
   justify-content: center;
   padding: 12px;
-  width: 63px;
+  min-width: 63px;
 }
 .w-stub::before {
   content: none;
