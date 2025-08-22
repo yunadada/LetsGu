@@ -34,24 +34,41 @@ const fmtDate = (iso?: string) => {
 const typeMeta = (t: string): { icon: React.ReactNode; title: string } => {
   const T = t.toUpperCase();
   switch (T) {
-    case "EXCHANGE":
-    case "ITEM_EXCHANGE":
-      return { icon: <img src={Giftbox} alt="" />, title: "리워드 교환" };
+    case "GIFT_CARD_EXCHANGE":
+      return {
+        icon: <img src={Giftbox} alt="" />,
+        title: "구미사랑상품권 교환",
+      };
+    case "PARTNER_ITEM_EXCHANGE":
+      return { icon: <img src={Giftbox} alt="" />, title: "제휴 쿠폰 교환" };
     case "MISSION_SUCCESS":
       return { icon: <img src={Bag3D} alt="" />, title: "미션 성공" };
     case "REVIEW_WRITE":
       return { icon: <img src={Heart3D} alt="" />, title: "리뷰 작성" };
     default:
-      return { icon: <span aria-hidden="true">🪙</span>, title: T.replaceAll("_", " ") };
+      return {
+        icon: <span aria-hidden="true">🪙</span>,
+        title: T.replaceAll("_", " "),
+      };
   }
 };
 
-const RewardHistorySheet: React.FC<Props> = ({ open, onClose, rows, loading, err }) => {
+const RewardHistorySheet: React.FC<Props> = ({
+  open,
+  onClose,
+  rows,
+  loading,
+  err,
+}) => {
   if (!open) return null;
 
   return (
     <div className="rhs-root" role="dialog" aria-modal="true" onClick={onClose}>
-      <div className="rhs-panel" onClick={(e) => e.stopPropagation()} role="document">
+      <div
+        className="rhs-panel"
+        onClick={(e) => e.stopPropagation()}
+        role="document"
+      >
         <div className="rhs-handle" />
         <div className="rhs-titlebar">
           <h3 className="rhs-title">리워드 내역</h3>

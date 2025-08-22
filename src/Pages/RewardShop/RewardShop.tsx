@@ -12,8 +12,8 @@ import giftbox from "../../assets/giftbox.png";
 interface Item {
   itemId: number;
   itemName: string;
-  price: number;
-  count: number;
+  price: number; // 개당 포인트
+  count: number; // 재고
   imageUrl?: string;
 }
 interface ApiListRes {
@@ -35,8 +35,6 @@ type ServerErr = { message?: string; code?: string; msg?: string };
 
 /** ===== 헬퍼 ===== */
 const isVoucher = (name: string) => name.includes("상품권");
-
-// “구미사랑상품권” 접두사 제거
 const cleanVoucherName = (name: string) =>
   name.replace(/구미사랑상품권/gi, "").trim() || name;
 
@@ -49,7 +47,6 @@ const getAxiosMessage = (
 ): string =>
   axios.isAxiosError<ServerErr>(err) ? err.response?.data?.message ?? fb : fb;
 
-// 응답 객체(성공/에러 공통)에서 서버 메시지 뽑기
 const pickServerMsg = (v: unknown): string | null => {
   if (typeof v !== "object" || v === null) return null;
   const r = v as Record<string, unknown>;
@@ -64,10 +61,11 @@ const pickServerMsg = (v: unknown): string | null => {
 /** ===== 컴포넌트 ===== */
 const RewardShop: React.FC = () => {
   const [items, setItems] = useState<Item[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loadingList, setLoadingList] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // 🔸 서버에서 포인트 받아옴
+  // 서버 포인트
   const [points, setPoints] = useState<number>(0);
 
   const [tab, setTab] = useState<"voucher" | "partner">("voucher");
@@ -82,9 +80,9 @@ const RewardShop: React.FC = () => {
   useEffect(() => {
     let mounted = true;
     (async () => {
+      setLoadingList(true);
       try {
-        setLoading(true);
-        const [{ data: itemsData }, { data: pointData }] = await Promise.all([
+        const [itemsRes, pointRes] = await Promise.allSettled([
           axiosInstance.get<ApiListRes>("/api/v1/items", {
             headers: { Accept: "application/json" },
           }),
@@ -96,21 +94,30 @@ const RewardShop: React.FC = () => {
         if (!mounted) return;
 
         // 아이템
-        if (truthy(itemsData?.success)) setItems(itemsData.data ?? []);
-        else setError("아이템을 불러오지 못했습니다.");
+        if (itemsRes.status === "fulfilled") {
+          const result = itemsRes.value.data;
+          if (truthy(result?.success)) {
+            setItems(result.data ?? []);
+          } else {
+            setError("아이템을 불러오지 못했습니다.");
+          }
+        } else {
+          setError(getAxiosMessage(itemsRes.reason));
+        }
 
         // 포인트
-        if (truthy(pointData?.success)) {
-          setPoints(pointData.data?.point ?? 0);
+        if (pointRes.status === "fulfilled") {
+          const result = pointRes.value.data;
+          if (truthy(result?.success)) {
+            setPoints(result.data?.point ?? 0);
+          } else {
+            setMessage("포인트를 불러오지 못했습니다.");
+          }
         } else {
-          // 포인트만 실패해도 전체 막진 않고 토스트만
           setMessage("포인트를 불러오지 못했습니다.");
         }
-      } catch (err) {
-        if (!mounted) return;
-        setError(getAxiosMessage(err));
       } finally {
-        if (mounted) setLoading(false);
+        if (mounted) setLoadingList(false);
       }
     })();
     return () => {
@@ -127,7 +134,7 @@ const RewardShop: React.FC = () => {
     [items, tab]
   );
 
-  /** 교환 시트 열기/닫기 */
+  /** 교환 시트 */
   const openExchange = (item: Item) => {
     setSelected(item);
     setSheetOpen(true);
@@ -139,19 +146,28 @@ const RewardShop: React.FC = () => {
 
   /** 교환 요청 */
   const submitExchange = async (count: number) => {
-    if (!selected) return;
+    if (!selected || submitLoading) return;
+
+    // 클라 선검증
+    if (count < 1) return setMessage("수량은 1 이상이어야 합니다.");
+    if (selected.count < count) return setMessage("재고가 부족합니다.");
+    const need = selected.price * count;
+    if (points < need) return setMessage("포인트가 부족합니다.");
+
     try {
+      setSubmitLoading(true);
       const { data } = await axiosInstance.post<ApiActionRes>(
         `/api/v1/items/${selected.itemId}`,
         { count }
       );
 
       if (truthy(data?.success)) {
-        setPoints((p) => p - selected.price * count);
+        // 상태 업데이트
+        setPoints((p) => Math.max(0, p - need));
         setItems((prev) =>
           prev.map((it) =>
             it.itemId === selected.itemId
-              ? { ...it, count: it.count - count }
+              ? { ...it, count: Math.max(0, it.count - count) }
               : it
           )
         );
@@ -172,6 +188,8 @@ const RewardShop: React.FC = () => {
       } else {
         setMessage("교환 실패");
       }
+    } finally {
+      setSubmitLoading(false);
     }
   };
 
@@ -189,7 +207,7 @@ const RewardShop: React.FC = () => {
         <div className="topbar">
           <button
             className="back-btn"
-            onClick={() => window.history.back()}
+            onClick={() => navigate(-1)}
             aria-label="뒤로가기"
           >
             <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -227,7 +245,7 @@ const RewardShop: React.FC = () => {
         </nav>
       </header>
 
-      {loading && <p className="meta">불러오는 중…</p>}
+      {loadingList && <p className="meta">불러오는 중…</p>}
       {error && <p className="error">{error}</p>}
 
       {/* 카드 그리드 */}
@@ -237,9 +255,15 @@ const RewardShop: React.FC = () => {
 
           return (
             <div
-              key={item.itemId}
+              key={`${item.itemId}-${item.itemName}`}
               className={`card ${voucher ? "card-blue" : "card-plain"}`}
               onClick={() => openExchange(item)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  openExchange(item);
+                }
+              }}
               role="button"
               tabIndex={0}
             >
@@ -280,7 +304,6 @@ const RewardShop: React.FC = () => {
               {/* 본문 */}
               <div className="card-body">
                 <div className="card-name">{item.itemName}</div>
-                {/* 카드 메타/재고는 시트에서만 노출 */}
               </div>
             </div>
           );
@@ -341,14 +364,26 @@ const RewardShop: React.FC = () => {
         </div>
       )}
 
-      {/* 하단 시트 */}
-      <ExchangeSheet
-        open={sheetOpen}
-        item={selected}
-        points={points}
-        onClose={closeExchange}
-        onSubmit={submitExchange}
-      />
+      {/* 교환 시트 (선택 시에만 렌더) */}
+      {selected && (
+        <ExchangeSheet
+          open={sheetOpen}
+          onClose={closeExchange}
+          onConfirm={submitExchange}
+          item={{
+            itemId: selected.itemId,
+            itemName: selected.itemName,
+            price: selected.price,
+            imageUrl: selected.imageUrl,
+            stock: selected.count, // 재고 전달
+          }}
+          myPoints={points}
+          typeLabel={isVoucher(selected.itemName) ? "전자상품권" : "제휴쿠폰"}
+          loading={submitLoading}
+          showImage={false} // 피그마 기준 기본 비노출
+          minQty={1}
+        />
+      )}
 
       {/* 토스트 */}
       {message && (
