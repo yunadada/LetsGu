@@ -1,0 +1,65 @@
+.modalOverlay {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.wrapper {
+  position: relative;
+  background-color: white;
+  border-radius: 10px;
+  width: 270px;
+  height: 218px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeIcon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.closeIcon > svg {
+  width: 30px;
+  height: 30px;
+}
+
+.checkIcon {
+  border-radius: 50%;
+  background-color: #ff672b;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkIcon svg {
+  color: white;
+  width: 30px;
+  height: 30px;
+}
+
+.wrapper h4 {
+  margin: 0;
+  margin-top: 26px;
+  margin-bottom: 12px;
+}
+
+.wrapper p {
+  font-size: 13px;
+  color: #787878;
+  margin: 0;
+}
