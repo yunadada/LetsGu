@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import style from "./FailLocationVerifyModal.module.css";
 
 type Props = {
@@ -14,9 +15,15 @@ const FailLocationVerifyModal = ({
   retryLocationVerification,
   errorSentences,
 }: Props) => {
+  const navigate = useNavigate();
+
   const handleRetryLocationVerification = async () => {
     handleModal(false);
     await retryLocationVerification();
+  };
+
+  const cancelLocationVerify = () => {
+    navigate("/map");
   };
 
   return (
@@ -26,10 +33,7 @@ const FailLocationVerifyModal = ({
         <p>{errorSentences.sentence1}</p>
         <p>{errorSentences.sentence2}</p>
         <div className={style.button}>
-          <button
-            className={style.cancelButton}
-            // onClick={//TODO 지도 화면으로 이동}
-          >
+          <button className={style.cancelButton} onClick={cancelLocationVerify}>
             취소하기
           </button>
           <button

@@ -1,17 +1,19 @@
 import style from "./Header.module.css";
 import { IoChevronBackOutline } from "react-icons/io5";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   title: string;
 };
 
 const Header = ({ title }: Props) => {
+  const navigate = useNavigate();
+
   return (
     <header className={style.header}>
-      <Link to="/">
+      <button onClick={() => navigate(-1)}>
         <IoChevronBackOutline />
-      </Link>
+      </button>
       <p>{title}</p>
     </header>
   );

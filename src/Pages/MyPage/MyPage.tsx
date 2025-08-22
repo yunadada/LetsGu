@@ -6,37 +6,55 @@ import Header from "../../components/Header/Header";
 import Profile from "../../components/MyPage/Profile/Profile";
 import { IoChevronForwardOutline } from "react-icons/io5";
 import TabBarItem from "../../components/MyPage/TabBarItem/TabBarItem";
-import ListItem from "../../components/MyPage/ListItem/ListItem";
+// import ListItem from "../../components/MyPage/ListItem/ListItem";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { getMypageData } from "../../api/user";
+import type { UserProfileData } from "../../types/userInfo";
 
 const MyPage = () => {
+  const [userProfileData, setUserProfileData] =
+    useState<UserProfileData | null>(null);
   const navigate = useNavigate();
 
   const navigiateToProfile = () => {
-    navigate("/editProfile");
+    navigate("/editProfile", { state: { userProfileData } });
   };
+
+  useEffect(() => {
+    const getUserProfileData = async () => {
+      try {
+        const res = await getMypageData();
+        if (res.data.success) {
+          setUserProfileData(res.data.data);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    getUserProfileData();
+  }, []);
 
   return (
     <div className={style.wrapper}>
       <Header title="마이페이지" />
       <div className={style.contents}>
         <div className={style.profile}>
-          <Profile />
+          <Profile imageUrl={userProfileData?.imageUrl} />
         </div>
-        <div className={style.editProfile}>
+        <button className={style.nav} onClick={navigiateToProfile}>
           <p>
-            <span>사용자</span>님
+            <span>{userProfileData?.nickname}</span>님
           </p>
-          <button className={style.navButton} onClick={navigiateToProfile}>
-            <IoChevronForwardOutline />
-          </button>
-        </div>
+          <IoChevronForwardOutline />
+        </button>
         <div className={style.tabBar}>
           <TabBarItem img={ActivityImg} text="활동 내역" />
           <TabBarItem img={RewardImg} text="리워드 샵" />
           <TabBarItem img={WalletImg} text="내 지갑" />
         </div>
-        <div className={style.menuList}>
+        {/* <div className={style.menuList}>
           <ListItem text="공지사항" />
           <ListItem text="자주 묻는 질문" />
           <ListItem text="문의사항" />
@@ -45,7 +63,7 @@ const MyPage = () => {
           <p>이용약관</p>
           <div className={style.verticalLine}></div>
           <p>운영정책</p>
-        </div>
+        </div> */}
       </div>
     </div>
   );

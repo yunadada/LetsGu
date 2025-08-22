@@ -7,7 +7,7 @@
   height: 80px;
 }
 
-.header a {
+.header > button {
   position: absolute;
   left: 26px;
   display: flex;
