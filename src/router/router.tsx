@@ -1,3 +1,4 @@
+import ReviewDetailModal from "../components/Modal/ReviewDetailModal/ReviewDetailModal";
 import ActivityLog from "../Pages/ActivityLog/ActivityLog";
 import EditProfile from "../Pages/EditProfile/EditProfile";
 import LocationVerifyPage from "../Pages/LocationVerifyPage/LocationVerifyPage";
@@ -46,10 +47,6 @@ const authenticateRoutes: RouteConfig[] = [
   {
     path: "/activityLog",
     element: <ActivityLog />,
-  },
-  {
-    path: "/reviewDetail",
-    element: <ReviewDetail />,
   },
   {
     path: "/reviewWrite",
