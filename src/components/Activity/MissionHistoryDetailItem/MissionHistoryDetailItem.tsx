@@ -18,7 +18,12 @@ const MissionHistoryDetailItem = ({ data }: Props) => {
 
   return (
     <div className={style.container}>
-      <img className={style.img} src={data.imageUrl}></img>
+      <img
+        className={style.img}
+        src={data.imageUrl}
+        alt="이미지"
+        loading="lazy"
+      ></img>
       <div className={style.contents}>
         <p className={style.location}>{data.address}</p>
         <h3 className={style.name}>{data.placeName}</h3>
