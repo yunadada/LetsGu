@@ -6,7 +6,6 @@ import Header from "../../components/Header/Header";
 import Profile from "../../components/MyPage/Profile/Profile";
 import { IoChevronForwardOutline } from "react-icons/io5";
 import TabBarItem from "../../components/MyPage/TabBarItem/TabBarItem";
-// import ListItem from "../../components/MyPage/ListItem/ListItem";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getMypageData } from "../../api/user";
@@ -50,9 +49,13 @@ const MyPage = () => {
           <IoChevronForwardOutline />
         </button>
         <div className={style.tabBar}>
-          <TabBarItem img={ActivityImg} text="활동 내역" />
-          <TabBarItem img={RewardImg} text="리워드 샵" />
-          <TabBarItem img={WalletImg} text="내 지갑" />
+          <TabBarItem
+            img={ActivityImg}
+            text="활동 내역"
+            navUrl="/activityLog"
+          />
+          <TabBarItem img={RewardImg} text="리워드 샵" navUrl="/shop" />
+          <TabBarItem img={WalletImg} text="내 지갑" navUrl="/wallet" />
         </div>
         {/* <div className={style.menuList}>
           <ListItem text="공지사항" />

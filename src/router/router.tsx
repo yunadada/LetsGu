@@ -6,7 +6,8 @@ import Main from "../Pages/Main/Main";
 import MapPage from "../Pages/MapPage/MapPage";
 import MyPage from "../Pages/MyPage/MyPage";
 import PhotoVerifyPage from "../Pages/PhotoVerifyPage/PhotoVerifyPage";
-import ReviewDetail from "../Pages/Review/ReviewDetail/ReviewDetail";
+import RewardShop from "../Pages/RewardShop/RewardShop";
+import Wallet from "../Pages/Wallet/Wallet";
 import ReviewWrite from "../Pages/Review/ReviewWrite/ReviewWrite";
 
 export interface RouteConfig {
@@ -48,12 +49,16 @@ const authenticateRoutes: RouteConfig[] = [
     element: <ActivityLog />,
   },
   {
-    path: "/reviewDetail",
-    element: <ReviewDetail />,
-  },
-  {
     path: "/reviewWrite",
     element: <ReviewWrite />,
+  },
+  {
+    path: "/shop",
+    element: <RewardShop />,
+  },
+  {
+    path: "/wallet",
+    element: <Wallet />,
   },
 ];
 

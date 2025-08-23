@@ -11,6 +11,7 @@ import type { UserLocation } from "../../types/location";
 import { verifyLocation } from "../../api/MissionVerification/MissionVerification";
 // import { errorToast } from "../../utils/ToastUtil/toastUtil";
 
+
 const LocationVerifyPage = () => {
   const [isLocationVerified, setIsLocationVerified] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
