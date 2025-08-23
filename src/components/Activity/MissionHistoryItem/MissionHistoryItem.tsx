@@ -12,7 +12,6 @@ type Props = {
 
 const MissionHistoryItem = ({ status, data }: Props) => {
   const actData = data;
-
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => {
@@ -31,7 +30,13 @@ const MissionHistoryItem = ({ status, data }: Props) => {
       >
         <img className={style.img} src={actData.imageUrl} alt="미션" />
         {status === "unwritten" ? (
-          <Link className={style.edit} to="/reviewWrite">
+          <Link
+            className={style.edit}
+            to={{
+              pathname: "/reviewWrite",
+            }}
+            state={{ missionId: actData.completedMissionId }}
+          >
             <MdEdit />
           </Link>
         ) : (

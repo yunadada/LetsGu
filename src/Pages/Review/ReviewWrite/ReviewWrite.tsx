@@ -5,12 +5,11 @@ import { useState, type ChangeEvent } from "react";
 import SuccessReviewModal from "../../../components/Modal/SuccessReviewModal/SuccessReviewModal";
 import { submitReview } from "../../../api/reviews";
 import { errorToast, warningToast } from "../../../utils/ToastUtil/toastUtil";
+import { useLocation } from "react-router-dom";
 
-type Props = {
-  missionId: number;
-};
-
-const ReviewWrite = ({ missionId }: Props) => {
+const ReviewWrite = () => {
+  const location = useLocation();
+  const { missionId } = location.state;
   const [reviewContent, setReviewContent] = useState("");
   const [isReviewSubmittedModalOpen, setIsReviewSubmittedModalOpen] =
     useState(false);
