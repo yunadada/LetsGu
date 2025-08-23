@@ -1,18 +1,51 @@
 import Header from "../../../components/Header/Header";
 import style from "./ReviewWrite.module.css";
 import Mark from "../../../assets/MarkIcon.svg";
-import { useState, type ChangeEvent } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
+import SuccessReviewModal from "../../../components/Modal/SuccessReviewModal/SuccessReviewModal";
+import { submitReview } from "../../../api/reviews";
+import { errorToast, warningToast } from "../../../utils/ToastUtil/toastUtil";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const ReviewWrite = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { missionId } = location.state || {};
   const [reviewContent, setReviewContent] = useState("");
+  const [isReviewSubmittedModalOpen, setIsReviewSubmittedModalOpen] =
+    useState(false);
 
   const handleSaveReviewContent = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setReviewContent(e.currentTarget.value);
   };
 
-  const registerReview = () => {
-    // TODO: 리뷰 등록 api 연결
+  const registerReview = async () => {
+    try {
+      if (!reviewContent) {
+        warningToast("리뷰를 작성해주세요.");
+        return;
+      }
+
+      const data = { completedMissionId: missionId, content: reviewContent };
+      console.log(data);
+      const res = await submitReview(data);
+
+      console.log("리뷰 제출", res.data);
+      if (res.data.success) {
+        setIsReviewSubmittedModalOpen(true);
+      }
+    } catch (e) {
+      console.log(e);
+      errorToast("에러 발생");
+    }
   };
+
+  useEffect(() => {
+    if (!missionId) {
+      warningToast("다시 시도해주세요.");
+      navigate(-1);
+    }
+  }, [missionId, navigate]);
 
   return (
     <div className={style.wrapper}>
@@ -41,6 +74,7 @@ const ReviewWrite = () => {
           리뷰 등록하기
         </button>
       </div>
+      {isReviewSubmittedModalOpen && <SuccessReviewModal />}
     </div>
   );
 };

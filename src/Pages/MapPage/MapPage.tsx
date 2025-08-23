@@ -10,7 +10,6 @@ import duck from "../../assets/duck.png";
 import { ReviewHero } from "./Review";
 import { useNavigate } from "react-router-dom";
 import alert from "../../assets/alert.png";
-// import axiosInstance from "../../lib/axiosInstance";
 
 type SliderLevel = "closed" | "half" | "full";
 type Tab = "mission" | "review";
@@ -107,38 +106,16 @@ const MapPage: React.FC = () => {
     };
   }, []);
 
-  //간이 로그인
-
-  // const DEV_EMAIL = import.meta.env.VITE_DEV_EMAIL;
-  // const DEV_PASSWORD = import.meta.env.VITE_DEV_PASSWORD;
-
   useEffect(() => {
     let cancelled = false;
 
     const run = async () => {
       try {
-        // if (import.meta.env.DEV) {
-        //   if (!localStorage.getItem("ACCESS_TOKEN")) {
-        //     const res = await axiosInstance.post("/api/v1/auth/login", {
-        //       email: DEV_EMAIL,
-        //       password: DEV_PASSWORD,
-        //     });
-        //     const headers = res.headers as unknown as Record<
-        //       string,
-        //       string | undefined
-        //     >;
-        //     const auth = headers["authorization"] ?? headers["Authorization"];
-        //     if (!auth?.startsWith("Bearer ")) {
-        //       throw new Error("Authorization 헤더 노출 필요");
-        //     }
-        //     localStorage.setItem("ACCESS_TOKEN", auth.slice(7));
-        //   }
-        // }
         const list = await fetchMissions();
         console.log(list);
         if (!cancelled) setMissions(list);
       } catch (e) {
-        console.error("초기 로그인/미션 실패:", e);
+        console.error(e);
       }
     };
 
@@ -146,7 +123,7 @@ const MapPage: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, []); // 인라인이면 이 두 값만 의존
+  }, []);
   // }, [DEV_EMAIL, DEV_PASSWORD]); // 인라인이면 이 두 값만 의존
 
   useEffect(() => {
@@ -193,7 +170,7 @@ const MapPage: React.FC = () => {
       }
     }
   }, [missions]);
-  // Load reviews when: tab=review && selectedMission
+
   useEffect(() => {
     if (tab !== "review" || !selectedMission) return;
 
