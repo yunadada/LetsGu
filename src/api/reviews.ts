@@ -1,6 +1,7 @@
 // src/api/reviews.ts
 import axiosInstance from "../lib/axiosInstance";
 import axios from "axios";
+import type { ReviewData } from "../types/review";
 
 export type Review = {
   reviewId: number;
@@ -30,4 +31,20 @@ export const fetchMissionReviews = async (
     }
     throw e; // 다른 에러는 상위에서 처리
   }
+};
+
+export const getActivityOverview = async () => {
+  return await axiosInstance.get("/api/v1/reviews/overview");
+};
+
+export const submitReview = async ({ data }: ReviewData) => {
+  return await axiosInstance.post("/api/v1/reviews", data);
+};
+
+export const loadMore = async (apiUrl: string, cursorId: number) => {
+  return await axiosInstance.get(apiUrl, {
+    params: {
+      cursorId,
+    },
+  });
 };
