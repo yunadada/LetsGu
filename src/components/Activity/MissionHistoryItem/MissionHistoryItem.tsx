@@ -5,10 +5,9 @@ import type { UnwrittenLogType, WrittenLogType } from "../../../types/review";
 import { useState } from "react";
 import ReviewDetailModal from "../../Modal/ReviewDetailModal/ReviewDetailModal";
 
-type Props = {
-  status: "unwritten" | "written";
-  data: UnwrittenLogType | WrittenLogType;
-};
+type Props =
+  | { status: "unwritten"; data: UnwrittenLogType }
+  | { status: "written"; data: WrittenLogType };
 
 const MissionHistoryItem = ({ status, data }: Props) => {
   const actData = data;

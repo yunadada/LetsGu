@@ -1,15 +1,16 @@
 import Header from "../../../components/Header/Header";
 import style from "./ReviewWrite.module.css";
 import Mark from "../../../assets/MarkIcon.svg";
-import { useState, type ChangeEvent } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import SuccessReviewModal from "../../../components/Modal/SuccessReviewModal/SuccessReviewModal";
 import { submitReview } from "../../../api/reviews";
 import { errorToast, warningToast } from "../../../utils/ToastUtil/toastUtil";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const ReviewWrite = () => {
+  const navigate = useNavigate();
   const location = useLocation();
-  const { missionId } = location.state;
+  const { missionId } = location.state || {};
   const [reviewContent, setReviewContent] = useState("");
   const [isReviewSubmittedModalOpen, setIsReviewSubmittedModalOpen] =
     useState(false);
@@ -38,6 +39,13 @@ const ReviewWrite = () => {
       errorToast("에러 발생");
     }
   };
+
+  useEffect(() => {
+    if (!missionId) {
+      warningToast("다시 시도해주세요.");
+      navigate(-1);
+    }
+  }, [missionId, navigate]);
 
   return (
     <div className={style.wrapper}>

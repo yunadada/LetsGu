@@ -1,9 +1,8 @@
-import { IoIosClose } from "react-icons/io";
-import type { UnwrittenLogType, WrittenLogType } from "../../../types/review";
+import type { WrittenLogType } from "../../../types/review";
 import style from "./MissionHistoryDetailItem.module.css";
 
 type Props = {
-  data: UnwrittenLogType | WrittenLogType;
+  data: WrittenLogType;
 };
 
 const MissionHistoryDetailItem = ({ data }: Props) => {

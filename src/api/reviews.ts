@@ -37,7 +37,7 @@ export const getActivityOverview = async () => {
   return await axiosInstance.get("/api/v1/reviews/overview");
 };
 
-export const submitReview = async ({ data }: ReviewData) => {
+export const submitReview = async (data: ReviewData) => {
   return await axiosInstance.post("/api/v1/reviews", data);
 };
 
