@@ -109,31 +109,31 @@ const MapPage: React.FC = () => {
 
   //간이 로그인
 
-  const DEV_EMAIL = import.meta.env.VITE_DEV_EMAIL;
-  const DEV_PASSWORD = import.meta.env.VITE_DEV_PASSWORD;
+  // const DEV_EMAIL = import.meta.env.VITE_DEV_EMAIL;
+  // const DEV_PASSWORD = import.meta.env.VITE_DEV_PASSWORD;
 
   useEffect(() => {
     let cancelled = false;
 
     const run = async () => {
       try {
-        if (import.meta.env.DEV) {
-          if (!localStorage.getItem("ACCESS_TOKEN")) {
-            const res = await axiosInstance.post("/api/v1/auth/login", {
-              email: DEV_EMAIL,
-              password: DEV_PASSWORD,
-            });
-            const headers = res.headers as unknown as Record<
-              string,
-              string | undefined
-            >;
-            const auth = headers["authorization"] ?? headers["Authorization"];
-            if (!auth?.startsWith("Bearer ")) {
-              throw new Error("Authorization 헤더 노출 필요");
-            }
-            localStorage.setItem("ACCESS_TOKEN", auth.slice(7));
-          }
-        }
+        // if (import.meta.env.DEV) {
+        //   if (!localStorage.getItem("ACCESS_TOKEN")) {
+        //     const res = await axiosInstance.post("/api/v1/auth/login", {
+        //       email: DEV_EMAIL,
+        //       password: DEV_PASSWORD,
+        //     });
+        //     const headers = res.headers as unknown as Record<
+        //       string,
+        //       string | undefined
+        //     >;
+        //     const auth = headers["authorization"] ?? headers["Authorization"];
+        //     if (!auth?.startsWith("Bearer ")) {
+        //       throw new Error("Authorization 헤더 노출 필요");
+        //     }
+        //     localStorage.setItem("ACCESS_TOKEN", auth.slice(7));
+        //   }
+        // }
         const list = await fetchMissions();
         if (!cancelled) setMissions(list);
       } catch (e) {
@@ -145,7 +145,7 @@ const MapPage: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [DEV_EMAIL, DEV_PASSWORD]); // 인라인이면 이 두 값만 의존
+  }, []); // 인라인이면 이 두 값만 의존
 
   useEffect(() => {
     const map = mapRef.current;
@@ -286,7 +286,7 @@ const MapPage: React.FC = () => {
             </svg>
           </button>
 
-          <h1 className="appbar__title">미션 지도</h1>
+          {/* <h1 className="appbar__title">미션 지도</h1> */}
           {showTip && (
             <div className={`tip-floating ${activeMission ? "with-card" : ""}`}>
               <img
@@ -366,16 +366,16 @@ const MapPage: React.FC = () => {
                   </span>
                   <button
                     className="rv-toolbar__sort"
-                    onClick={() =>
+                    onClick={() =>    
                       setSortOrder((s) =>
                         s === "latest" ? "oldest" : "latest"
-                      )
+                      )     
                     }
                   >
                     ↕ {sortOrder === "latest" ? "최신순" : "오래된순"}
                   </button>
                 </div>
-
+       
                 {/* 리스트 카드(기존 mission-card) */}
                 <div className="mission-card review-sheet">
                   {reviewsLoading ? (
