@@ -3,6 +3,7 @@ import axiosInstance from "../lib/axiosInstance";
 
 /** 서버가 내려주는 미션 타입 */
 export type Mission = {
+  address: string;
   missionId: number;
   placeName: string;
   description: string;
