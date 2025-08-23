@@ -28,7 +28,7 @@
 
 /* ========== Bottom sheet content ========== */
 .sheet-inner {
-  padding: 8px 16px calc(env(safe-area-inset-bottom, 16px)+16px);
+  padding: 8px 16px calc(env(safe-area-inset-bottom, 16px) + 16px);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -60,8 +60,8 @@
   color: #fff;
 }
 
-/* ========== Appbar ========== */
-.appbar {
+/* ========== App bar ========== */
+.app-bar {
   position: sticky;
   top: 0;
   z-index: 10010;
@@ -71,10 +71,9 @@
   align-items: center;
   padding: 0 8px;
   gap: 10px;
-  /* background: var(--bg-ivory); */
 }
-.appbar__back,
-.appbar__spacer {
+.app-bar__back,
+.app-bar__spacer {
   display: grid;
   place-items: center;
   height: 56px;
@@ -82,19 +81,11 @@
   border: 0;
   color: var(--ink);
 }
-.appbar__back {
+.app-bar__back {
   cursor: pointer;
   background-color: #ffbc2b;
   margin-top: 20px;
   border-radius: 40px;
-  /* width: px; */
-}
-.appbar__title {
-  margin: 0;
-  text-align: center;
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--ink);
 }
 
 /* ========== Overlay (header / floating cards) ========== */
@@ -104,7 +95,7 @@
   z-index: 10000;
   pointer-events: none;
 }
-.overlay-root .appbar,
+.overlay-root .app-bar,
 .overlay-root .mission-active-floating {
   pointer-events: auto;
 }
@@ -168,15 +159,6 @@
 .tip-floating__close:active {
   transform: translateY(1px);
 }
-/* 기존 클래스 호환 */
-.alert__close {
-  all: unset;
-  cursor: pointer;
-  color: #9ca3af;
-  font-size: 18px;
-  padding: 2px 4px;
-  pointer-events: auto;
-}
 
 /* ========== Bottom Sheet z-index helper ========== */
 .bs-backdrop {
@@ -204,8 +186,6 @@
   margin: 30px 0;
 }
 .mission-pin img {
-  /* width: 100%; */
-  /* height: 100%; */
   object-fit: contain;
   display: block;
   margin: 0 auto;
@@ -249,7 +229,7 @@
   transform: translateY(1px);
 }
 
-/* ========== MissionActiveCard (한 곳에서만 정의) ========== */
+/* ========== MissionActiveCard ========== */
 .mission-active-card {
   position: relative;
   border-radius: 20px;
@@ -327,6 +307,8 @@
   background: var(--bg-ivory);
   border-radius: 24px;
   padding: 16px;
+  max-height: 60dvh; /* 스크롤 루트 */
+  overflow: auto; /* ★ 실제 스크롤 주체 */
 }
 .rv-toolbar {
   position: sticky;
@@ -358,6 +340,7 @@
 .rv-list {
   display: grid;
   gap: 12px;
+  padding-right: 2px;
 }
 .rv-card {
   background: #fff;
@@ -415,6 +398,15 @@
   padding: 4px 0;
 }
 
+/* ========== Misc ========== */
+.pin {
+  width: 30px;
+  height: 40px;
+}
+.sheet-open .app-bar {
+  pointer-events: none;
+}
+
 /* ========== Animations ========== */
 @keyframes dropIn {
   from {
@@ -425,32 +417,4 @@
     opacity: 1;
     transform: translate(-50%, 0);
   }
-}
-
-/* MapPage.css */
-
-.review-sheet {
-  /* 시트 내부 카드 박스 */
-  max-height: 70dvh; /* 시트 높이 안에서 충분히 크게 */
-  overflow: hidden; /* 내부 목록만 스크롤하도록 */
-  display: flex;
-  flex-direction: column;
-}
-
-.rv-list {
-  overflow-y: auto; /* ✅ 목록만 스크롤 */
-  /* max-height: 60dvh; 필요시 조절 */
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding-right: 4px; /* 스크롤바 여백 */
-}
-
-/* 더보기 버튼이 보이도록 여백 */
-.rv-more-btn {
-  margin-top: 12px;
-}
-.pin {
-  width: 30px;
-  height: 40px;
 }

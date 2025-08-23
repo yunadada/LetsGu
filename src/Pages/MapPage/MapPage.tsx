@@ -1,3 +1,4 @@
+// src/Pages/MapPage/MapPage.tsx
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import "./MapPage.css";
 import BottomSlider from "../../components/BottomSlider/BottomSlider";
@@ -13,6 +14,7 @@ import {
   fetchMissionReviewsPreview,
   fetchMissionReviewsScroll,
   type Review,
+  type SortType,
 } from "../../api/missionReviews";
 import pin from "../../assets/pin.svg";
 
@@ -24,7 +26,6 @@ const MapPage: React.FC = () => {
   const mapDivRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<google.maps.Marker[]>([]);
-  const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   // Page state
   const [missions, setMissions] = useState<Mission[]>([]);
@@ -45,9 +46,11 @@ const MapPage: React.FC = () => {
   const [expanded, setExpanded] = useState<Record<string | number, boolean>>(
     {}
   );
-  // scroll info
+
+  // pagination (버튼으로만 사용)
   const [nextId, setNextId] = useState<number | undefined>();
   const [hasNext, setHasNext] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   const navigate = useNavigate();
 
@@ -104,43 +107,26 @@ const MapPage: React.FC = () => {
           elementType: "labels",
           stylers: [{ visibility: "off" }],
         },
-        // ▼ 추가: 행정구역(동/리/읍/면/시 등) 라벨 끄기
-        // 아래 항목들은 “부분적 제어용 예시”입니다.
-        // - 위의 광범위 규칙(administrative.labels off)을 사용한다면 굳이 필요 없습니다.
-        // - “시/군/구는 남기고 동/리만 지우기” 같은 미세 조정이 필요할 때,
-        //   위의 광범위 규칙을 지우고, 아래 세부 규칙들 중 필요한 것만 주석 해제해 쓰세요.
-        // - 스타일 규칙은 보통 '뒤에 오는 규칙'이 우선 적용되므로, 겹칠 경우 순서를 조정하세요.
-
-        // {
-        //   // sublocality = 동/읍/면 급 라벨 (예: 원평동, 도량동 / ○○읍, ○○면)
-        //   // “시 이름은 남기고 동/리만 지우고 싶다”면 이 항목만 off 하세요.
-        //   featureType: "administrative.sublocality",
-        //   elementType: "labels",
-        //   stylers: [{ visibility: "off" }],
-        // },
         {
-          // locality = 시/군/구 급 행정구역 라벨 (예: 구미시, 강남구 등)
-          // 이걸 끄면 시/군/구 이름도 안 보입니다. (상위 도시명까지 숨김)
-          featureType: "administrative.locality",
+          featureType: "poi.park",
           elementType: "labels",
-          stylers: [{ visibility: "on" }],
+          stylers: [{ visibility: "off" }],
         },
-
-        // {
-        //   // neighborhood = 리/통/반 등 더 작은 생활권 단위 라벨
-        //   // 세밀한 동네 표기(리/통/반)를 없애고 싶을 때 사용합니다.
-        //   featureType: "administrative.neighborhood",
-        //   elementType: "labels",
-        //   stylers: [{ visibility: "off" }],
-        // },
-
-        // {
-        //   // land_parcel = 지번(필지) 라벨 (예: 123-45 같은 표기)
-        //   // 지번 텍스트가 지저분해 보일 때만 선택적으로 off 하세요.
-        //   featureType: "administrative.land_parcel",
-        //   elementType: "labels",
-        //   stylers: [{ visibility: "off" }],
-        // },
+        {
+          featureType: "road",
+          elementType: "labels",
+          stylers: [{ visibility: "off" }],
+        },
+        {
+          featureType: "transit",
+          elementType: "labels",
+          stylers: [{ visibility: "off" }],
+        },
+        {
+          featureType: "administrative",
+          elementType: "labels",
+          stylers: [{ visibility: "off" }],
+        },
       ],
     });
     return () => {
@@ -158,19 +144,10 @@ const MapPage: React.FC = () => {
         const list = await fetchMissions();
         if (!cancelled) {
           setMissions(list);
-          console.log("[MapPage][Mission] 불러오기 성공 raw:", list);
-          console.table(
-            list.map((m) => ({
-              id: m.missionId,
-              name: m.placeName,
-              category: m.placeCategory,
-              lat: m.latitude,
-              lng: m.longitude,
-            }))
-          );
+          // console.log("[MapPage][Mission] 불러오기 성공 raw:", list);
         }
       } catch (e) {
-        console.error("[MapPage][Mission] 불러오기 실패:", e);
+        // console.error("[MapPage][Mission] 불러오기 실패:", e);
       }
     })();
     return () => {
@@ -230,34 +207,29 @@ const MapPage: React.FC = () => {
       setReviews([]);
       setReviewsNotFound(false);
       try {
+        // console.log("[Reviews] Preview →", {
+        //   missionId: selectedMission.missionId,
+        //   sortType: sortOrder === "latest" ? "DESC" : "ASC",
+        // });
         const { list, notFound, hasNext, nextId } =
           await fetchMissionReviewsPreview(
             selectedMission.missionId,
             sortOrder === "latest" ? "DESC" : "ASC"
           );
         if (!alive) return;
+
+        // console.log("[Reviews] Preview meta ←", { notFound, hasNext, nextId, count: list.length });
+
         if (notFound) {
-          console.warn("[MapPage][Review] 리뷰 없음");
           setReviewsNotFound(true);
           return;
         }
         setReviews(list);
         setHasNext(hasNext);
         setNextId(nextId);
-
-        console.log("[MapPage][Review] 프리뷰 raw:", list);
-        console.table(
-          list.map((r) => ({
-            id: r.reviewId,
-            user: r.memberName,
-            date: r.reviewDate,
-            content: r.reviewContent.slice(0, 30) + "...",
-            image: r.reviewImageUrl,
-          }))
-        );
       } catch (e) {
         if (!alive) return;
-        console.error("[MapPage][Review] 불러오기 실패:", e);
+        // console.error("[Reviews] Preview error:", e);
         setReviewsError("리뷰를 불러오지 못했어요.");
       } finally {
         if (alive) setReviewsLoading(false);
@@ -268,58 +240,31 @@ const MapPage: React.FC = () => {
     };
   }, [tab, selectedMission, sortOrder]);
 
-  // load more
-  const loadMoreReviews = async () => {
-    if (!selectedMission || !hasNext) return;
+  // "더 보기" 버튼으로만 페이지 추가
+  const loadMoreReviews = useCallback(async () => {
+    if (!selectedMission || !hasNext || loadingMore) {
+      // console.log("[More] skip", { hasNext, loadingMore, nextId });
+      return;
+    }
     try {
+      setLoadingMore(true);
       const res = await fetchMissionReviewsScroll({
         missionId: selectedMission.missionId,
         lastReviewId: nextId,
-        sortType: sortOrder === "latest" ? "DESC" : "ASC",
+        sortType: (sortOrder === "latest" ? "DESC" : "ASC") as SortType,
+        // limit: 3, // 필요하면 조절
       });
+      // console.log("[More] meta", { count: res.items.length, nextId: res.nextId, hasNext: res.hasNext });
+
       setReviews((prev) => [...prev, ...res.items]);
       setHasNext(res.hasNext);
       setNextId(res.nextId);
-
-      console.log("[MapPage][Review] 더 불러오기 raw:", res.items);
-      console.table(
-        res.items.map((r) => ({
-          id: r.reviewId,
-          user: r.memberName,
-          date: r.reviewDate,
-          content: r.reviewContent.slice(0, 30) + "...",
-        }))
-      );
     } catch (e) {
-      console.error("[MapPage][Review] 더 불러오기 실패:", e);
+      // console.error("[More] error", e);
+    } finally {
+      setLoadingMore(false);
     }
-  };
-
-  // load more observer
-  useEffect(() => {
-    if (!hasNext) return; // 다음 페이지 없으면 감시 중단
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          console.log(
-            "[MapPage][Review] 스크롤 끝 감지 → loadMoreReviews 실행"
-          );
-          loadMoreReviews();
-        }
-      },
-      { threshold: 1.0 } // 100% 보여야 실행
-    );
-
-    if (loadMoreRef.current) {
-      observer.observe(loadMoreRef.current);
-    }
-
-    return () => {
-      if (loadMoreRef.current) {
-        observer.unobserve(loadMoreRef.current);
-      }
-    };
-  }, [hasNext, loadMoreReviews]);
+  }, [selectedMission, hasNext, loadingMore, nextId, sortOrder]);
 
   // Tip auto-hide
   useEffect(() => {
@@ -343,10 +288,10 @@ const MapPage: React.FC = () => {
         <div className="googleMap" ref={mapDivRef} />
       </div>
 
-      <div className="overlay-root">
-        <header className="appbar">
+      <div className={`overlay-root ${isOpen ? "sheet-open" : ""}`}>
+        <div className="app-bar">
           <button
-            className="appbar__back"
+            className="app-bar__back"
             aria-label="뒤로가기"
             onClick={() => navigate("/")}
           >
@@ -381,8 +326,7 @@ const MapPage: React.FC = () => {
               </button>
             </div>
           )}
-          <div className="appbar__spacer" />
-        </header>
+        </div>
         {activeMission && (
           <div className="mission-active-floating">
             <MissionActiveCard
@@ -445,6 +389,7 @@ const MapPage: React.FC = () => {
                     ↕ {sortOrder === "latest" ? "최신순" : "오래된순"}
                   </button>
                 </div>
+
                 <div className="mission-card review-sheet">
                   {reviewsLoading ? (
                     <p className="mission-empty">불러오는 중…</p>
@@ -505,13 +450,20 @@ const MapPage: React.FC = () => {
                           );
                         })}
                       </div>
+
                       {hasNext && (
-                        <div
-                          ref={loadMoreRef}
-                          style={{ padding: "20px", textAlign: "center" }}
+                        <button
+                          className="rv-more-btn"
+                          onClick={loadMoreReviews}
+                          disabled={loadingMore}
+                          style={{
+                            width: "100%",
+                            padding: 12,
+                            borderRadius: 12,
+                          }}
                         >
-                          불러오는 중...
-                        </div>
+                          {loadingMore ? "불러오는 중..." : "더 보기"}
+                        </button>
                       )}
                     </>
                   )}
