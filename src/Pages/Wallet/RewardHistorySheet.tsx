@@ -43,7 +43,7 @@ const typeMeta = (t: string): { icon: React.ReactNode; title: string } => {
       return { icon: <img src={Giftbox} alt="" />, title: "제휴 쿠폰 교환" };
     case "MISSION_SUCCESS":
       return { icon: <img src={Bag3D} alt="" />, title: "미션 성공" };
-    case "REVIEW_WRITE":
+    case "REVIEW":
       return { icon: <img src={Heart3D} alt="" />, title: "리뷰 작성" };
     default:
       return {
@@ -60,8 +60,22 @@ const RewardHistorySheet: React.FC<Props> = ({
   loading,
   err,
 }) => {
-  if (!open) return null;
+  // ✅ 최신순(역순) 정렬: createdAt 내림차순 → 동률이면 id 내림차순
+  const sortedRows = React.useMemo(() => {
+    const toTs = (s?: string) => {
+      const t = s ? new Date(s).getTime() : 0;
+      return Number.isFinite(t) ? t : 0;
+    };
+    return [...rows].sort((a, b) => {
+      const diff = toTs(b.createdAt) - toTs(a.createdAt);
+      if (!Number.isFinite(diff) || diff === 0) {
+        return (b.pointTransactionId ?? 0) - (a.pointTransactionId ?? 0);
+      }
+      return diff;
+    });
+  }, [rows]);
 
+  if (!open) return null;
   return (
     <div className="rhs-root" role="dialog" aria-modal="true" onClick={onClose}>
       <div
@@ -79,16 +93,14 @@ const RewardHistorySheet: React.FC<Props> = ({
           <p className="meta rhs-meta-pad">불러오는 중…</p>
         ) : err ? (
           <p className="error rhs-meta-pad">{err}</p>
-        ) : rows.length === 0 ? (
+        ) : sortedRows.length === 0 ? (
           <p className="meta rhs-meta-pad">표시할 내역이 없어요.</p>
         ) : (
           <ul className="rh-list">
-            {rows.map((r) => {
+            {sortedRows.map((r) => {
               const { icon, title } = typeMeta(r.pointType);
               const pos = r.changeAmount >= 0;
-
-              // 필요 시 강조(안쪽 점선 테두리) 조건을 여기에 넣으세요.
-              const highlight = false; // 예: r.pointTransactionId === selectedId
+              const highlight = false;
 
               return (
                 <li

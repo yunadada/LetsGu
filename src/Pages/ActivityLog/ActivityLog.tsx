@@ -17,10 +17,22 @@ const ActivityLog = () => {
     writtenReviewCount: 0,
   });
   const [unwrittenLog, setUnwrittenLog] = useState<UnwrittenLogType[]>([]);
-  const [unwrittenHasNext, setUnwrittenHasNext] = useState<PageResponse>({});
+  const [unwrittenHasNext, setUnwrittenHasNext] = useState<
+    Omit<PageResponse, "data">
+  >({
+    hasNext: false,
+    nextCreatedAt: "",
+    nextId: 0,
+  });
 
   const [writtenLog, setWrittenLog] = useState<WrittenLogType[]>([]);
-  const [writtenHasNext, setWrittenHasNext] = useState<PageResponse>({});
+  const [writtenHasNext, setWrittenHasNext] = useState<
+    Omit<PageResponse, "data">
+  >({
+    hasNext: false,
+    nextCreatedAt: "",
+    nextId: 0,
+  });
 
   const unwrittenLoader = useRef<HTMLDivElement | null>(null);
   const writtenLoader = useRef<HTMLDivElement | null>(null);
@@ -30,33 +42,53 @@ const ActivityLog = () => {
   );
 
   // 작성 가능한 리뷰
+  const [isFetchingUnwritten, setIsFetchingUnwritten] = useState(false);
   const fetchUnwrittenMore = async () => {
-    const res = await loadMore(
-      "/api/v1/reviews/unwritten/page",
-      unwrittenHasNext.nextId
-    );
-    const moreData = res.data.data;
-    setUnwrittenLog((prev) => [...prev, ...moreData.data]);
-    setUnwrittenHasNext({
-      hasNext: moreData.hasNext,
-      nextCreatedAt: moreData.nextCreatedAt,
-      nextId: moreData.nextId,
-    });
+    if (isFetchingUnwritten || !unwrittenHasNext.hasNext) return;
+    setIsFetchingUnwritten(true);
+
+    try {
+      const res = await loadMore(
+        "/api/v1/reviews/unwritten/page",
+        unwrittenHasNext.nextId
+      );
+      const moreData = res.data.data;
+      setUnwrittenLog((prev) => [...prev, ...moreData.data]);
+      setUnwrittenHasNext({
+        hasNext: moreData.hasNext,
+        nextCreatedAt: moreData.nextCreatedAt,
+        nextId: moreData.nextId,
+      });
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsFetchingUnwritten(false);
+    }
   };
 
   // 작성한 리뷰
+  const [isFetchingWritten, setIsFetchingWritten] = useState(false);
   const fetchWrittenMore = async () => {
-    const res = await loadMore(
-      "/api/v1/reviews/written/page",
-      writtenHasNext.nextId
-    );
-    const moreData = res.data.data;
-    setWrittenLog((prev) => [...prev, ...moreData.data]);
-    setWrittenHasNext({
-      hasNext: moreData.hasNext,
-      nextCreatedAt: moreData.nextCreatedAt,
-      nextId: moreData.nextId,
-    });
+    if (isFetchingWritten || !writtenHasNext.hasNext) return;
+    setIsFetchingWritten(true);
+
+    try {
+      const res = await loadMore(
+        "/api/v1/reviews/written/page",
+        writtenHasNext.nextId
+      );
+      const moreData = res.data.data;
+      setWrittenLog((prev) => [...prev, ...moreData.data]);
+      setWrittenHasNext({
+        hasNext: moreData.hasNext,
+        nextCreatedAt: moreData.nextCreatedAt,
+        nextId: moreData.nextId,
+      });
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsFetchingWritten(false);
+    }
   };
 
   useEffect(() => {
@@ -90,14 +122,22 @@ const ActivityLog = () => {
       (entries) => {
         const target = entries[0];
         if (target.isIntersecting) {
-          if (activeTab === "unwritten" && unwrittenHasNext.hasNext) {
+          if (
+            activeTab === "unwritten" &&
+            unwrittenHasNext.hasNext &&
+            !isFetchingUnwritten
+          ) {
             fetchUnwrittenMore();
-          } else if (activeTab === "written" && writtenHasNext.hasNext) {
+          } else if (
+            activeTab === "written" &&
+            writtenHasNext.hasNext &&
+            !isFetchingWritten
+          ) {
             fetchWrittenMore();
           }
         }
       },
-      { threshold: 1.0 }
+      { threshold: 0 }
     );
 
     if (activeTab === "unwritten" && unwrittenLoader.current) {
@@ -108,7 +148,13 @@ const ActivityLog = () => {
     }
 
     return () => observer.disconnect();
-  }, [activeTab, unwrittenHasNext, writtenHasNext]);
+  }, [
+    activeTab,
+    unwrittenHasNext,
+    writtenHasNext,
+    isFetchingUnwritten,
+    +isFetchingWritten,
+  ]);
 
   return (
     <div className={style.wrapper}>
@@ -144,7 +190,13 @@ const ActivityLog = () => {
                   data={item}
                 />
               ))}
-              {unwrittenHasNext.hasNext && <div ref={unwrittenLoader} />}
+              {unwrittenHasNext.hasNext && (
+                <div
+                  ref={unwrittenLoader}
+                  className={style.loaderBox}
+                  aria-hidden="true"
+                />
+              )}
             </div>
           )
         ) : reviewCount.writtenReviewCount === 0 ? (

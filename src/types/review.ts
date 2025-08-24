@@ -25,7 +25,7 @@ export type ReviewData = {
 };
 
 export type PageResponse = {
-  data?: [];
+  data: [];
   hasNext: boolean;
   nextCreatedAt: string;
   nextId: number;

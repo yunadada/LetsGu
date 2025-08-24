@@ -46,6 +46,6 @@
   gap: 8px;
 }
 
-/* .loader {
-  height: 50px;
-} */
+.loaderBox {
+  min-height: 1px;
+}

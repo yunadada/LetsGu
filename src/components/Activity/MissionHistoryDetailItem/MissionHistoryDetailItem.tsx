@@ -1,9 +1,8 @@
-import { IoIosClose } from "react-icons/io";
-import type { UnwrittenLogType, WrittenLogType } from "../../../types/review";
+import type { WrittenLogType } from "../../../types/review";
 import style from "./MissionHistoryDetailItem.module.css";
 
 type Props = {
-  data: UnwrittenLogType | WrittenLogType;
+  data: WrittenLogType;
 };
 
 const MissionHistoryDetailItem = ({ data }: Props) => {
@@ -19,7 +18,12 @@ const MissionHistoryDetailItem = ({ data }: Props) => {
 
   return (
     <div className={style.container}>
-      <img className={style.img} src={data.imageUrl}></img>
+      <img
+        className={style.img}
+        src={data.imageUrl}
+        alt="이미지"
+        loading="lazy"
+      ></img>
       <div className={style.contents}>
         <p className={style.location}>{data.address}</p>
         <h3 className={style.name}>{data.placeName}</h3>

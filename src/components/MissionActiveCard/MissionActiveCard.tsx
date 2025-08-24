@@ -41,7 +41,7 @@ export default function MissionActiveCard({
         <>
           {/* 핀 래퍼로 감싸기 */}
           <div className="mac-pin">
-            <img src={categoryIcons[catKey]} alt="" width={20} height={30} />
+            <img src={categoryIcons[catKey]} alt="" width={40} height={60} />
           </div>
 
           <p className="mac-desc">{description}</p>
@@ -51,7 +51,7 @@ export default function MissionActiveCard({
               미션 그만두기
             </button>
             <i className="mac-divider" />
-            <button className="mac-ghost" type="button" onClick={onCertify} >
+            <button className="mac-ghost" type="button" onClick={onCertify}>
               미션 인증하기
             </button>
           </div>
