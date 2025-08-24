@@ -20,7 +20,7 @@ export type WrittenLogType = {
 };
 
 export type ReviewData = {
-  completedMissionId?: number;
+  completedMissionId: number;
   content: string;
 };
 

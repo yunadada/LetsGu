@@ -67,7 +67,11 @@ export const verifyImage = (
 
         while (true) {
           const { value, done } = await reader.read();
-          if (done) break;
+          if (done) {
+            controller.abort();
+            reject(new Error("SSE 스트림이 서버 측에서 종료되었습니다."));
+            return;
+          }
 
           buffer += decoder.decode(value, { stream: true });
           const events = buffer.split("\n\n");

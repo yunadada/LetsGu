@@ -21,6 +21,20 @@ const MissionHistoryItem = ({ status, data }: Props) => {
     setIsModalOpen(false);
   };
 
+  // 타입 가드: UnwrittenLogType인지 확인
+  const isUnwrittenLog = (
+    data: UnwrittenLogType | WrittenLogType
+  ): data is UnwrittenLogType => {
+    return (data as UnwrittenLogType).completedMissionId !== undefined;
+  };
+
+  // 타입 가드: WrittenLogType인지 확인
+  const isWrittenLog = (
+    data: UnwrittenLogType | WrittenLogType
+  ): data is WrittenLogType => {
+    return (data as WrittenLogType).reviewId !== undefined;
+  };
+
   return (
     <>
       <div
@@ -28,7 +42,7 @@ const MissionHistoryItem = ({ status, data }: Props) => {
         onClick={status === "written" ? openModal : undefined}
       >
         <img className={style.img} src={actData.imageUrl} alt="미션" />
-        {status === "unwritten" ? (
+        {status === "unwritten" && isUnwrittenLog(actData) && (
           <Link
             className={style.edit}
             to={{
@@ -41,14 +55,12 @@ const MissionHistoryItem = ({ status, data }: Props) => {
           >
             <MdEdit />
           </Link>
-        ) : (
-          ""
         )}
 
         <p>{actData.address}</p>
         <h3>{actData.placeName}</h3>
       </div>
-      {isModalOpen && (
+      {isModalOpen && isWrittenLog(actData) && (
         <ReviewDetailModal data={actData} closeModal={closeModal} />
       )}
     </>

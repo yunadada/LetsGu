@@ -6,7 +6,7 @@ import SuccessReviewModal from "../../../components/Modal/SuccessReviewModal/Suc
 import { submitReview } from "../../../api/reviews";
 import { errorToast, warningToast } from "../../../utils/ToastUtil/toastUtil";
 import { useLocation, useNavigate } from "react-router-dom";
-import type { ReviewWriteState } from "../../../types/review";
+import type { ReviewData, ReviewWriteState } from "../../../types/review";
 
 const ReviewWrite = () => {
   const navigate = useNavigate();
@@ -31,7 +31,10 @@ const ReviewWrite = () => {
         return;
       }
 
-      const data = { completedMissionId: missionId, content: reviewContent };
+      const data: ReviewData = {
+        completedMissionId: missionId!,
+        content: reviewContent,
+      };
       const res = await submitReview(data);
 
       console.log("리뷰 제출", res.data);
