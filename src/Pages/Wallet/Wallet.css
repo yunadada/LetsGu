@@ -23,40 +23,6 @@
   background: #fff;
   border-bottom: 1px solid var(--line);
 }
-.topbar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  margin-bottom: 10px;
-}
-.back-btn {
-  background: transparent;
-  border: 0;
-  cursor: pointer;
-  padding: 6px;
-  border-radius: 10px;
-}
-.back-btn:hover {
-  background: #f4f5f7;
-}
-.icon {
-  width: 22px;
-  height: 22px;
-  display: block;
-  color: #111;
-}
-
-.shop-header-title {
-  margin-left: 4px;
-  font-size: 18px;
-  font-weight: 900;
-  letter-spacing: 0.2px;
-  background: linear-gradient(90deg, #111 0%, #666 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
 
 /* ---------- Summary Card ---------- */
 .wallet-summary {
@@ -65,6 +31,7 @@
   display: grid;
   place-items: center;
 }
+
 .ws-card {
   position: relative;
   width: 340px;

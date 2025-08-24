@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import RewardHistorySheet from "./RewardHistorySheet";
 import coin from "../../assets/coin.png";
 import rewardIcon from "../../assets/RewardHistory.png";
+import Header from "../../components/Header/Header";
 
 /** ===== 타입 (새 스키마 대응) ===== */
 type ApiOk<T> = { success: true; data: T };
@@ -308,26 +309,7 @@ const Wallet: React.FC = () => {
     <div className="shop-container">
       {/* 헤더 */}
       <header className="shop-header">
-        <div className="topbar">
-          <button
-            className="back-btn"
-            onClick={() => navigate("/")}
-            aria-label="뒤로가기"
-          >
-            <svg className="icon" viewBox="0 0 24 24" aria-hidden>
-              <path
-                d="M15 18L9 12l6-6"
-                stroke="currentColor"
-                strokeWidth="2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-          <div className="shop-header-title">내 지갑</div>
-          <div className="topbar-spacer" />
-        </div>
+        <Header title="내 지갑" />
 
         {/* 상단 카드 */}
         <div className="wallet-summary">
