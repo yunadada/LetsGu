@@ -46,21 +46,37 @@ const MapPage: React.FC = () => {
   const [expanded, setExpanded] = useState<Record<string | number, boolean>>(
     {}
   );
+  // Error banner
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // pagination (버튼으로만 사용)
+  // Pagination (button-only)
   const [nextId, setNextId] = useState<number | undefined>();
   const [hasNext, setHasNext] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
 
   const navigate = useNavigate();
 
-  const dropMission = () => {
-    const mission = activeMission ?? selectedMission;
-    if (!mission) return;
-    navigate("/locationVerification", {
-      state: { missionId: mission.missionId, placeName: mission.placeName },
-    }); // ✅ state로 전달
-    //console.log(mission.missionId);
+  // ===== Helpers: mission states =====
+  const isMissionCompleted = (m?: Mission | null) => {
+    if (!m) return false;
+    // Case A: boolean flag from API
+    if ((m as any).isCompleted === true) return true;
+    // Case B: status strings (fallback)
+    if ((m as any).status === "COMPLETED" || (m as any).progress === "DONE")
+      return true;
+    return false;
+  };
+
+  const isMissionAccepted = (m?: Mission | null) => {
+    if (!m) return false;
+    // Common boolean field names
+    if ((m as any).isAccepted === true) return true;
+    if ((m as any).accepted === true) return true;
+    if ((m as any).joined === true) return true;
+    // Fallback via status
+    if ((m as any).status === "ACCEPTED" || (m as any).progress === "ACCEPTED")
+      return true;
+    return false;
   };
 
   const hasReviews = reviews.length > 0;
@@ -77,7 +93,6 @@ const MapPage: React.FC = () => {
 
   const truncate = (t: string, n = 80) =>
     t.length > n ? t.slice(0, n) + "…" : t;
-
   const initials = (name?: string) => (name ?? "").trim().slice(0, 1) || "?";
 
   const sortedReviews = React.useMemo(() => {
@@ -145,10 +160,9 @@ const MapPage: React.FC = () => {
         const list = await fetchMissions();
         if (!cancelled) {
           setMissions(list);
-          // console.log("[MapPage][Mission] 불러오기 성공 raw:", list);
         }
       } catch (e) {
-        // console.error("[MapPage][Mission] 불러오기 실패:", e);
+        // console.error("[MapPage][Mission] fetch error:", e);
       }
     })();
     return () => {
@@ -208,18 +222,12 @@ const MapPage: React.FC = () => {
       setReviews([]);
       setReviewsNotFound(false);
       try {
-        // console.log("[Reviews] Preview →", {
-        //   missionId: selectedMission.missionId,
-        //   sortType: sortOrder === "latest" ? "DESC" : "ASC",
-        // });
         const { list, notFound, hasNext, nextId } =
           await fetchMissionReviewsPreview(
             selectedMission.missionId,
             sortOrder === "latest" ? "DESC" : "ASC"
           );
         if (!alive) return;
-
-        // console.log("[Reviews] Preview meta ←", { notFound, hasNext, nextId, count: list.length });
 
         if (notFound) {
           setReviewsNotFound(true);
@@ -230,7 +238,6 @@ const MapPage: React.FC = () => {
         setNextId(nextId);
       } catch (e) {
         if (!alive) return;
-        // console.error("[Reviews] Preview error:", e);
         setReviewsError("리뷰를 불러오지 못했어요.");
       } finally {
         if (alive) setReviewsLoading(false);
@@ -243,20 +250,14 @@ const MapPage: React.FC = () => {
 
   // "더 보기" 버튼으로만 페이지 추가
   const loadMoreReviews = useCallback(async () => {
-    if (!selectedMission || !hasNext || loadingMore) {
-      // console.log("[More] skip", { hasNext, loadingMore, nextId });
-      return;
-    }
+    if (!selectedMission || !hasNext || loadingMore) return;
     try {
       setLoadingMore(true);
       const res = await fetchMissionReviewsScroll({
         missionId: selectedMission.missionId,
         lastReviewId: nextId,
         sortType: (sortOrder === "latest" ? "DESC" : "ASC") as SortType,
-        // limit: 3, // 필요하면 조절
       });
-      // console.log("[More] meta", { count: res.items.length, nextId: res.nextId, hasNext: res.hasNext });
-
       setReviews((prev) => [...prev, ...res.items]);
       setHasNext(res.hasNext);
       setNextId(res.nextId);
@@ -274,14 +275,41 @@ const MapPage: React.FC = () => {
     return () => clearTimeout(t);
   }, [showTip]);
 
-  // accept mission
+  // accept mission (guarded)
   const acceptMission = useCallback(() => {
     if (!selectedMission) return;
+
+    if (isMissionCompleted(selectedMission)) {
+      setErrorMsg("이미 완료한 미션이에요.");
+      setSliderLevel("half");
+      return;
+    }
+    if (isMissionAccepted(selectedMission)) {
+      setErrorMsg("이미 수락한 미션이에요.");
+      setSliderLevel("half");
+      return;
+    }
+
     setActiveMission(selectedMission);
     setActiveCollapsed(false);
     setSliderLevel("closed");
     setShowTip(false);
   }, [selectedMission]);
+
+  // certify navigation (guarded)
+  const dropMission = () => {
+    const mission = activeMission ?? selectedMission;
+    if (!mission) return;
+    if (isMissionCompleted(mission)) {
+      setErrorMsg("이미 완료한 미션은 인증할 수 없어요.");
+      setSliderLevel("half");
+      return;
+    }
+    // 정책에 따라: 수락된 미션이면 인증 이동 허용 (일반적)
+    navigate("/locationVerification", {
+      state: { missionId: mission.missionId },
+    });
+  };
 
   return (
     <div className="mapPage">
@@ -307,6 +335,16 @@ const MapPage: React.FC = () => {
               />
             </svg>
           </button>
+
+          {errorMsg && (
+            <div className="error-banner" role="alert">
+              {errorMsg}
+              <button className="error-close" onClick={() => setErrorMsg(null)}>
+                ×
+              </button>
+            </div>
+          )}
+
           {showTip && (
             <div className={`tip-floating ${activeMission ? "with-card" : ""}`}>
               <img
@@ -328,6 +366,7 @@ const MapPage: React.FC = () => {
             </div>
           )}
         </div>
+
         {activeMission && (
           <div className="mission-active-floating">
             <MissionActiveCard
@@ -476,6 +515,16 @@ const MapPage: React.FC = () => {
               <div className="mission-pin" aria-hidden>
                 <img src={pin} alt="" width={20} height={30} />
               </div>
+
+              {/* 상태 뱃지 표시 */}
+              <div className="mission-state" aria-live="polite">
+                {isMissionCompleted(selectedMission) ? (
+                  <span className="badge badge-done">완료</span>
+                ) : isMissionAccepted(selectedMission) ? (
+                  <span className="badge badge-accepted">수락됨</span>
+                ) : null}
+              </div>
+
               <h3 className="mission-title" style={{ marginTop: 4 }}>
                 {selectedMission.description}
               </h3>
@@ -489,11 +538,39 @@ const MapPage: React.FC = () => {
           )}
 
           {/* CTA */}
-          {tab === "mission" && selectedMission && (
-            <button className="cta" onClick={acceptMission}>
-              미션 수락하기
-            </button>
-          )}
+          {tab === "mission" &&
+            selectedMission &&
+            (() => {
+              const accepted = isMissionAccepted(selectedMission);
+              const completed = isMissionCompleted(selectedMission);
+              const disabled = accepted || completed;
+              const label = completed
+                ? "완료된 미션"
+                : accepted
+                ? "이미 수락함"
+                : "미션 수락하기";
+              const onClick = disabled
+                ? () => {
+                    setErrorMsg(
+                      completed
+                        ? "이미 완료한 미션이에요."
+                        : "이미 수락한 미션이에요."
+                    );
+                    setSliderLevel("half");
+                  }
+                : acceptMission;
+
+              return (
+                <button
+                  className={`cta ${disabled ? "is-disabled" : ""}`}
+                  onClick={onClick}
+                  disabled={disabled}
+                  aria-disabled={disabled}
+                >
+                  {label}
+                </button>
+              );
+            })()}
         </div>
       </BottomSlider>
     </div>
