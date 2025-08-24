@@ -1,10 +1,9 @@
 import style from "./ReviewDetailModal.module.css";
 import MissionHistoryDetailItem from "../../Activity/MissionHistoryDetailItem/MissionHistoryDetailItem";
-import type { UnwrittenLogType, WrittenLogType } from "../../../types/review";
-// import { IoIosClose } from "react-icons/io";
+import type { WrittenLogType } from "../../../types/review";
 
 type Props = {
-  data: UnwrittenLogType | WrittenLogType;
+  data: WrittenLogType;
   closeModal: () => void;
 };
 
@@ -15,9 +14,6 @@ const ReviewDetailModal = ({ data, closeModal }: Props) => {
       <button type="button" className={style.closeButton} onClick={closeModal}>
         닫기
       </button>
-      {/* <button type="button" className={style.closeButton}>
-        <IoIosClose />
-      </button> */}
     </div>
   );
 };
