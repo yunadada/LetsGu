@@ -60,18 +60,22 @@ const RewardHistorySheet: React.FC<Props> = ({
   loading,
   err,
 }) => {
-  if (!open) return null;
-
   // ✅ 최신순(역순) 정렬: createdAt 내림차순 → 동률이면 id 내림차순
   const sortedRows = React.useMemo(() => {
-    const toTs = (s?: string) => (s ? new Date(s).getTime() : 0);
+    const toTs = (s?: string) => {
+      const t = s ? new Date(s).getTime() : 0;
+      return Number.isFinite(t) ? t : 0;
+    };
     return [...rows].sort((a, b) => {
       const diff = toTs(b.createdAt) - toTs(a.createdAt);
-      if (diff !== 0) return diff;
-      return (b.pointTransactionId ?? 0) - (a.pointTransactionId ?? 0);
+      if (!Number.isFinite(diff) || diff === 0) {
+        return (b.pointTransactionId ?? 0) - (a.pointTransactionId ?? 0);
+      }
+      return diff;
     });
   }, [rows]);
 
+  if (!open) return null;
   return (
     <div className="rhs-root" role="dialog" aria-modal="true" onClick={onClose}>
       <div
