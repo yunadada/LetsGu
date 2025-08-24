@@ -6,18 +6,23 @@ import { useNavigate } from "react-router-dom";
 import { errorToast, warningToast } from "../../utils/ToastUtil/toastUtil";
 import type { ChangeEvent, FormEvent } from "react";
 import type { LoginInput, UserInfo } from "../../types/userInfo";
+import { useAuth } from "../../contexts/auth";
 
 const Login = () => {
+  const { setIsAuthenticated } = useAuth();
+
   const [inputValue, setInputValue] = useState<LoginInput>({
     email: "",
     password: "",
   });
+
   const [userInfo, setUserInfo] = useState<UserInfo>({
     memberId: 0,
     email: "",
     nickname: "",
     imageUrl: "",
   });
+
   const navigate = useNavigate();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -55,13 +60,15 @@ const Login = () => {
 
         if (token) {
           localStorage.setItem("accessToken", token);
-          navigate("/");
+          setIsAuthenticated(true);
+          navigate("/", { replace: true });
           return;
         }
       }
     } catch (e) {
       errorToast("이메일 또는 비밀번호가 올바르지 않습니다.");
       setInputValue({ email: "", password: "" });
+      console.log(e);
     }
   };
 

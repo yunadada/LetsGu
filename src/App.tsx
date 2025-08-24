@@ -7,6 +7,9 @@ import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import "./App.css";
 import MapPage from "./Pages/MapPage/MapPage";
+import { useEffect, useState } from "react";
+import { ProtectedRoute } from "./components/ProtectedRoute/ProtectedRoute";
+import { AuthContext } from "./contexts/auth";
 
 const render = (status: Status) => {
   switch (status) {
@@ -20,18 +23,35 @@ const render = (status: Status) => {
 };
 
 function App() {
-  const allRoutes: RouteConfig[] = [...publicRoutes, ...authenticateRoutes];
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    setIsAuthenticated(!!token);
+  }, []);
 
   return (
-    <Wrapper apiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY} render={render}>
-      <ToastContainer position="top-center" autoClose={3000} limit={1} />
-      <Routes>
-        {allRoutes.map((route) => {
-          const { path, element } = route;
-          return <Route key={path} path={path} element={element} />;
-        })}
-      </Routes>
-    </Wrapper>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+      <Wrapper apiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY} render={render}>
+        <ToastContainer position="top-center" autoClose={3000} limit={1} />
+        <Routes>
+          {publicRoutes.map((route: RouteConfig) => (
+            <Route key={route.path} path={route.path} element={route.element} />
+          ))}
+          {authenticateRoutes.map((route: RouteConfig) => (
+            <Route
+              key={route.path}
+              path={route.path}
+              element={
+                <ProtectedRoute isAuthenticated={isAuthenticated}>
+                  {route.element}
+                </ProtectedRoute>
+              }
+            />
+          ))}
+        </Routes>
+      </Wrapper>
+    </AuthContext.Provider>
   );
 }
 
