@@ -1,5 +1,4 @@
 import { toast } from "react-toastify";
-import "./toastUtil.css";
 
 export const successToast = (message: string) => {
   toast.success(message, {
