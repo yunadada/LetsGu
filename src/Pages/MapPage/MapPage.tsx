@@ -269,7 +269,7 @@ const MapPage: React.FC = () => {
   // Tip auto-hide
   useEffect(() => {
     if (!showTip) return;
-    const t = setTimeout(() => setShowTip(false), 1000000000);
+    const t = setTimeout(() => setShowTip(false), 2500);
     return () => clearTimeout(t);
   }, [showTip]);
 
