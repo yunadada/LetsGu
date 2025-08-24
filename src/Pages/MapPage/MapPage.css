@@ -8,9 +8,16 @@
   --elev: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
+.mapPage {
+  width: 402px;
+  height: 100%;
+  margin: 0 auto; /* 화면 중앙 정렬 */
+  position: relative; /* 내부 absolute 기준 */
+}
+
 /* ========== Map layout ========== */
 .mapContainer {
-  width: 100%;
+  width: 402px;
   height: 100%;
   position: relative;
   display: flex;
@@ -18,7 +25,7 @@
   align-items: center;
 }
 .googleMap {
-  width: 100vw;
+  width: 402px;
   height: 100dvh;
 }
 .googleMap .gm-style {
@@ -64,13 +71,12 @@
 .app-bar {
   position: sticky;
   top: 0;
-  z-index: 10010;
   height: 56px;
   display: grid;
   grid-template-columns: 56px 1fr 56px;
   align-items: center;
   padding: 0 8px;
-  gap: 10px;
+  width: 100%;
 }
 .app-bar__back,
 .app-bar__spacer {
@@ -84,14 +90,18 @@
 .app-bar__back {
   cursor: pointer;
   background-color: #ffbc2b;
-  margin-top: 20px;
+  margin-top: 10px; /* ★ 위로 밀리던 원인 제거 */
   border-radius: 40px;
 }
 
 /* ========== Overlay (header / floating cards) ========== */
 .overlay-root {
   position: fixed;
-  inset: 0;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%); /* 화면 가운데 */
+  width: 402px; /* ★ 폰 폭으로 제한 */
   z-index: 10000;
   pointer-events: none;
 }
@@ -162,10 +172,24 @@
 
 /* ========== Bottom Sheet z-index helper ========== */
 .bs-backdrop {
-  z-index: 9998;
+  position: fixed;
+  inset: 0; /* 전체 화면 */
+  background: rgba(0, 0, 0, 0.28); /* 어둡게 */
+  z-index: 9998; /* 시트(9999) 바로 아래 */
 }
+
 .bs-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 50% !important; /* inline left:0 무력화 */
+  right: auto !important; /* inline right:0 무력화 */
+  width: 402px !important;
+  transform: translate(-50%, calc(100% - 40px)) !important; /* 닫힘 */
   z-index: 9999;
+}
+
+.bs-sheet.open {
+  transform: translate(-50%, 0) !important; /* 열림 */
 }
 
 /* ========== Mission / Empty card ========== */
@@ -417,4 +441,9 @@
     opacity: 1;
     transform: translate(-50%, 0);
   }
+}
+
+.mapContainer,
+.googleMap {
+  width: 402px;
 }
