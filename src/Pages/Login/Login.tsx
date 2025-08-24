@@ -58,6 +58,9 @@ const Login = () => {
           const fromPath = location.state?.from?.pathname || "/";
           navigate(fromPath, { replace: true });
           return;
+        } else {
+          errorToast("토큰 발급에 실패했습니다. 다시 로그인해주세요.");
+          navigate("/login", { replace: true });
         }
       }
     } catch (e) {

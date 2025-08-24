@@ -20,7 +20,7 @@ export type WrittenLogType = {
 };
 
 export type ReviewData = {
-  completedMissionId: number;
+  completedMissionId?: number;
   content: string;
 };
 
@@ -29,4 +29,9 @@ export type PageResponse = {
   hasNext: boolean;
   nextCreatedAt: string;
   nextId: number;
+};
+
+export type ReviewWriteState = {
+  missionId?: number;
+  placeName?: string;
 };

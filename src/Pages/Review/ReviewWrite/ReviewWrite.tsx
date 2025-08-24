@@ -6,11 +6,16 @@ import SuccessReviewModal from "../../../components/Modal/SuccessReviewModal/Suc
 import { submitReview } from "../../../api/reviews";
 import { errorToast, warningToast } from "../../../utils/ToastUtil/toastUtil";
 import { useLocation, useNavigate } from "react-router-dom";
+import type { ReviewWriteState } from "../../../types/review";
 
 const ReviewWrite = () => {
   const navigate = useNavigate();
+
   const location = useLocation();
-  const { missionId, placeName } = location.state;
+  const state = (location.state ?? {}) as ReviewWriteState;
+  const missionId = state.missionId;
+  const placeName = state.placeName;
+
   const [reviewContent, setReviewContent] = useState("");
   const [isReviewSubmittedModalOpen, setIsReviewSubmittedModalOpen] =
     useState(false);

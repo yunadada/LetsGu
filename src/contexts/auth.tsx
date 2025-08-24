@@ -1,8 +1,13 @@
-import { createContext, useContext } from "react";
+import {
+  createContext,
+  useContext,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 
 type AuthContextType = {
   isAuthenticated: boolean | null;
-  setIsAuthenticated: (value: boolean) => void;
+  setIsAuthenticated: Dispatch<SetStateAction<boolean | null>>;
 };
 
 export const AuthContext = createContext<AuthContextType | null>(null);

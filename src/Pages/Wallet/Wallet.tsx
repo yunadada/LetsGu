@@ -4,7 +4,6 @@ import "./Wallet.css";
 import "../RewardShop/RewardsShop.css";
 import axiosInstance from "../../lib/axiosInstance";
 import axios, { type AxiosError } from "axios";
-import { useNavigate } from "react-router-dom";
 import RewardHistorySheet from "./RewardHistorySheet";
 import rewardIcon from "../../assets/RewardHistory.png";
 import Header from "../../components/Header/Header";
@@ -67,14 +66,14 @@ const getMsg = (err: unknown, fb = "네트워크 오류가 발생했습니다.")
   return fb;
 };
 
-const fmtDate = (iso?: string) => {
-  if (!iso) return "-";
-  const d = new Date(iso);
-  const Y = d.getFullYear();
-  const M = String(d.getMonth() + 1).padStart(2, "0");
-  const D = String(d.getDate()).padStart(2, "0");
-  return `${Y}.${M}.${D}`;
-};
+// const fmtDate = (iso?: string) => {
+//   if (!iso) return "-";
+//   const d = new Date(iso);
+//   const Y = d.getFullYear();
+//   const M = String(d.getMonth() + 1).padStart(2, "0");
+//   const D = String(d.getDate()).padStart(2, "0");
+//   return `${Y}.${M}.${D}`;
+// };
 
 const validityText = (name?: string) =>
   /상품권|지역사랑|모바일\s*상품권|기프트\s*카드|gift\s*card|전자\s*상품권/i.test(
@@ -85,8 +84,6 @@ const validityText = (name?: string) =>
 
 /** ===== 컴포넌트 ===== */
 const Wallet: React.FC = () => {
-  const navigate = useNavigate();
-
   const [point, setPoint] = useState<number>(0);
   const [wallet, setWallet] = useState<WalletPayload | null>(null);
   const [loading, setLoading] = useState(false);
