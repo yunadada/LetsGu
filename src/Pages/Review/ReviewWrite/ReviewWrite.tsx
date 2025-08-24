@@ -5,7 +5,7 @@ import { useEffect, useState, type ChangeEvent } from "react";
 import SuccessReviewModal from "../../../components/Modal/SuccessReviewModal/SuccessReviewModal";
 import { submitReview } from "../../../api/reviews";
 import { errorToast, warningToast } from "../../../utils/ToastUtil/toastUtil";
-import { useLocation, useNavigate } from "react-router-dom";
+import { replace, useLocation, useNavigate } from "react-router-dom";
 import type { ReviewData, ReviewWriteState } from "../../../types/review";
 
 const ReviewWrite = () => {
@@ -42,8 +42,13 @@ const ReviewWrite = () => {
         setIsReviewSubmittedModalOpen(true);
       }
     } catch (e) {
-      console.log(e);
-      errorToast("에러 발생");
+      const error = e.response.data;
+
+      if (error.code === "R002") {
+        errorToast(error.msg);
+        navigate("/map", { replace: true });
+        return;
+      }
     }
   };
 
