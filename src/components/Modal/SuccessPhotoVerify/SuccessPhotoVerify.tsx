@@ -3,7 +3,12 @@ import { FiCheck } from "react-icons/fi";
 import ConfettiExplosion from "react-confetti-explosion";
 import { useNavigate } from "react-router-dom";
 
-const SuccessPhotoVerify = () => {
+type Props = {
+  missionId: number;
+  placeName: string;
+};
+
+const SuccessPhotoVerify = ({ missionId, placeName }: Props) => {
   const navigate = useNavigate();
 
   return (
@@ -18,8 +23,19 @@ const SuccessPhotoVerify = () => {
         </p>
         <div className={style.button}>
           <button onClick={() => navigate("/map")}>미션 지도로 이동</button>
-          {/* TODO: 리뷰 작성 경로에 미션 id 전달 */}
-          <button onClick={() => navigate("/reviewWrite")}>리뷰 쓰기</button>
+          <button
+            onClick={() =>
+              navigate("/reviewWrite", {
+                state: {
+                  missionId: missionId,
+                  placeName: placeName,
+                },
+                replace: true,
+              })
+            }
+          >
+            리뷰 쓰기
+          </button>
         </div>
       </div>
       <div className={style.confetti}>

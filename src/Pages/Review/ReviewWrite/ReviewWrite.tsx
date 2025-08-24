@@ -9,7 +9,7 @@ import { useLocation } from "react-router-dom";
 
 const ReviewWrite = () => {
   const location = useLocation();
-  const { missionId } = location.state;
+  const { missionId, placeName } = location.state;
   const [reviewContent, setReviewContent] = useState("");
   const [isReviewSubmittedModalOpen, setIsReviewSubmittedModalOpen] =
     useState(false);
@@ -26,7 +26,6 @@ const ReviewWrite = () => {
       }
 
       const data = { completedMissionId: missionId, content: reviewContent };
-      console.log(data);
       const res = await submitReview(data);
 
       console.log("리뷰 제출", res.data);
@@ -51,7 +50,7 @@ const ReviewWrite = () => {
         </div>
         <div className={style.location}>
           <img src={Mark} alt="" />
-          <p>금오공과대학교</p>
+          <p>{placeName}</p>
         </div>
         <div className={style.textareaWrapper}>
           <textarea
