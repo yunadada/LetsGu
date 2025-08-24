@@ -44,7 +44,7 @@ export const verifyImage = (
   return new Promise(async (resolve, reject) => {
     const url = `${
       import.meta.env.VITE_REACT_APP_BASE_URL
-    }api/v1/missions/analyze/${jobId}/events`;
+    }/api/v1/missions/analyze/${jobId}/events`;
 
     try {
       const controller = new AbortController();
