@@ -6,9 +6,9 @@ import axiosInstance from "../../lib/axiosInstance";
 import axios, { type AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import RewardHistorySheet from "./RewardHistorySheet";
-import coin from "../../assets/coin.png";
 import rewardIcon from "../../assets/RewardHistory.png";
 import Header from "../../components/Header/Header";
+import Coin from "../../assets/Coin.svg";
 
 /** ===== 타입 (새 스키마 대응) ===== */
 type ApiOk<T> = { success: true; data: T };
@@ -320,7 +320,7 @@ const Wallet: React.FC = () => {
             </div>
 
             <div className="ws-amount">
-              <img src={coin} alt="" className="coin-img" aria-hidden />
+              <img src={Coin} alt="코인" className="coin-img" aria-hidden />
               <span className="num">{point.toLocaleString()}</span>
             </div>
 

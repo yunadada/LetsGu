@@ -1,6 +1,6 @@
 // src/Pages/RewardShop/ExchangeSheet.tsx
 import React, { useMemo, useState } from "react";
-import coin from "../../assets/coin.png";
+import Coin from "../../assets/Coin.svg";
 
 export interface ExchangeItem {
   itemId: number;
@@ -184,7 +184,7 @@ const ExchangeSheet: React.FC<ExchangeSheetProps> = ({
               style={{ display: "inline-flex", alignItems: "center", gap: 8 }}
             >
               <img
-                src={coin}
+                src={Coin}
                 alt=""
                 className="coin-img"
                 style={{ width: 18, height: 18 }}

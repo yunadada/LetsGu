@@ -5,7 +5,7 @@ import axiosInstance from "../../lib/axiosInstance";
 import axios from "axios";
 import ExchangeSheet from "./ExchangeSheet";
 import { useNavigate } from "react-router-dom";
-import coin from "../../assets/coin.png";
+import Coin from "../../assets/Coin.svg";
 import giftbox from "../../assets/giftbox.png";
 import Header from "../../components/Header/Header";
 
@@ -278,7 +278,7 @@ const RewardShop: React.FC = () => {
 
                 {/* 가격 알약 */}
                 <div className="price-pill">
-                  <img src={coin} alt="" className="coin-img" aria-hidden />
+                  <img src={Coin} alt="" className="coin-img" aria-hidden />
                   {item.price.toLocaleString()}
                 </div>
               </div>
