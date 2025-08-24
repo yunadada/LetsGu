@@ -375,9 +375,15 @@
   align-items: end;
   justify-items: stretch;
   animation: rhs-fade-in 0.18s ease;
+  width: 420px;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
 }
 .rhs-panel {
   width: 100%;
+
   background: #fff;
   border-top-left-radius: 22px;
   border-top-right-radius: 22px;
