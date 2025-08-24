@@ -29,7 +29,7 @@
 
 /* 단계별 높이 */
 .bs-sheet.half {
-  height: 50vh;
+  height: 60vh;
 } /* 필요시 45~60vh 조절 */
 .bs-sheet.full {
   height: 90vh;
@@ -40,7 +40,7 @@
   position: relative;
   display: grid;
   place-items: center;
-  padding: 14px 16px 10px;
+  padding: 14px 16px 24px;
   background: linear-gradient(180deg, #ffecd4 70%, rgba(255, 255, 255, 0) 100%);
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
