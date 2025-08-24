@@ -25,7 +25,7 @@ const PhotoVerifyPage = () => {
   const [modalMode, setModalMode] = useState<ModalMode>("none");
 
   const location = useLocation();
-  const missionId = location.state?.missionId as number | undefined;
+  const { missionId, placeName, imgUrl } = location.state || {};
 
   if (!missionId) {
     errorToast("미션 정보를 찾을 수 없습니다.");
@@ -124,7 +124,7 @@ const PhotoVerifyPage = () => {
   return (
     <div className={style.wrapper}>
       <Header title={"미션 인증하기"} />
-      <ToggleBox title="사진 가이드" />
+      <ToggleBox title="사진 가이드" imgUrl={imgUrl} />
       <div className={style.contents}>
         <div className={style.subTitle}>
           <img src={CameraIcon}></img>
@@ -167,7 +167,9 @@ const PhotoVerifyPage = () => {
       </div>
 
       {modalMode === "analyzing" && <PhotoVerifyModal imgUrl={previewPhoto} />}
-      {modalMode === "success" && <SuccessPhotoVerify />}
+      {modalMode === "success" && (
+        <SuccessPhotoVerify missionId={missionId} placeName={placeName} />
+      )}
       {modalMode === "fail" && <FailPhotoVerify onRetry={retryUpload} />}
     </div>
   );

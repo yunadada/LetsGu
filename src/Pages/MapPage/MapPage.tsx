@@ -58,8 +58,9 @@ const MapPage: React.FC = () => {
     const mission = activeMission ?? selectedMission;
     if (!mission) return;
     navigate("/locationVerification", {
-      state: { missionId: mission.missionId },
-    });
+      state: { missionId: mission.missionId, placeName: mission.placeName },
+    }); // ✅ state로 전달
+    //console.log(mission.missionId);
   };
 
   const hasReviews = reviews.length > 0;

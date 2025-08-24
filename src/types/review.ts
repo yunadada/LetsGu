@@ -30,3 +30,8 @@ export type PageResponse = {
   nextCreatedAt: string;
   nextId: number;
 };
+
+export type ReviewWriteState = {
+  missionId?: number;
+  placeName?: string;
+};

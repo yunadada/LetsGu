@@ -6,9 +6,10 @@ import { useState } from "react";
 
 type Props = {
   title: string;
+  imgUrl: string;
 };
 
-const ToggleBox = ({ title }: Props) => {
+const ToggleBox = ({ title, imgUrl }: Props) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpand = () => {
@@ -32,7 +33,7 @@ const ToggleBox = ({ title }: Props) => {
             className={`${style.expanded} ${isExpanded ? style.active : ""}`}
           >
             <hr />
-            <img src="https://picsum.photos/seed/picsum/200/300" />
+            <img src={imgUrl} alt="가이드 이미지" />
           </div>
         </>
       ) : (

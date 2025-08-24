@@ -6,11 +6,16 @@ import SuccessReviewModal from "../../../components/Modal/SuccessReviewModal/Suc
 import { submitReview } from "../../../api/reviews";
 import { errorToast, warningToast } from "../../../utils/ToastUtil/toastUtil";
 import { useLocation, useNavigate } from "react-router-dom";
+import type { ReviewData, ReviewWriteState } from "../../../types/review";
 
 const ReviewWrite = () => {
   const navigate = useNavigate();
+
   const location = useLocation();
-  const { missionId } = location.state || {};
+  const state = (location.state ?? {}) as ReviewWriteState;
+  const missionId = state.missionId;
+  const placeName = state.placeName;
+
   const [reviewContent, setReviewContent] = useState("");
   const [isReviewSubmittedModalOpen, setIsReviewSubmittedModalOpen] =
     useState(false);
@@ -26,8 +31,10 @@ const ReviewWrite = () => {
         return;
       }
 
-      const data = { completedMissionId: missionId, content: reviewContent };
-      console.log(data);
+      const data: ReviewData = {
+        completedMissionId: missionId!,
+        content: reviewContent,
+      };
       const res = await submitReview(data);
 
       console.log("리뷰 제출", res.data);
@@ -59,7 +66,7 @@ const ReviewWrite = () => {
         </div>
         <div className={style.location}>
           <img src={Mark} alt="" />
-          <p>금오공과대학교</p>
+          <p>{placeName}</p>
         </div>
         <div className={style.textareaWrapper}>
           <textarea

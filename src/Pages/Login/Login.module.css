@@ -1,6 +1,6 @@
 .wrapper {
   width: 402px;
-  height: 874px;
+  height: 100%;
   position: absolute;
   display: flex;
   flex-direction: column;

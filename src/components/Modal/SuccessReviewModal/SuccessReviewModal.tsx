@@ -7,7 +7,7 @@ const SuccessReviewModal = () => {
   return (
     <div className={style.modalOverlay}>
       <div className={style.wrapper}>
-        <Link className={style.closeIcon} to="/activityLog">
+        <Link className={style.closeIcon} to="/activityLog" replace>
           <IoIosClose />
         </Link>
         <div className={style.checkIcon}>
