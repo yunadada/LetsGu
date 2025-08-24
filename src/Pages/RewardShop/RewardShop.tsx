@@ -6,7 +6,7 @@ import axios from "axios";
 import ExchangeSheet from "./ExchangeSheet";
 import { useNavigate } from "react-router-dom";
 import Coin from "../../assets/Coin.svg";
-import giftbox from "../../assets/giftbox.png";
+import giftbox from "../../assets/Giftbox.png";
 import Header from "../../components/Header/Header";
 
 /** ===== 타입 ===== */
