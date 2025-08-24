@@ -2,10 +2,10 @@ import style from "./Login.module.css";
 import LogoImg from "../../assets/Logo.svg";
 import { useState } from "react";
 import { requestLogin } from "../../api/auth";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { errorToast, warningToast } from "../../utils/ToastUtil/toastUtil";
 import type { ChangeEvent, FormEvent } from "react";
-import type { LoginInput, UserInfo } from "../../types/userInfo";
+import type { LoginInput } from "../../types/userInfo";
 import { useAuth } from "../../contexts/auth";
 
 const Login = () => {
@@ -16,14 +16,8 @@ const Login = () => {
     password: "",
   });
 
-  const [userInfo, setUserInfo] = useState<UserInfo>({
-    memberId: 0,
-    email: "",
-    nickname: "",
-    imageUrl: "",
-  });
-
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -51,7 +45,6 @@ const Login = () => {
         if (info) {
           localStorage.setItem("profileImg", info.imageUrl);
         }
-        setUserInfo(info);
 
         const authHeader = res.headers["authorization"];
         const token = authHeader?.startsWith("Bearer ")
@@ -61,7 +54,9 @@ const Login = () => {
         if (token) {
           localStorage.setItem("accessToken", token);
           setIsAuthenticated(true);
-          navigate("/", { replace: true });
+
+          const fromPath = location.state?.from?.pathname || "/";
+          navigate(fromPath, { replace: true });
           return;
         }
       }
