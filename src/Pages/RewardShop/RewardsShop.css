@@ -924,7 +924,7 @@
   transform: translateY(0); /* JS로 제어 */
   transition: transform 200ms ease;
   will-change: transform;
-  touch-action: none; /* 드래그 충돌 방지 */
+  
 }
 
 /* 드래그 중에는 트랜지션 끔 (스냅백만 부드럽게) */
