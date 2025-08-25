@@ -30,7 +30,11 @@ export const fetchMissions = async (): Promise<Mission[]> => {
   const { data } = await axiosInstance.get<MissionsResponse>(
     "/api/v1/missions"
   );
-  console.log("Fetched missions:", data);
+ 
+   if (process.env.NODE_ENV !== "production") {
+  console.debug("[mission] Fetched missions:", {
+   success: data?.success,    count: Array.isArray(data?.data) ? data.data.length : 0,
+  }); }
 
   return data?.data ?? [];
 };
