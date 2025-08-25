@@ -21,7 +21,8 @@
 html,
 body,
 #root {
-  max-height: 700px;
+  height: 100%;
+  /* max-height: 800px; */
   width: 100%;
   background-color: #efefef;
   display: flex;
