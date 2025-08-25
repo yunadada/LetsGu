@@ -447,3 +447,20 @@
 .googleMap {
   width: 402px;
 }
+.error-banner {
+  margin: 8px 0 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #ffe8e6;
+  color: #a11;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.error-close {
+  background: transparent;
+  border: 0;
+  font-size: 18px;
+  cursor: pointer;
+  color: inherit;
+}
