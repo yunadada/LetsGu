@@ -33,7 +33,12 @@ function App() {
   return (
     <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
       <Wrapper apiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY} render={render}>
-        <ToastContainer position="top-center" autoClose={3000} limit={1} />
+        <ToastContainer
+          className="toastContainerCustom"
+          position="top-center"
+          autoClose={3000}
+          limit={1}
+        />
         <Routes>
           {publicRoutes.map((route: RouteConfig) => (
             <Route key={route.path} path={route.path} element={route.element} />

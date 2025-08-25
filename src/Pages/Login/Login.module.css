@@ -57,3 +57,24 @@
   border: 1px solid white;
   border-radius: 38px;
 }
+
+@media (max-width: 390px) and (min-height: 650px) {
+  .wrapper > p {
+    position: relative;
+    color: white;
+    font-size: 12px;
+    top: 100px;
+    width: 210px;
+  }
+
+  .logo {
+    margin-bottom: 0;
+    margin-top: 70px;
+    transform: scale(0.9);
+    transform-origin: top center;
+  }
+  .formBox {
+    transform: scale(0.9);
+    transform-origin: top center;
+  }
+}

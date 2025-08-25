@@ -117,8 +117,8 @@ const Wallet: React.FC = () => {
         ]);
         if (!alive) return;
 
-        console.log("[Wallet] ▶ my-point 응답:", pRes.data);
-        console.log("[Wallet] ▶ my-wallet 응답:", wRes.data);
+        // console.log("[Wallet] ▶ my-point 응답:", pRes.data);
+        // console.log("[Wallet] ▶ my-wallet 응답:", wRes.data);
         if ("success" in pRes.data && pRes.data.success) {
           setPoint(pRes.data.data.point ?? 0);
         } else {
@@ -164,8 +164,8 @@ const Wallet: React.FC = () => {
     if (!historyOpen) return;
 
     let alive = true;
-    console.groupCollapsed("[Wallet] ▶ reward-history fetch");
-    console.time("[Wallet] ⏱ fetch");
+    // console.groupCollapsed("[Wallet] ▶ reward-history fetch");
+    // console.time("[Wallet] ⏱ fetch");
 
     (async () => {
       try {
@@ -196,8 +196,8 @@ const Wallet: React.FC = () => {
       } finally {
         if (alive) {
           setHistoryLoading(false);
-          console.timeEnd("[Wallet] ⏱ fetch");
-          console.groupEnd();
+          // console.timeEnd("[Wallet] ⏱ fetch");
+          // console.groupEnd();
         }
       }
     })();
@@ -209,7 +209,7 @@ const Wallet: React.FC = () => {
 
   // state가 실제로 반영된 뒤 값을 보고 싶을 때
   useEffect(() => {
-    console.log("[Wallet] ▶ history state 업데이트:", history.length, history);
+    // console.log("[Wallet] ▶ history state 업데이트:", history.length, history);
   }, [history]);
 
   /** 파생 */
@@ -239,11 +239,11 @@ const Wallet: React.FC = () => {
     }
 
     try {
-      console.log("[Wallet] ▶ use 호출 ID:", id, {
-        from: it.orderItemId ? "orderItemId" : "itemId",
-        itemId: it.itemId,
-        itemName: it.itemName,
-      });
+      // console.log("[Wallet] ▶ use 호출 ID:", id, {
+      //   from: it.orderItemId ? "orderItemId" : "itemId",
+      //   itemId: it.itemId,
+      //   itemName: it.itemName,
+      // });
 
       const { data } = await axiosInstance.post<ApiOk<null> | ApiErr>(
         `/api/v1/wallet/my-wallet/${id}`,

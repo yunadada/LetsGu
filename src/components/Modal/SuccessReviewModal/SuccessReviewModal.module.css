@@ -63,3 +63,10 @@
   color: #787878;
   margin: 0;
 }
+
+@media (max-width: 390px) and (min-height: 890px) {
+  .wrapper {
+    transform: scale(0.8);
+    transform-origin: top center;
+  }
+}

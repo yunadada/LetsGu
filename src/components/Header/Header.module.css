@@ -22,3 +22,11 @@
   font-size: 18px;
   font-weight: bolder;
 }
+
+@media (max-width: 390px) and (min-height: 890px) {
+  .header {
+    min-height: 80px;
+    transform: scale(0.98);
+    transform-origin: top center;
+  }
+}

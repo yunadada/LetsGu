@@ -71,3 +71,18 @@
   font-size: 12px;
   margin: 0;
 }
+
+@media (max-width: 390px) and (min-height: 650px) {
+  .wrapper {
+    transform: scale(0.98);
+    transform-origin: top center;
+  }
+  .header {
+    transform: scale(0.8);
+    transform-origin: top center;
+  }
+  .navBar {
+    transform: scale(0.8);
+    transform-origin: top center;
+  }
+}

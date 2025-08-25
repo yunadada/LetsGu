@@ -81,7 +81,7 @@ textarea:focus-visible {
 .app-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  /* min-height: 100v; */
   background-color: #f8f8f8;
 }
 
@@ -92,4 +92,22 @@ textarea:focus-visible {
 }
 .hide-scrollbar::-webkit-scrollbar {
   display: none; /* Chromium/Safari */
+}
+
+.toastContainerCustom {
+  top: 0;
+  width: 402px;
+}
+
+.Toastify__toast {
+  width: 100%;
+  top: 0;
+  border-radius: 0 0 8px 8px;
+}
+
+@media (max-width: 390px) and (min-height: 650px) {
+  .wrapper {
+    transform: scale(0.8);
+    transform-origin: top center;
+  }
 }
