@@ -8,9 +8,16 @@
   --elev: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
+.mapPage {
+  width: 402px;
+  height: 100%;
+  margin: 0 auto; /* 화면 중앙 정렬 */
+  position: relative; /* 내부 absolute 기준 */
+}
+
 /* ========== Map layout ========== */
 .mapContainer {
-  width: 100%;
+  width: 402px;
   height: 100%;
   position: relative;
   display: flex;
@@ -18,7 +25,7 @@
   align-items: center;
 }
 .googleMap {
-  width: 100vw;
+  width: 402px;
   height: 100dvh;
 }
 .googleMap .gm-style {
@@ -28,7 +35,7 @@
 
 /* ========== Bottom sheet content ========== */
 .sheet-inner {
-  padding: 8px 16px calc(env(safe-area-inset-bottom, 16px)+16px);
+  padding: 8px 16px calc(env(safe-area-inset-bottom, 16px) + 16px);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -60,20 +67,19 @@
   color: #fff;
 }
 
-/* ========== Appbar ========== */
-.appbar {
+/* ========== App bar ========== */
+.app-bar {
   position: sticky;
   top: 0;
-  z-index: 10010;
   height: 56px;
   display: grid;
   grid-template-columns: 56px 1fr 56px;
   align-items: center;
   padding: 0 8px;
-  background: var(--bg-ivory);
+  width: 100%;
 }
-.appbar__back,
-.appbar__spacer {
+.app-bar__back,
+.app-bar__spacer {
   display: grid;
   place-items: center;
   height: 56px;
@@ -81,25 +87,25 @@
   border: 0;
   color: var(--ink);
 }
-.appbar__back {
+.app-bar__back {
   cursor: pointer;
-}
-.appbar__title {
-  margin: 0;
-  text-align: center;
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--ink);
+  background-color: #ffbc2b;
+  margin-top: 10px; /* ★ 위로 밀리던 원인 제거 */
+  border-radius: 40px;
 }
 
 /* ========== Overlay (header / floating cards) ========== */
 .overlay-root {
   position: fixed;
-  inset: 0;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%); /* 화면 가운데 */
+  width: 402px; /* ★ 폰 폭으로 제한 */
   z-index: 10000;
   pointer-events: none;
 }
-.overlay-root .appbar,
+.overlay-root .app-bar,
 .overlay-root .mission-active-floating {
   pointer-events: auto;
 }
@@ -134,6 +140,7 @@
   animation: dropIn 0.18s ease;
   width: 366px;
   height: 69px;
+  margin-top: 20px;
 }
 .tip-floating.with-card {
   top: calc(env(safe-area-inset-top, 0px) + 56px);
@@ -162,22 +169,27 @@
 .tip-floating__close:active {
   transform: translateY(1px);
 }
-/* 기존 클래스 호환 */
-.alert__close {
-  all: unset;
-  cursor: pointer;
-  color: #9ca3af;
-  font-size: 18px;
-  padding: 2px 4px;
-  pointer-events: auto;
-}
 
 /* ========== Bottom Sheet z-index helper ========== */
 .bs-backdrop {
-  z-index: 9998;
+  position: fixed;
+  inset: 0; /* 전체 화면 */
+  background: rgba(0, 0, 0, 0.28); /* 어둡게 */
+  z-index: 9998; /* 시트(9999) 바로 아래 */
 }
+
 .bs-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 50% !important; /* inline left:0 무력화 */
+  right: auto !important; /* inline right:0 무력화 */
+  width: 402px !important;
+  transform: translate(-50%, calc(100% - 40px)) !important; /* 닫힘 */
   z-index: 9999;
+}
+
+.bs-sheet.open {
+  transform: translate(-50%, 0) !important; /* 열림 */
 }
 
 /* ========== Mission / Empty card ========== */
@@ -198,8 +210,6 @@
   margin: 30px 0;
 }
 .mission-pin img {
-  width: 20px;
-  height: 30px;
   object-fit: contain;
   display: block;
   margin: 0 auto;
@@ -243,7 +253,7 @@
   transform: translateY(1px);
 }
 
-/* ========== MissionActiveCard (한 곳에서만 정의) ========== */
+/* ========== MissionActiveCard ========== */
 .mission-active-card {
   position: relative;
   border-radius: 20px;
@@ -321,6 +331,8 @@
   background: var(--bg-ivory);
   border-radius: 24px;
   padding: 16px;
+  max-height: 60dvh; /* 스크롤 루트 */
+  overflow: auto; /* ★ 실제 스크롤 주체 */
 }
 .rv-toolbar {
   position: sticky;
@@ -352,6 +364,7 @@
 .rv-list {
   display: grid;
   gap: 12px;
+  padding-right: 2px;
 }
 .rv-card {
   background: #fff;
@@ -409,6 +422,15 @@
   padding: 4px 0;
 }
 
+/* ========== Misc ========== */
+.pin {
+  width: 30px;
+  height: 40px;
+}
+.sheet-open .app-bar {
+  pointer-events: none;
+}
+
 /* ========== Animations ========== */
 @keyframes dropIn {
   from {
@@ -419,4 +441,26 @@
     opacity: 1;
     transform: translate(-50%, 0);
   }
+}
+
+.mapContainer,
+.googleMap {
+  width: 402px;
+}
+.error-banner {
+  margin: 8px 0 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #ffe8e6;
+  color: #a11;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.error-close {
+  background: transparent;
+  border: 0;
+  font-size: 18px;
+  cursor: pointer;
+  color: inherit;
 }

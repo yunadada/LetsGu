@@ -1,18 +1,64 @@
 import Header from "../../../components/Header/Header";
 import style from "./ReviewWrite.module.css";
 import Mark from "../../../assets/MarkIcon.svg";
-import { useState, type ChangeEvent } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
+import SuccessReviewModal from "../../../components/Modal/SuccessReviewModal/SuccessReviewModal";
+import { submitReview } from "../../../api/reviews";
+import { errorToast, warningToast } from "../../../utils/ToastUtil/toastUtil";
+import { useLocation, useNavigate } from "react-router-dom";
+import type { ReviewData, ReviewWriteState } from "../../../types/review";
+import type { AxiosError } from "axios";
 
 const ReviewWrite = () => {
+  const navigate = useNavigate();
+
+  const location = useLocation();
+  const state = (location.state ?? {}) as ReviewWriteState;
+  const missionId = state.missionId;
+  const placeName = state.placeName;
+
   const [reviewContent, setReviewContent] = useState("");
+  const [isReviewSubmittedModalOpen, setIsReviewSubmittedModalOpen] =
+    useState(false);
 
   const handleSaveReviewContent = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setReviewContent(e.currentTarget.value);
   };
 
-  const registerReview = () => {
-    // TODO: 리뷰 등록 api 연결
+  const registerReview = async () => {
+    try {
+      if (!reviewContent) {
+        warningToast("리뷰를 작성해주세요.");
+        return;
+      }
+
+      const data: ReviewData = {
+        completedMissionId: missionId!,
+        content: reviewContent,
+      };
+      const res = await submitReview(data);
+
+      console.log("리뷰 제출", res.data);
+      if (res.data.success) {
+        setIsReviewSubmittedModalOpen(true);
+      }
+    } catch (e) {
+      const err = e as AxiosError<{ code: string; msg: string }>;
+
+      if (err.response?.data.code === "R002") {
+        errorToast(err.response.data.msg);
+        navigate("/map", { replace: true });
+        return;
+      }
+    }
   };
+
+  useEffect(() => {
+    if (!missionId) {
+      warningToast("다시 시도해주세요.");
+      navigate(-1);
+    }
+  }, [missionId, navigate]);
 
   return (
     <div className={style.wrapper}>
@@ -26,7 +72,7 @@ const ReviewWrite = () => {
         </div>
         <div className={style.location}>
           <img src={Mark} alt="" />
-          <p>금오공과대학교</p>
+          <p>{placeName}</p>
         </div>
         <div className={style.textareaWrapper}>
           <textarea
@@ -41,6 +87,7 @@ const ReviewWrite = () => {
           리뷰 등록하기
         </button>
       </div>
+      {isReviewSubmittedModalOpen && <SuccessReviewModal />}
     </div>
   );
 };

@@ -4,10 +4,10 @@ import "./Wallet.css";
 import "../RewardShop/RewardsShop.css";
 import axiosInstance from "../../lib/axiosInstance";
 import axios, { type AxiosError } from "axios";
-import { useNavigate } from "react-router-dom";
 import RewardHistorySheet from "./RewardHistorySheet";
-import coin from "../../assets/coin.png";
 import rewardIcon from "../../assets/RewardHistory.png";
+import Header from "../../components/Header/Header";
+import Coin from "../../assets/Coin.svg";
 
 /** ===== 타입 (새 스키마 대응) ===== */
 type ApiOk<T> = { success: true; data: T };
@@ -66,14 +66,14 @@ const getMsg = (err: unknown, fb = "네트워크 오류가 발생했습니다.")
   return fb;
 };
 
-const fmtDate = (iso?: string) => {
-  if (!iso) return "-";
-  const d = new Date(iso);
-  const Y = d.getFullYear();
-  const M = String(d.getMonth() + 1).padStart(2, "0");
-  const D = String(d.getDate()).padStart(2, "0");
-  return `${Y}.${M}.${D}`;
-};
+// const fmtDate = (iso?: string) => {
+//   if (!iso) return "-";
+//   const d = new Date(iso);
+//   const Y = d.getFullYear();
+//   const M = String(d.getMonth() + 1).padStart(2, "0");
+//   const D = String(d.getDate()).padStart(2, "0");
+//   return `${Y}.${M}.${D}`;
+// };
 
 const validityText = (name?: string) =>
   /상품권|지역사랑|모바일\s*상품권|기프트\s*카드|gift\s*card|전자\s*상품권/i.test(
@@ -84,8 +84,6 @@ const validityText = (name?: string) =>
 
 /** ===== 컴포넌트 ===== */
 const Wallet: React.FC = () => {
-  const navigate = useNavigate();
-
   const [point, setPoint] = useState<number>(0);
   const [wallet, setWallet] = useState<WalletPayload | null>(null);
   const [loading, setLoading] = useState(false);
@@ -308,26 +306,7 @@ const Wallet: React.FC = () => {
     <div className="shop-container">
       {/* 헤더 */}
       <header className="shop-header">
-        <div className="topbar">
-          <button
-            className="back-btn"
-            onClick={() => navigate("/")}
-            aria-label="뒤로가기"
-          >
-            <svg className="icon" viewBox="0 0 24 24" aria-hidden>
-              <path
-                d="M15 18L9 12l6-6"
-                stroke="currentColor"
-                strokeWidth="2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-          <div className="shop-header-title">내 지갑</div>
-          <div className="topbar-spacer" />
-        </div>
+        <Header title="내 지갑" />
 
         {/* 상단 카드 */}
         <div className="wallet-summary">
@@ -338,7 +317,7 @@ const Wallet: React.FC = () => {
             </div>
 
             <div className="ws-amount">
-              <img src={coin} alt="" className="coin-img" aria-hidden />
+              <img src={Coin} alt="코인" className="coin-img" aria-hidden />
               <span className="num">{point.toLocaleString()}</span>
             </div>
 

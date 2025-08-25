@@ -1,16 +1,22 @@
+// src/Pages/MapPage/MapPage.tsx
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import "./MapPage.css";
 import BottomSlider from "../../components/BottomSlider/BottomSlider";
 import MissionActiveCard from "../../components/MissionActiveCard/MissionActiveCard";
-import { getMarkerIcons, categoryIcons } from "../../assets/icons/markerIcons";
+import { getMarkerIcons } from "../../assets/icons/markerIcons";
 import type { MarkerCategory } from "../../assets/icons/markerIcons";
-import { fetchMissionReviews, type Review } from "../../api/reviews";
 import { fetchMissions, type Mission } from "../../api/mission";
 import duck from "../../assets/duck.png";
 import { ReviewHero } from "./Review";
 import { useNavigate } from "react-router-dom";
 import alert from "../../assets/alert.png";
-// import axiosInstance from "../../lib/axiosInstance";
+import {
+  fetchMissionReviewsPreview,
+  fetchMissionReviewsScroll,
+  type Review,
+  type SortType,
+} from "../../api/missionReviews";
+import pin from "../../assets/pin.svg";
 
 type SliderLevel = "closed" | "half" | "full";
 type Tab = "mission" | "review";
@@ -36,24 +42,44 @@ const MapPage: React.FC = () => {
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [reviewsError, setReviewsError] = useState<string | null>(null);
   const [reviewsNotFound, setReviewsNotFound] = useState(false);
-  // 정렬/펼침 상태
   const [sortOrder, setSortOrder] = useState<"latest" | "oldest">("latest");
   const [expanded, setExpanded] = useState<Record<string | number, boolean>>(
     {}
   );
+  // Error banner
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const dropMission = () => {
-    const mission = activeMission ?? selectedMission;
+  // Pagination (button-only)
+  const [nextId, setNextId] = useState<number | undefined>();
+  const [hasNext, setHasNext] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
 
-    if (!mission) return;
-    navigate("/locationVerification", {
-      state: { missionId: mission.missionId },
-    }); // ✅ state로 전달
-    //console.log(mission.missionId);
+  const navigate = useNavigate();
+
+  // ===== Helpers: mission states =====
+  const isMissionCompleted = (m?: Mission | null) => {
+    if (!m) return false;
+    // Case A: boolean flag from API
+    if ((m as any).isCompleted === true) return true;
+    // Case B: status strings (fallback)
+    if ((m as any).status === "COMPLETED" || (m as any).progress === "DONE")
+      return true;
+    return false;
   };
 
-  const hasReviews = Array.isArray(reviews) && reviews.length > 0;
-  const navigate = useNavigate();
+  const isMissionAccepted = (m?: Mission | null) => {
+    if (!m) return false;
+    // Common boolean field names
+    if ((m as any).isAccepted === true) return true;
+    if ((m as any).accepted === true) return true;
+    if ((m as any).joined === true) return true;
+    // Fallback via status
+    if ((m as any).status === "ACCEPTED" || (m as any).progress === "ACCEPTED")
+      return true;
+    return false;
+  };
+
+  const hasReviews = reviews.length > 0;
   const toggleExpand = (id: string | number) =>
     setExpanded((p) => ({ ...p, [id]: !p[id] }));
 
@@ -67,7 +93,6 @@ const MapPage: React.FC = () => {
 
   const truncate = (t: string, n = 80) =>
     t.length > n ? t.slice(0, n) + "…" : t;
-
   const initials = (name?: string) => (name ?? "").trim().slice(0, 1) || "?";
 
   const sortedReviews = React.useMemo(() => {
@@ -79,7 +104,8 @@ const MapPage: React.FC = () => {
     });
     return arr;
   }, [reviews, sortOrder]);
-  // Map init (once)
+
+  // Map init
   useEffect(() => {
     if (!mapDivRef.current || !window.google?.maps) return;
     mapRef.current = new google.maps.Map(mapDivRef.current, {
@@ -97,62 +123,57 @@ const MapPage: React.FC = () => {
           elementType: "labels",
           stylers: [{ visibility: "off" }],
         },
+        {
+          featureType: "poi.park",
+          elementType: "labels",
+          stylers: [{ visibility: "off" }],
+        },
+        {
+          featureType: "road",
+          elementType: "labels",
+          stylers: [{ visibility: "off" }],
+        },
+        {
+          featureType: "transit",
+          elementType: "labels",
+          stylers: [{ visibility: "off" }],
+        },
+        {
+          featureType: "administrative",
+          elementType: "labels",
+          stylers: [{ visibility: "off" }],
+        },
       ],
     });
     return () => {
-      // cleanup markers on unmount
       markersRef.current.forEach((m) => m.setMap(null));
       markersRef.current = [];
       mapRef.current = null;
     };
   }, []);
 
-  //간이 로그인
-
-  // const DEV_EMAIL = import.meta.env.VITE_DEV_EMAIL;
-  // const DEV_PASSWORD = import.meta.env.VITE_DEV_PASSWORD;
-
+  // fetch missions
   useEffect(() => {
     let cancelled = false;
-
-    const run = async () => {
+    (async () => {
       try {
-        // if (import.meta.env.DEV) {
-        //   if (!localStorage.getItem("ACCESS_TOKEN")) {
-        //     const res = await axiosInstance.post("/api/v1/auth/login", {
-        //       email: DEV_EMAIL,
-        //       password: DEV_PASSWORD,
-        //     });
-        //     const headers = res.headers as unknown as Record<
-        //       string,
-        //       string | undefined
-        //     >;
-        //     const auth = headers["authorization"] ?? headers["Authorization"];
-        //     if (!auth?.startsWith("Bearer ")) {
-        //       throw new Error("Authorization 헤더 노출 필요");
-        //     }
-        //     localStorage.setItem("ACCESS_TOKEN", auth.slice(7));
-        //   }
-        // }
         const list = await fetchMissions();
-        console.log(list);
-        if (!cancelled) setMissions(list);
+        if (!cancelled) {
+          setMissions(list);
+        }
       } catch (e) {
-        console.error("초기 로그인/미션 실패:", e);
+        // console.error("[MapPage][Mission] fetch error:", e);
       }
-    };
-
-    run();
+    })();
     return () => {
       cancelled = true;
     };
-  }, []); // 인라인이면 이 두 값만 의존
-  // }, [DEV_EMAIL, DEV_PASSWORD]); // 인라인이면 이 두 값만 의존
+  }, []);
 
+  // draw markers
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !window.google?.maps) return;
-    // 항상 이전 마커 정리
     markersRef.current.forEach((m) => m.setMap(null));
     markersRef.current = [];
     if (missions.length === 0) return;
@@ -163,20 +184,17 @@ const MapPage: React.FC = () => {
     missions.forEach((m) => {
       const cat = toIconCategory(m.placeCategory);
       const icon = icons[cat];
-
       const marker = new google.maps.Marker({
         position: { lat: m.latitude, lng: m.longitude },
         map,
         title: m.placeName,
         icon: { url: icon.url, scaledSize: icon.scaledSize },
       });
-
       marker.addListener("click", () => {
         setSelectedMission(m);
         setTab("mission");
         setSliderLevel("half");
       });
-
       markersRef.current.push(marker);
       bounds.extend({ lat: m.latitude, lng: m.longitude });
     });
@@ -193,72 +211,108 @@ const MapPage: React.FC = () => {
       }
     }
   }, [missions]);
-  // Load reviews when: tab=review && selectedMission
+
+  // fetch reviews when tab=review
   useEffect(() => {
     if (tab !== "review" || !selectedMission) return;
-
-    let alive = true; // cleanup까지 살아 있음 표시
-
+    let alive = true;
     (async () => {
       setReviewsLoading(true);
       setReviewsError(null);
       setReviews([]);
       setReviewsNotFound(false);
-
       try {
-        const { list, notFound } = await fetchMissionReviews(
-          selectedMission.missionId
-        );
-        if (!alive) return; // 늦게 온 응답 무시
+        const { list, notFound, hasNext, nextId } =
+          await fetchMissionReviewsPreview(
+            selectedMission.missionId,
+            sortOrder === "latest" ? "DESC" : "ASC"
+          );
+        if (!alive) return;
 
         if (notFound) {
           setReviewsNotFound(true);
           return;
         }
-
-        type ReviewListWire =
-          | Review[]
-          | { missionReviewResponse?: Review[] | null | undefined };
-
-        const wire = list as ReviewListWire;
-
-        const normalized: Review[] = Array.isArray(wire)
-          ? wire
-          : Array.isArray(wire.missionReviewResponse)
-          ? wire.missionReviewResponse!
-          : [];
-        setReviews(normalized);
-      } catch {
+        setReviews(list);
+        setHasNext(hasNext);
+        setNextId(nextId);
+      } catch (e) {
         if (!alive) return;
         setReviewsError("리뷰를 불러오지 못했어요.");
       } finally {
         if (alive) setReviewsLoading(false);
       }
     })();
-
     return () => {
       alive = false;
-    }; // 의존성 변경/언마운트 시 안전 종료
-  }, [tab, selectedMission]);
+    };
+  }, [tab, selectedMission, sortOrder]);
+
+  // "더 보기" 버튼으로만 페이지 추가
+  const loadMoreReviews = useCallback(async () => {
+    if (!selectedMission || !hasNext || loadingMore) return;
+    try {
+      setLoadingMore(true);
+      const res = await fetchMissionReviewsScroll({
+        missionId: selectedMission.missionId,
+        lastReviewId: nextId,
+        sortType: (sortOrder === "latest" ? "DESC" : "ASC") as SortType,
+      });
+      setReviews((prev) => [...prev, ...res.items]);
+      setHasNext(res.hasNext);
+      setNextId(res.nextId);
+    } catch (e) {
+      // console.error("[More] error", e);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [selectedMission, hasNext, loadingMore, nextId, sortOrder]);
 
   // Tip auto-hide
   useEffect(() => {
     if (!showTip) return;
-    const t = setTimeout(() => {
-      setShowTip(false);
-      // localStorage.setItem("map_tip_seen", "1");
-    }, 10000);
+    const t = setTimeout(() => setShowTip(false), 2500);
     return () => clearTimeout(t);
   }, [showTip]);
 
-  // Handlers
+  // accept mission (guarded)
   const acceptMission = useCallback(() => {
     if (!selectedMission) return;
+
+    if (isMissionCompleted(selectedMission)) {
+      setErrorMsg("이미 완료한 미션이에요.");
+      setSliderLevel("half");
+      return;
+    }
+    if (isMissionAccepted(selectedMission)) {
+      setErrorMsg("이미 수락한 미션이에요.");
+      setSliderLevel("half");
+      return;
+    }
+
     setActiveMission(selectedMission);
     setActiveCollapsed(false);
     setSliderLevel("closed");
     setShowTip(false);
   }, [selectedMission]);
+
+  // certify navigation (guarded)
+  const dropMission = () => {
+    const mission = activeMission ?? selectedMission;
+    if (!mission) return;
+    if (isMissionCompleted(mission)) {
+      setErrorMsg("이미 완료한 미션은 인증할 수 없어요.");
+      setSliderLevel("half");
+      return;
+    }
+    // 정책에 따라: 수락된 미션이면 인증 이동 허용 (일반적)
+ navigate("/locationVerification", {
+ state: {
+    missionId: mission.missionId,
+    placeName: mission.placeName,
+ },
+});
+  };
 
   return (
     <div className="mapPage">
@@ -266,17 +320,14 @@ const MapPage: React.FC = () => {
         <div className="googleMap" ref={mapDivRef} />
       </div>
 
-      <div className="overlay-root">
-        <header className="appbar">
-          {/* <button onClick={devLogin}>devLogin</button> */}
+      <div className={`overlay-root ${isOpen ? "sheet-open" : ""}`}>
+        <div className="app-bar">
           <button
-            className="appbar__back"
+            className="app-bar__back"
             aria-label="뒤로가기"
-            onClick={() => {
-              navigate("/");
-            }}
+            onClick={() => navigate("/")}
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden>
+            <svg width="24" height="24" viewBox="0 0 24 24">
               <path
                 d="M15 18l-6-6 6-6"
                 stroke="currentColor"
@@ -288,7 +339,15 @@ const MapPage: React.FC = () => {
             </svg>
           </button>
 
-          <h1 className="appbar__title">미션 지도</h1>
+          {errorMsg && (
+            <div className="error-banner" role="alert">
+              {errorMsg}
+              <button className="error-close" onClick={() => setErrorMsg(null)}>
+                ×
+              </button>
+            </div>
+          )}
+
           {showTip && (
             <div className={`tip-floating ${activeMission ? "with-card" : ""}`}>
               <img
@@ -309,8 +368,8 @@ const MapPage: React.FC = () => {
               </button>
             </div>
           )}
-          <div className="appbar__spacer" />
-        </header>
+        </div>
+
         {activeMission && (
           <div className="mission-active-floating">
             <MissionActiveCard
@@ -318,10 +377,8 @@ const MapPage: React.FC = () => {
               collapsed={activeCollapsed}
               onToggle={() => setActiveCollapsed((v) => !v)}
               onQuit={() => setActiveMission(null)}
-              onCertify={() => {
-                dropMission();
-              }}
-              selectedMission={activeMission ?? selectedMission} // ✅ 이게 더 안전
+              onCertify={() => dropMission()}
+              selectedMission={activeMission ?? selectedMission}
             />
           </div>
         )}
@@ -339,17 +396,16 @@ const MapPage: React.FC = () => {
           <div className="seg" role="tablist" aria-label="미션/리뷰 탭">
             <button
               className={`seg__tab ${tab === "mission" ? "is-active" : ""}`}
-              role="tab"
-              aria-selected={tab === "mission"}
               onClick={() => setTab("mission")}
             >
               미션
             </button>
             <button
               className={`seg__tab ${tab === "review" ? "is-active" : ""}`}
-              role="tab"
-              aria-selected={tab === "review"}
-              onClick={() => setTab("review")}
+              onClick={() => {
+                setTab("review");
+                setSliderLevel("full");
+              }}
             >
               리뷰
             </button>
@@ -361,7 +417,6 @@ const MapPage: React.FC = () => {
               <ReviewHero />
             ) : (
               <>
-                {/* ✅ 리뷰 툴바: mission-card 밖으로 이동 */}
                 <div className="rv-toolbar">
                   <span className="rv-toolbar__count">
                     리뷰 수 <strong>{reviews.length}</strong>
@@ -378,7 +433,6 @@ const MapPage: React.FC = () => {
                   </button>
                 </div>
 
-                {/* 리스트 카드(기존 mission-card) */}
                 <div className="mission-card review-sheet">
                   {reviewsLoading ? (
                     <p className="mission-empty">불러오는 중…</p>
@@ -395,47 +449,66 @@ const MapPage: React.FC = () => {
                       <img className="duck" src={duck} alt="리뷰 없음" />
                     </div>
                   ) : (
-                    <div className="rv-list">
-                      {sortedReviews.map((r) => {
-                        const isOpen = !!expanded[r.reviewId];
-                        const text = isOpen
-                          ? r.reviewContent
-                          : truncate(r.reviewContent, 90);
-                        return (
-                          <article key={r.reviewId} className="rv-card">
-                            <div className="rv-top">
-                              <div className="rv-avatar" aria-hidden>
-                                {initials(r.memberName)}
+                    <>
+                      <div className="rv-list">
+                        {sortedReviews.map((r) => {
+                          const isOpen = !!expanded[r.reviewId];
+                          const text = isOpen
+                            ? r.reviewContent
+                            : truncate(r.reviewContent, 90);
+                          return (
+                            <article key={r.reviewId} className="rv-card">
+                              <div className="rv-top">
+                                <div className="rv-avatar" aria-hidden>
+                                  {initials(r.memberName)}
+                                </div>
+                                <div className="rv-meta">
+                                  <div className="rv-name">{r.memberName}</div>
+                                </div>
+                                <time className="rv-date">
+                                  {formatDate(r.reviewDate)}
+                                </time>
                               </div>
-                              <div className="rv-meta">
-                                <div className="rv-name">{r.memberName}</div>
-                              </div>
-                              <time className="rv-date">
-                                {formatDate(r.reviewDate)}
-                              </time>
-                            </div>
-                            <p className={`rv-text ${isOpen ? "is-open" : ""}`}>
-                              {text}
-                            </p>
-                            {r.reviewImageUrl && (
-                              <img
-                                className="rv-img"
-                                src={r.reviewImageUrl}
-                                alt=""
-                              />
-                            )}
-                            {r.reviewContent && r.reviewContent.length > 90 && (
-                              <button
-                                className="rv-more"
-                                onClick={() => toggleExpand(r.reviewId)}
+                              <p
+                                className={`rv-text ${isOpen ? "is-open" : ""}`}
                               >
-                                {isOpen ? "접기" : "더보기"}
-                              </button>
-                            )}
-                          </article>
-                        );
-                      })}
-                    </div>
+                                {text}
+                              </p>
+                              {r.reviewImageUrl && (
+                                <img
+                                  className="rv-img"
+                                  src={r.reviewImageUrl}
+                                  alt=""
+                                />
+                              )}
+                              {r.reviewContent.length > 90 && (
+                                <button
+                                  className="rv-more"
+                                  onClick={() => toggleExpand(r.reviewId)}
+                                >
+                                  {isOpen ? "접기" : "더보기"}
+                                </button>
+                              )}
+                            </article>
+                          );
+                        })}
+                      </div>
+
+                      {hasNext && (
+                        <button
+                          className="rv-more-btn"
+                          onClick={loadMoreReviews}
+                          disabled={loadingMore}
+                          style={{
+                            width: "100%",
+                            padding: 12,
+                            borderRadius: 12,
+                          }}
+                        >
+                          {loadingMore ? "불러오는 중..." : "더 보기"}
+                        </button>
+                      )}
+                    </>
                   )}
                 </div>
               </>
@@ -443,24 +516,21 @@ const MapPage: React.FC = () => {
           ) : selectedMission ? (
             <div className="mission-card">
               <div className="mission-pin" aria-hidden>
-                <img
-                  src={
-                    categoryIcons[
-                      (selectedMission.placeCategory in categoryIcons
-                        ? selectedMission.placeCategory
-                        : "LIFE_CONVENIENCE") as MarkerCategory
-                    ]
-                  }
-                  alt=""
-                  width={20}
-                  height={30}
-                />
+                <img src={pin} alt="" width={20} height={30} />
+              </div>
+
+              {/* 상태 뱃지 표시 */}
+              <div className="mission-state" aria-live="polite">
+                {isMissionCompleted(selectedMission) ? (
+                  <span className="badge badge-done">완료</span>
+                ) : isMissionAccepted(selectedMission) ? (
+                  <span className="badge badge-accepted">수락됨</span>
+                ) : null}
               </div>
 
               <h3 className="mission-title" style={{ marginTop: 4 }}>
                 {selectedMission.description}
               </h3>
-
               <p className="mission-address">{selectedMission.placeName}</p>
               <p className="mission-address">{selectedMission.address}</p>
             </div>
@@ -471,11 +541,39 @@ const MapPage: React.FC = () => {
           )}
 
           {/* CTA */}
-          {tab === "mission" && selectedMission && (
-            <button className="cta" onClick={acceptMission}>
-              미션 수락하기
-            </button>
-          )}
+          {tab === "mission" &&
+            selectedMission &&
+            (() => {
+              const accepted = isMissionAccepted(selectedMission);
+              const completed = isMissionCompleted(selectedMission);
+              const disabled = accepted || completed;
+              const label = completed
+                ? "완료된 미션"
+                : accepted
+                ? "이미 수락함"
+                : "미션 수락하기";
+              const onClick = disabled
+                ? () => {
+                    setErrorMsg(
+                      completed
+                        ? "이미 완료한 미션이에요."
+                        : "이미 수락한 미션이에요."
+                    );
+                    setSliderLevel("half");
+                  }
+                : acceptMission;
+
+              return (
+                <button
+                  className={`cta ${disabled ? "is-disabled" : ""}`}
+                  onClick={onClick}
+                  disabled={disabled}
+                  aria-disabled={disabled}
+                >
+                  {label}
+                </button>
+              );
+            })()}
         </div>
       </BottomSlider>
     </div>

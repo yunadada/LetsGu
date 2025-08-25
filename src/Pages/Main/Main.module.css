@@ -1,6 +1,6 @@
 .wrapper {
   width: 402px;
-  height: 874px;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -16,7 +16,7 @@
   width: 100%;
   display: flex;
   justify-content: space-between;
-  padding: 30px 20px;
+  padding: 26px 20px;
   box-sizing: border-box;
 }
 
@@ -47,7 +47,7 @@
 .date {
   color: white;
   font-size: 16px;
-  margin-top: 30px;
+  margin-top: 24px;
   margin-bottom: 20px;
 }
 

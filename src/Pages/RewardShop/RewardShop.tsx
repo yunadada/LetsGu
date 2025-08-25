@@ -5,8 +5,9 @@ import axiosInstance from "../../lib/axiosInstance";
 import axios from "axios";
 import ExchangeSheet from "./ExchangeSheet";
 import { useNavigate } from "react-router-dom";
-import coin from "../../assets/coin.png";
-import giftbox from "../../assets/giftbox.png";
+import Coin from "../../assets/Coin.svg";
+import giftbox from "../../assets/Giftbox.png";
+import Header from "../../components/Header/Header";
 
 /** ===== 타입 ===== */
 interface Item {
@@ -204,26 +205,7 @@ const RewardShop: React.FC = () => {
     <div className="shop-container">
       {/* 헤더 */}
       <header className="shop-header">
-        <div className="topbar">
-          <button
-            className="back-btn"
-            onClick={() => navigate(-1)}
-            aria-label="뒤로가기"
-          >
-            <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                d="M15 18L9 12l6-6"
-                stroke="currentColor"
-                strokeWidth="2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-          <h1 className="shop-title">리워드 샵</h1>
-          <div className="topbar-spacer" aria-hidden />
-        </div>
+        <Header title="리워드 샵" />
 
         <nav className="tabs" role="tablist" aria-label="상품 유형">
           <button
@@ -296,7 +278,7 @@ const RewardShop: React.FC = () => {
 
                 {/* 가격 알약 */}
                 <div className="price-pill">
-                  <img src={coin} alt="" className="coin-img" aria-hidden />
+                  <img src={Coin} alt="" className="coin-img" aria-hidden />
                   {item.price.toLocaleString()}
                 </div>
               </div>

@@ -229,6 +229,7 @@ const ExchangeSheet: React.FC<ExchangeSheetProps> = ({
             >
               <img
                 src={Coin}
+                src={Coin}
                 alt=""
                 className="coin-img"
                 style={{ width: 18, height: 18 }}
