@@ -1,18 +1,18 @@
 .container {
-  padding: 18px;
+  padding: 22px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-radius: 70px;
-  width: 138px;
-  height: 246px;
+  border-radius: 87px;
+  width: 172px;
+  height: 308px;
   background-color: rgba(255, 255, 255, 0.5);
 }
 
 .img {
-  width: 106px;
-  height: 106px;
+  width: 132px;
+  height: 132px;
   border-radius: 50%;
   background-color: aqua;
 }
@@ -22,26 +22,26 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  gap: 6px;
-  margin: 12px 0;
+  gap: 8px;
+  margin: 16px 0;
   cursor: pointer;
 }
 
 .navButton > p {
-  font-size: 13px;
+  font-size: 16px;
   font-weight: bolder;
 }
 
 .navButton > img {
-  width: 14px;
-  height: 10px;
+  width: 18px;
+  height: 12px;
   flex: 0 0 auto;
 }
 
 .contents {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 6px;
   align-items: center;
   justify-content: center;
 }

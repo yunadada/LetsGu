@@ -7,20 +7,20 @@
 }
 
 .container p {
-  font-size: 12px;
+  font-size: 14px;
   color: white;
   margin: 0;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .container span {
-  font-size: 38px;
+  font-size: 48px;
   color: white;
 }
 
 .weatherIcon > img {
-  width: 46px;
-  height: 46px;
+  width: 60px;
+  height: 60px;
 }
 
 .temperature {
@@ -31,7 +31,7 @@
 .container > hr {
   width: 346px;
   border: 1px solid rgba(0, 0, 0, 0.1);
-  margin: 10px 0;
+  margin: 20px 0;
 }
 
 .hourlyWeather {
