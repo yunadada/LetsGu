@@ -17,28 +17,30 @@ const ToggleBox = ({ title, imgUrl }: Props) => {
   };
 
   return (
-    <div className={style.container}>
-      <div className={`${style.collapsed} ${isExpanded ? style.open : ""}`}>
-        <div className={style.title}>
-          <img src={GuideIcon} />
-          <p>{title}</p>
-        </div>
-        <button onClick={toggleExpand}>
-          {isExpanded ? <IoIosArrowUp /> : <IoIosArrowDown />}
-        </button>
-      </div>
-      {isExpanded ? (
-        <>
-          <div
-            className={`${style.expanded} ${isExpanded ? style.active : ""}`}
-          >
-            <hr />
-            <img src={imgUrl} alt="가이드 이미지" />
+    <div className={style.wrapper}>
+      <div className={style.container}>
+        <div className={`${style.collapsed} ${isExpanded ? style.open : ""}`}>
+          <div className={style.title}>
+            <img src={GuideIcon} />
+            <p>{title}</p>
           </div>
-        </>
-      ) : (
-        ""
-      )}
+          <button onClick={toggleExpand}>
+            {isExpanded ? <IoIosArrowUp /> : <IoIosArrowDown />}
+          </button>
+        </div>
+        {isExpanded ? (
+          <>
+            <div
+              className={`${style.expanded} ${isExpanded ? style.active : ""}`}
+            >
+              <hr />
+              <img src={imgUrl} alt="가이드 이미지" />
+            </div>
+          </>
+        ) : (
+          ""
+        )}
+      </div>
     </div>
   );
 };

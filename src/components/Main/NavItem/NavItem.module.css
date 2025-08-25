@@ -14,7 +14,6 @@
   width: 132px;
   height: 132px;
   border-radius: 50%;
-  background-color: aqua;
 }
 
 .navButton {
@@ -44,4 +43,11 @@
   gap: 6px;
   align-items: center;
   justify-content: center;
+}
+
+@media (max-width: 390px) and (max-height: 650px) {
+  .container {
+    transform: scale(0.98);
+    transform-origin: top center;
+  }
 }

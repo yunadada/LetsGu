@@ -123,7 +123,10 @@ const PhotoVerifyPage = () => {
 
   return (
     <div className={style.wrapper}>
+      {/* <div className=""> */}
       <Header title={"미션 인증하기"} />
+      {/* </div> */}
+
       <ToggleBox title="사진 가이드" imgUrl={imgUrl} />
       <div className={style.contents}>
         <div className={style.subTitle}>

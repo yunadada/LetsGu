@@ -14,23 +14,25 @@ const Weather = ({ weatherInfo, hourlyWeather }: Props) => {
 
   return (
     <div className={style.container}>
-      <p>구미시</p>
-      <span>{Math.round(weatherInfo?.temp)}°</span>
-      <div className={style.weatherIcon}>
-        <img
-          src={`https://openweathermap.org/img/wn/${weatherInfo?.icon}@2x.png`}
-          alt="날씨"
-        />
-      </div>
-      <div className={style.temperature}>
-        <p>최고 {Math.round(weatherInfo?.todayMax)}°</p>
-        <p>최저 {Math.round(weatherInfo?.todayMin)}°</p>
-      </div>
-      <hr />
-      <div className={style.hourlyWeather}>
-        {hourlyWeather?.map((item, idx) => (
-          <HourlyWeatherCard key={idx} hourlyWeather={item} />
-        ))}
+      <div className={style.inner}>
+        <p>구미시</p>
+        <span>{Math.round(weatherInfo?.temp)}°</span>
+        <div className={style.weatherIcon}>
+          <img
+            src={`https://openweathermap.org/img/wn/${weatherInfo?.icon}@2x.png`}
+            alt="날씨"
+          />
+        </div>
+        <div className={style.temperature}>
+          <p>최고 {Math.round(weatherInfo?.todayMax)}°</p>
+          <p>최저 {Math.round(weatherInfo?.todayMin)}°</p>
+        </div>
+        <hr />
+        <div className={style.hourlyWeather}>
+          {hourlyWeather?.map((item, idx) => (
+            <HourlyWeatherCard key={idx} hourlyWeather={item} />
+          ))}
+        </div>
       </div>
     </div>
   );
