@@ -306,9 +306,12 @@ const MapPage: React.FC = () => {
       return;
     }
     // 정책에 따라: 수락된 미션이면 인증 이동 허용 (일반적)
-    navigate("/locationVerification", {
-      state: { missionId: mission.missionId },
-    });
+ navigate("/locationVerification", {
+ state: {
+    missionId: mission.missionId,
+    placeName: mission.placeName,
+ },
+});
   };
 
   return (
