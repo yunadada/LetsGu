@@ -1,6 +1,6 @@
 // src/Pages/RewardShop/ExchangeSheet.tsx
-import React, { useMemo, useState } from "react";
-import coin from "../../assets/coin.png";
+import React, { useMemo, useRef, useState } from "react";
+import Coin from "../../assets/Coin.svg";
 
 export interface ExchangeItem {
   itemId: number;
@@ -14,29 +14,20 @@ interface ExchangeSheetProps {
   open: boolean;
   onClose: () => void;
   onConfirm: (qty: number) => void | Promise<void>;
-
-  /** 교환 대상 */
   item: ExchangeItem;
-
-  /** 보유 포인트 */
   myPoints: number;
-
-  /** 상단 타입 라벨(피그마: '전자상품권 | ...') */
-  typeLabel?: string; // 예: "전자상품권"
-
-  /** 로딩 중이면 버튼/컨트롤 비활성화 */
+  typeLabel?: string;
   loading?: boolean;
-
-  /** 이미지 섹션 노출 여부(피그마 기본 미노출) */
   showImage?: boolean;
-
-  /** 최소/최대 수량(선택사항, 없으면 자동 계산) */
   minQty?: number;
   maxQtyOverride?: number;
 }
 
 const clamp = (v: number, min: number, max: number) =>
   Math.max(min, Math.min(max, v));
+
+const DRAG_CLOSE_THRESHOLD = 120; // px
+const MAX_BACKDROP_OPACITY = 0.4;
 
 const ExchangeSheet: React.FC<ExchangeSheetProps> = ({
   open,
@@ -50,9 +41,41 @@ const ExchangeSheet: React.FC<ExchangeSheetProps> = ({
   minQty = 1,
   maxQtyOverride,
 }) => {
-  const unit = item.price;
+  // -------- 드래그 상태 --------
+  const [dragY, setDragY] = useState(0);
+  const [dragging, setDragging] = useState(false);
+  const startYRef = useRef<number | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
 
-  // 포인트/재고 기반 최대 수량 계산
+  const onPointerDown: React.PointerEventHandler = (e) => {
+    if (loading) return;
+    startYRef.current = e.clientY;
+    setDragging(true);
+    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+  };
+
+  const onPointerMove: React.PointerEventHandler = (e) => {
+    if (!dragging || startYRef.current == null) return;
+    const dy = e.clientY - startYRef.current;
+    // 위로 끌면 무시, 아래로만 이동
+    setDragY(Math.max(0, dy));
+  };
+
+  const finishDrag = () => {
+    if (!dragging) return;
+    if (dragY > DRAG_CLOSE_THRESHOLD) {
+      onClose();
+    }
+    // 스냅백
+    setDragging(false);
+    setDragY(0);
+  };
+
+  const onPointerUp: React.PointerEventHandler = () => finishDrag();
+  const onPointerCancel: React.PointerEventHandler = () => finishDrag();
+
+  // -------- 수량/검증 --------
+  const unit = item.price;
   const maxByPoints = unit > 0 ? Math.floor(myPoints / unit) : 0;
   const maxByStock =
     typeof item.stock === "number" && item.stock >= 0
@@ -65,19 +88,15 @@ const ExchangeSheet: React.FC<ExchangeSheetProps> = ({
         ? maxQtyOverride
         : Number.POSITIVE_INFINITY;
     const m = Math.min(baseMax, byOverride);
-    // 음수/NaN 방어
     return Number.isFinite(m) ? Math.max(m, 0) : 0;
   }, [maxByPoints, maxByStock, maxQtyOverride]);
 
   const [qty, setQty] = useState<number>(minQty);
-
-  // 현재 수량을 허용 범위로 정규화
   const safeQty = useMemo(
     () => clamp(qty, minQty, Math.max(computedMax, minQty)),
     [qty, minQty, computedMax]
   );
   const total = safeQty * unit;
-
   const canSubmit =
     computedMax > 0 && safeQty >= minQty && total <= myPoints && !loading;
 
@@ -85,13 +104,23 @@ const ExchangeSheet: React.FC<ExchangeSheetProps> = ({
     setQty((q) => clamp(q - 1, minQty, Math.max(computedMax, minQty)));
   const handlePlus = () =>
     setQty((q) => clamp(q + 1, minQty, Math.max(computedMax, minQty)));
-
   const handleConfirm = async () => {
     if (!canSubmit) return;
     await onConfirm(safeQty);
   };
 
   if (!open) return null;
+
+  // -------- 스타일 계산(드래그에 따라 패널/백드롭 갱신) --------
+  const panelStyle: React.CSSProperties = {
+    transform: `translateY(${dragY}px)`,
+    transition: dragging ? "none" : "transform 200ms ease",
+    touchAction: "none",
+  };
+  const backdropOpacity = Math.max(
+    0,
+    MAX_BACKDROP_OPACITY * (1 - Math.min(dragY / 300, 1))
+  );
 
   return (
     <div
@@ -100,14 +129,35 @@ const ExchangeSheet: React.FC<ExchangeSheetProps> = ({
       aria-modal="true"
       aria-label="교환 시트"
     >
-      <div className="xs-panel">
+      {/* 백드롭 */}
+      <div
+        className="xs-backdrop"
+        style={{ opacity: backdropOpacity }}
+        onClick={() => !loading && onClose()}
+      />
+
+      {/* 패널 */}
+      <div
+        ref={panelRef}
+        className={`xs-panel ${dragging ? "dragging" : ""}`}
+        style={panelStyle}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerCancel}
+      >
         {/* 핸들/헤더 */}
-        <div className="xs-handle" aria-hidden />
+        <div
+          className="xs-handle"
+          onPointerDown={onPointerDown}
+          role="button"
+          aria-label="드래그하여 닫기"
+          tabIndex={0}
+        />
         <div className="xs-header">
           <div className="xs-title" style={{ lineHeight: 1.35 }}>
-            {typeLabel ? `${typeLabel} | ${item.itemName}` : item.itemName}
+            {item.itemName}
           </div>
-          <button
+          {/* <button
             type="button"
             className="xs-close"
             aria-label="닫기"
@@ -116,10 +166,10 @@ const ExchangeSheet: React.FC<ExchangeSheetProps> = ({
             title="닫기"
           >
             ×
-          </button>
+          </button> */}
         </div>
 
-        {/* (옵션) 히어로 이미지: 피그마엔 없음, 필요 시만 표시 */}
+        {/* (옵션) 이미지 */}
         {showImage &&
           (item.imageUrl ? (
             <div className="xs-hero" aria-hidden={false}>
@@ -131,12 +181,7 @@ const ExchangeSheet: React.FC<ExchangeSheetProps> = ({
             </div>
           ))}
 
-        {/* 가격/단가 – 피그마에는 직접 표기되지 않지만 필요하면 노출 */}
-        {/* <div className="xs-section">
-          <div className="xs-price">개당 {unit.toLocaleString()} 리워드</div>
-        </div> */}
-
-        {/* 교환 수량 + 스테퍼 */}
+        {/* 수량 */}
         <div className="xs-section">
           <div className="xs-row" style={{ alignItems: "center" }}>
             <div className="xs-label">교환 수량</div>
@@ -162,7 +207,6 @@ const ExchangeSheet: React.FC<ExchangeSheetProps> = ({
             </div>
           </div>
 
-          {/* 힌트/제약 표시 */}
           {computedMax <= 0 && (
             <div className="xs-hint neg" role="alert">
               보유 포인트가 부족하거나 재고가 없습니다.
@@ -175,7 +219,7 @@ const ExchangeSheet: React.FC<ExchangeSheetProps> = ({
           )}
         </div>
 
-        {/* 합계/총 개수 */}
+        {/* 합계 */}
         <div className="xs-section">
           <div className="xs-row">
             <div className="xs-qty">총 {safeQty}개</div>
@@ -184,7 +228,7 @@ const ExchangeSheet: React.FC<ExchangeSheetProps> = ({
               style={{ display: "inline-flex", alignItems: "center", gap: 8 }}
             >
               <img
-                src={coin}
+                src={Coin}
                 alt=""
                 className="coin-img"
                 style={{ width: 18, height: 18 }}
@@ -192,7 +236,6 @@ const ExchangeSheet: React.FC<ExchangeSheetProps> = ({
               {total.toLocaleString()}
             </div>
           </div>
-          {/* 포인트 부족 시 경고 색상 */}
           {total > myPoints && (
             <div className="xs-hint neg" role="alert">
               보유 포인트가 부족합니다. (보유 {myPoints.toLocaleString()}{" "}
@@ -201,7 +244,7 @@ const ExchangeSheet: React.FC<ExchangeSheetProps> = ({
           )}
         </div>
 
-        {/* 액션 버튼 */}
+        {/* 액션 */}
         <div className="xs-actions">
           <button
             type="button"
