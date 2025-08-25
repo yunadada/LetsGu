@@ -531,7 +531,7 @@
   z-index: 160;
 }
 
-@media (max-width: 390px) and (max-height: 700px) {
+@media (max-width: 390px) and (min-height: 700px) {
   .wrapper {
     transform: scale(0.98);
     transform-origin: top center;
