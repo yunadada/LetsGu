@@ -35,7 +35,7 @@ const ExchangeSheet: React.FC<ExchangeSheetProps> = ({
   onConfirm,
   item,
   myPoints,
-  typeLabel,
+  
   loading = false,
   showImage = false,
   minQty = 1,

@@ -1,4 +1,3 @@
-// RewardHistorySheet.tsx
 import React from "react";
 import "./Wallet.css";
 import Giftbox from "../../assets/Giftbox.png";
@@ -53,6 +52,10 @@ const typeMeta = (t: string): { icon: React.ReactNode; title: string } => {
   }
 };
 
+/** 드래그 UX 상수 (ExchangeSheet와 동일) */
+const DRAG_CLOSE_THRESHOLD = 120; // px
+const MAX_BACKDROP_OPACITY = 0.4;
+
 const RewardHistorySheet: React.FC<Props> = ({
   open,
   onClose,
@@ -75,15 +78,80 @@ const RewardHistorySheet: React.FC<Props> = ({
     });
   }, [rows]);
 
+  // ====== 드래그 상태 (디자인 유지, 로직만 추가) ======
+  const [dragY, setDragY] = React.useState(0);
+  const [dragging, setDragging] = React.useState(false);
+  const startYRef = React.useRef<number | null>(null);
+
+  const onPointerDown: React.PointerEventHandler = (e) => {
+    if (loading) return;
+    startYRef.current = e.clientY;
+    setDragging(true);
+    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+  };
+  const onPointerMove: React.PointerEventHandler = (e) => {
+    if (!dragging || startYRef.current == null) return;
+    const dy = e.clientY - startYRef.current;
+    setDragY(Math.max(0, dy)); // 위로 끌기 무시, 아래로만
+  };
+  const finishDrag = () => {
+    if (!dragging) return;
+    if (dragY > DRAG_CLOSE_THRESHOLD) onClose();
+    setDragging(false);
+    setDragY(0); // 스냅백
+  };
+  const onPointerUp: React.PointerEventHandler = () => finishDrag();
+  const onPointerCancel: React.PointerEventHandler = () => finishDrag();
+
   if (!open) return null;
+
+  // 패널/백드롭 인라인 스타일 (기존 클래스 유지)
+  const panelStyle: React.CSSProperties = {
+    transform: `translateY(${dragY}px)`,
+    transition: dragging ? "none" : "transform 200ms ease",
+    touchAction: "none",
+  };
+  const backdropOpacity = Math.max(
+    0,
+    MAX_BACKDROP_OPACITY * (1 - Math.min(dragY / 300, 1))
+  );
+
   return (
-    <div className="rhs-root" role="dialog" aria-modal="true" onClick={onClose}>
+    <div
+      className="rhs-root"
+      role="dialog"
+      aria-modal="true"
+      onClick={onClose}
+      // 기존 배경 스타일을 건드리지 않되, 투명도만 살짝 보정하고 싶다면 아래 주석 해제
+      // style={{ backgroundColor: `rgba(0,0,0,${backdropOpacity})` }}
+    >
+      {/* ▶ 별도 백드롭 레이어(인라인 스타일만 사용, CSS 의존 없음) */}
       <div
-        className="rhs-panel"
+        onClick={onClose}
+        aria-hidden
+        style={{
+          position: "fixed",
+          inset: 0,
+          background: `rgba(0,0,0,${backdropOpacity})`,
+        }}
+      />
+
+      <div
+        className={`rhs-panel ${dragging ? "dragging" : ""}`}
+        style={panelStyle}
         onClick={(e) => e.stopPropagation()}
         role="document"
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerCancel}
       >
-        <div className="rhs-handle" />
+        <div
+          className="rhs-handle"
+          onPointerDown={onPointerDown}
+          role="button"
+          aria-label="드래그하여 닫기"
+          tabIndex={0}
+        />
         <div className="rhs-titlebar">
           <h3 className="rhs-title">리워드 내역</h3>
           <span className="rhs-range">최근 6개월</span>
