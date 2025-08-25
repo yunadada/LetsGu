@@ -162,7 +162,7 @@ const MapPage: React.FC = () => {
           setMissions(list);
         }
       } catch (e) {
-        // console.error("[MapPage][Mission] fetch error:", e);
+        console.error("[MapPage][Mission] fetch error:", e);
       }
     })();
     return () => {
@@ -262,7 +262,7 @@ const MapPage: React.FC = () => {
       setHasNext(res.hasNext);
       setNextId(res.nextId);
     } catch (e) {
-      // console.error("[More] error", e);
+      console.error("[More] error", e);
     } finally {
       setLoadingMore(false);
     }
@@ -306,12 +306,12 @@ const MapPage: React.FC = () => {
       return;
     }
     // 정책에 따라: 수락된 미션이면 인증 이동 허용 (일반적)
- navigate("/locationVerification", {
- state: {
-    missionId: mission.missionId,
-    placeName: mission.placeName,
- },
-});
+    navigate("/locationVerification", {
+      state: {
+        missionId: mission.missionId,
+        placeName: mission.placeName,
+      },
+    });
   };
 
   return (

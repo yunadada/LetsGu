@@ -94,7 +94,7 @@ export const verifyImage = (
 
             try {
               const data = JSON.parse(dataStr);
-              console.log("📨 SSE 메시지 수신:", { eventType, data });
+              // console.log("📨 SSE 메시지 수신:", { eventType, data });
 
               if (eventType === "verification") {
                 if (data.eventType === "completed") {

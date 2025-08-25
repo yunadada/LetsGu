@@ -38,7 +38,7 @@ const ReviewWrite = () => {
       };
       const res = await submitReview(data);
 
-      console.log("리뷰 제출", res.data);
+      // console.log("리뷰 제출", res.data);
       if (res.data.success) {
         setIsReviewSubmittedModalOpen(true);
       }
