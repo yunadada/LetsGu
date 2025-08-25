@@ -1,18 +1,18 @@
 .container {
-  padding: 22px;
+  padding: 18px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-radius: 87px;
-  width: 172px;
-  height: 308px;
+  border-radius: 70px;
+  width: 138px;
+  height: 246px;
   background-color: rgba(255, 255, 255, 0.5);
 }
 
 .img {
-  width: 132px;
-  height: 132px;
+  width: 106px;
+  height: 106px;
   border-radius: 50%;
   background-color: aqua;
 }
@@ -22,26 +22,26 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  gap: 8px;
-  margin: 16px 0;
+  gap: 6px;
+  margin: 12px 0;
   cursor: pointer;
 }
 
 .navButton > p {
-  font-size: 16px;
+  font-size: 13px;
   font-weight: bolder;
 }
 
 .navButton > img {
-  width: 18px;
-  height: 12px;
+  width: 14px;
+  height: 10px;
   flex: 0 0 auto;
 }
 
 .contents {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 5px;
   align-items: center;
   justify-content: center;
 }
