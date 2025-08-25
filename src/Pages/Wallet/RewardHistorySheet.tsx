@@ -117,24 +117,13 @@ const RewardHistorySheet: React.FC<Props> = ({
   );
 
   return (
-    <div
+       <div
       className="rhs-root"
       role="dialog"
       aria-modal="true"
-      onClick={onClose}
-      // 기존 배경 스타일을 건드리지 않되, 투명도만 살짝 보정하고 싶다면 아래 주석 해제
-      // style={{ backgroundColor: `rgba(0,0,0,${backdropOpacity})` }}
-    >
-      {/* ▶ 별도 백드롭 레이어(인라인 스타일만 사용, CSS 의존 없음) */}
-      <div
-        onClick={onClose}
-        aria-hidden
-        style={{
-          position: "fixed",
-          inset: 0,
-          background: `rgba(0,0,0,${backdropOpacity})`,
-        }}
-      />
+    onClick={onClose}
+    style={{ backgroundColor: `rgba(0,0,0,${backdropOpacity})` }}
+  >
 
       <div
         className={`rhs-panel ${dragging ? "dragging" : ""}`}
