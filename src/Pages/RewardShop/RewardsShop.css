@@ -1,3 +1,6 @@
+
+
+
 /* =========================
    RewardsShop.css (CLEAN FINAL)
    ========================= */
@@ -435,6 +438,7 @@
   border: 1px solid #787878;
   border-radius: 7px;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
+  margin-right: 20px;
 }
 .qc-btn {
   width: 28px;
@@ -710,11 +714,10 @@
   align-items: end;
   justify-items: stretch;
   width: 420px;
-  top:0;
-  bottom:0;
-  left:50%;
+  top: 0;
+  bottom: 0;
+  left: 50%;
   transform: translateX(-50%);
-  
 }
 .xs-panel {
   width: 100%;
@@ -742,8 +745,9 @@
 .xs-title {
   font-weight: 800;
   font-size: 16px;
+  margin-left: 20px;
 }
-.xs-close {
+/* .xs-close {
   position: absolute;
   right: 8px;
   top: 4px;
@@ -753,7 +757,7 @@
   background: transparent;
   font-size: 22px;
   line-height: 1;
-}
+} */
 
 .xs-hero {
   padding: 12px 16px 0;
@@ -787,12 +791,15 @@
 .xs-label {
   color: #666;
   font-size: 13px;
+  margin-left: 20px;
 }
 .xs-qty,
 .xs-total {
   font-weight: 800;
   font-size: 15px;
   color: #111;
+  margin-left: 20px;
+  margin-right: 20px;
 }
 .xs-total.neg {
   color: #d14;
@@ -895,3 +902,52 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+/* 백드롭 */
+.xs-backdrop {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  opacity: 0; /* JS로 제어 */
+  transition: opacity 200ms ease;
+}
+
+/* 패널(바텀시트) */
+.xs-panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-top-left-radius: 40px;
+  border-top-right-radius: 40px;
+  background: #fff;
+  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.15);
+  transform: translateY(0); /* JS로 제어 */
+  transition: transform 200ms ease;
+  will-change: transform;
+  
+}
+
+/* 드래그 중에는 트랜지션 끔 (스냅백만 부드럽게) */
+.xs-panel.dragging {
+  transition: none;
+}
+
+/* 핸들 */
+/* .xs-handle {
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+} */
+/* .xs-handle::before {
+  content: "";
+  width: 36px;
+  height: 4px;
+  border-radius: 9999px;
+
+  display: block;
+} */
+
+/* 나머지 기존 xs-* 구조는 그대로 사용 */
+
