@@ -7,6 +7,7 @@ import { submitReview } from "../../../api/reviews";
 import { errorToast, warningToast } from "../../../utils/ToastUtil/toastUtil";
 import { useLocation, useNavigate } from "react-router-dom";
 import type { ReviewData, ReviewWriteState } from "../../../types/review";
+import type { AxiosError } from "axios";
 
 const ReviewWrite = () => {
   const navigate = useNavigate();
@@ -42,8 +43,13 @@ const ReviewWrite = () => {
         setIsReviewSubmittedModalOpen(true);
       }
     } catch (e) {
-      console.log(e);
-      errorToast("에러 발생");
+      const err = e as AxiosError<{ code: string; msg: string }>;
+
+      if (err.response?.data.code === "R002") {
+        errorToast(err.response.data.msg);
+        navigate("/map", { replace: true });
+        return;
+      }
     }
   };
 
