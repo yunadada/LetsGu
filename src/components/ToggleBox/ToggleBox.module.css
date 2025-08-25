@@ -75,7 +75,7 @@
 }
 
 .expanded.active {
-  min-height: 420px;
+  max-height: 420px;
 }
 
 @media (max-width: 390px) and (min-height: 650px) {

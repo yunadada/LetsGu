@@ -71,7 +71,7 @@
 }
 
 @media (max-width: 390px) and (min-height: 890px) {
-  .wrapper {
+  .modalOverlay {
     transform: scale(0.8);
     transform-origin: top center;
   }

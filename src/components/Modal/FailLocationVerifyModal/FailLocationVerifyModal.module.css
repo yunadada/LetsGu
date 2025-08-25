@@ -62,7 +62,7 @@
 }
 
 @media (max-width: 390px) and (min-height: 650px) {
-  .container {
+  .modalOverlay {
     transform: scale(0.8);
     transform-origin: top center;
   }

@@ -901,7 +901,7 @@
 }
 
 @media (max-width: 390px) and (min-height: 650px) {
-  .wrapper {
+  .shop-container {
     transform: scale(0.98);
     transform-origin: top center;
   }

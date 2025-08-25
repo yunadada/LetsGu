@@ -21,7 +21,7 @@ const ToggleBox = ({ title, imgUrl }: Props) => {
       <div className={style.container}>
         <div className={`${style.collapsed} ${isExpanded ? style.open : ""}`}>
           <div className={style.title}>
-            <img src={GuideIcon} />
+            <img src={GuideIcon} alt="가이드 이미지" />
             <p>{title}</p>
           </div>
           <button onClick={toggleExpand}>
@@ -37,9 +37,7 @@ const ToggleBox = ({ title, imgUrl }: Props) => {
               <img src={imgUrl} alt="가이드 이미지" />
             </div>
           </>
-        ) : (
-          ""
-        )}
+        ) : null}
       </div>
     </div>
   );
