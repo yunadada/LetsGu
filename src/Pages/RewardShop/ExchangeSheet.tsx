@@ -115,7 +115,7 @@ const ExchangeSheet: React.FC<ExchangeSheetProps> = ({
   const panelStyle: React.CSSProperties = {
     transform: `translateY(${dragY}px)`,
     transition: dragging ? "none" : "transform 200ms ease",
-    touchAction: "none",
+    
   };
   const backdropOpacity = Math.max(
     0,
