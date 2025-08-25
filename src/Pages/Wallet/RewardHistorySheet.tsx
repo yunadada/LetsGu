@@ -109,7 +109,7 @@ const RewardHistorySheet: React.FC<Props> = ({
   const panelStyle: React.CSSProperties = {
     transform: `translateY(${dragY}px)`,
     transition: dragging ? "none" : "transform 200ms ease",
-    touchAction: "none",
+    
   };
   const backdropOpacity = Math.max(
     0,
