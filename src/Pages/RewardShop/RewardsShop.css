@@ -710,11 +710,10 @@
   align-items: end;
   justify-items: stretch;
   width: 420px;
-  top:0;
-  bottom:0;
-  left:50%;
+  top: 0;
+  bottom: 0;
+  left: 50%;
   transform: translateX(-50%);
-  
 }
 .xs-panel {
   width: 100%;
