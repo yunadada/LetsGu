@@ -100,6 +100,7 @@ const PhotoVerifyPage = () => {
         setModalMode("fail");
       }
     } catch (error) {
+      errorToast("이미지 인증에 실패했습니다.");
       console.log("에러", error);
       setModalMode("fail");
     }
