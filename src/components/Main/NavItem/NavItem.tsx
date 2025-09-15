@@ -1,23 +1,24 @@
 import style from "./NavItem.module.css";
-import Arrow from "../../../assets/Arrow.svg";
 import { useNavigate } from "react-router-dom";
 
 type Props = {
   thumbnail: string;
   title: string;
-  contents: React.ReactNode;
 };
 
-const NavItem = ({ thumbnail, title, contents }: Props) => {
+const NavItem = ({ thumbnail, title }: Props) => {
   const navigate = useNavigate();
 
   const routePage = () => {
     switch (title) {
-      case "마이페이지":
-        navigate("/myPage");
+      case "활동 내역":
+        navigate("/activityLog");
         break;
-      case "미션 수행하기":
-        navigate("/map");
+      case "리워드 샵":
+        navigate("/shop");
+        break;
+      case "내 지갑":
+        navigate("/wallet");
         break;
       default:
         navigate("/");
@@ -25,15 +26,11 @@ const NavItem = ({ thumbnail, title, contents }: Props) => {
   };
 
   return (
-    <div className={style.container}>
-      <div className={style.img}>
-        <img src={thumbnail} alt="썸네일" />
+    <div className={style.container} onClick={routePage}>
+      <div className={style.circle}>
+        <img src={thumbnail} />
       </div>
-      <button type="button" className={style.navButton} onClick={routePage}>
-        <p>{title}</p>
-        <img src={Arrow} />
-      </button>
-      <div className={style.contents}>{contents}</div>
+      <p>{title}</p>
     </div>
   );
 };
