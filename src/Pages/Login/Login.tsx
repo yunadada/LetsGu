@@ -39,13 +39,6 @@ const Login = () => {
       const res = await requestLogin(inputValue);
 
       if (res.data.success) {
-        const info = res.data.data;
-
-        // 임시로 프로필 이미지 로컬 스토리지에 저장
-        if (info) {
-          localStorage.setItem("profileImg", info.imageUrl);
-        }
-
         const authHeader = res.headers["authorization"];
         const token = authHeader?.startsWith("Bearer ")
           ? authHeader.slice(7)

@@ -4,7 +4,7 @@ import Profile from "../../components/MyPage/Profile/Profile";
 import InfoItem from "../../components/EditProfile/InfoItem/InfoItem";
 import { useLocation, useNavigate } from "react-router-dom";
 import type { UserProfileData } from "../../types/userInfo";
-import { errorToast } from "../../utils/ToastUtil/toastUtil";
+import { successToast } from "../../utils/ToastUtil/toastUtil";
 
 const EditProfile = () => {
   const location = useLocation();
@@ -13,7 +13,7 @@ const EditProfile = () => {
 
   const onLogout = () => {
     localStorage.removeItem("accessToken");
-    errorToast("로그아웃 되었습니다.");
+    successToast("로그아웃 되었습니다.");
     navigate("/login");
   };
 

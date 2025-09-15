@@ -8,11 +8,13 @@ import MissionStartThumbnail from "../../assets/MissionStartThumbnail.svg";
 import { useEffect, useState } from "react";
 import { getPoint, getWeather } from "../../api/main";
 import type { HourlyWeather, WeatherInfo } from "../../types/weather";
+import { getMypageData } from "../../api/user";
+import type { UserProfileData } from "../../types/userInfo";
+import { useNavigate } from "react-router-dom";
 
 const Main = () => {
   const mypageItems = ["활동내역", "내 지갑", "리워드 샵"];
   const [point, setPoint] = useState(0);
-  const [profileUrl, setProfileUrl] = useState("");
   const [weatherInfo, setWeatherInfo] = useState<WeatherInfo>({
     temp: 0,
     icon: "",
@@ -20,16 +22,20 @@ const Main = () => {
     todayMin: 0,
   });
   const [hourlyWeather, setHourlyWeather] = useState<HourlyWeather[]>([]);
+  const [userProfileData, setUserProfileData] =
+    useState<UserProfileData | null>(null);
+  const navigate = useNavigate();
 
   const date = new Date();
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
   const day = date.getDate();
 
-  useEffect(() => {
-    const img = localStorage.getItem("profileImg");
-    setProfileUrl(img ?? "");
+  const navigiateToProfile = () => {
+    navigate("/editProfile", { state: { userProfileData } });
+  };
 
+  useEffect(() => {
     const getTodayWeather = async () => {
       try {
         const res = await getWeather();
@@ -49,8 +55,20 @@ const Main = () => {
       }
     };
 
+    const getUserProfileData = async () => {
+      try {
+        const res = await getMypageData();
+        if (res.data.success) {
+          setUserProfileData(res.data.data);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
     getTodayWeather();
     getUserPoint();
+    getUserProfileData();
   }, []);
 
   return (
@@ -60,9 +78,12 @@ const Main = () => {
           <img src={Coin} />
           <p>{point}</p>
         </div>
-        <div className={style.profileImg}>
-          <img src={profileUrl ?? defaultProfileImg} alt="프로필" />
-        </div>
+        <button className={style.profileImg} onClick={navigiateToProfile}>
+          <img
+            src={userProfileData?.imageUrl ?? defaultProfileImg}
+            alt="프로필"
+          />
+        </button>
       </div>
       <p className={style.date}>
         {year}년 {month}월 {day}일
