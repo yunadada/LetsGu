@@ -10,6 +10,7 @@ import type {
   UnwrittenLogType,
   WrittenLogType,
 } from "../../types/review";
+import { errorToast } from "../../utils/ToastUtil/toastUtil";
 
 const ActivityLog = () => {
   const [reviewCount, setReviewCount] = useState<ReviewCount>({
@@ -110,6 +111,7 @@ const ActivityLog = () => {
           setWrittenHasNext(data.writtenPage);
         }
       } catch (e) {
+        errorToast("활동내역을 불러오는데 실패했습니다.");
         console.log(e);
       }
     };

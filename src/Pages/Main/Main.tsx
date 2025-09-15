@@ -1,18 +1,22 @@
 import style from "./Main.module.css";
+import Arrow from "../../assets/Arrow.svg";
+import ActivityImg from "../../assets/ActivityImg.svg";
+import RewardImg from "../../assets/RewardImg.svg";
+import WalletImg from "../../assets/WalletImg.svg";
 import Coin from "../../assets/Coin.svg";
-import defaultProfileImg from "../../assets/defaultProfileImg.svg";
+import MissionStartThumbnail from "../../assets/MissionStartThumbnail.svg";
 import Weather from "../../components/Main/Weather/Weather";
 import NavItem from "../../components/Main/NavItem/NavItem";
-import MyPageThumbnail from "../../assets/MyPageThumbnail.svg";
-import MissionStartThumbnail from "../../assets/MissionStartThumbnail.svg";
 import { useEffect, useState } from "react";
 import { getPoint, getWeather } from "../../api/main";
 import type { HourlyWeather, WeatherInfo } from "../../types/weather";
+import { getMypageData } from "../../api/user";
+import type { UserProfileData } from "../../types/userInfo";
+import { useNavigate } from "react-router-dom";
+import { errorToast } from "../../utils/ToastUtil/toastUtil";
 
 const Main = () => {
-  const mypageItems = ["활동내역", "내 지갑", "리워드 샵"];
   const [point, setPoint] = useState(0);
-  const [profileUrl, setProfileUrl] = useState("");
   const [weatherInfo, setWeatherInfo] = useState<WeatherInfo>({
     temp: 0,
     icon: "",
@@ -20,22 +24,31 @@ const Main = () => {
     todayMin: 0,
   });
   const [hourlyWeather, setHourlyWeather] = useState<HourlyWeather[]>([]);
+  const [userProfileData, setUserProfileData] =
+    useState<UserProfileData | null>(null);
+  const navigate = useNavigate();
 
   const date = new Date();
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
   const day = date.getDate();
 
-  useEffect(() => {
-    const img = localStorage.getItem("profileImg");
-    setProfileUrl(img ?? "");
+  const navigiateToProfile = () => {
+    navigate("/editProfile", { state: { userProfileData } });
+  };
 
+  const navigateToMission = () => {
+    navigate("/map");
+  };
+
+  useEffect(() => {
     const getTodayWeather = async () => {
       try {
         const res = await getWeather();
         setWeatherInfo(res.data.data.current);
         setHourlyWeather(res.data.data.hourly6);
       } catch (e) {
+        errorToast("날씨 정보를 불러오는데 실패했습니다.");
         console.log(e);
       }
     };
@@ -45,12 +58,26 @@ const Main = () => {
         const point = await getPoint();
         setPoint(point.data.data.point);
       } catch (e) {
+        errorToast("포인트 내역을 불러오는데 실패했습니다.");
+        console.log(e);
+      }
+    };
+
+    const getUserProfileData = async () => {
+      try {
+        const res = await getMypageData();
+        if (res.data.success) {
+          setUserProfileData(res.data.data);
+        }
+      } catch (e) {
+        errorToast("사용자 정보를 불러오는데 실패했습니다.");
         console.log(e);
       }
     };
 
     getTodayWeather();
     getUserPoint();
+    getUserProfileData();
   }, []);
 
   return (
@@ -60,39 +87,30 @@ const Main = () => {
           <img src={Coin} />
           <p>{point}</p>
         </div>
-        <div className={style.profileImg}>
-          <img src={profileUrl ?? defaultProfileImg} alt="프로필" />
+        <div className={style.profileImg} onClick={navigiateToProfile}>
+          <img src={userProfileData?.imageUrl} alt="프로필" />
         </div>
       </div>
       <p className={style.date}>
         {year}년 {month}월 {day}일
       </p>
       <Weather weatherInfo={weatherInfo} hourlyWeather={hourlyWeather} />
-      <div className={style.navBar}>
-        <NavItem
-          thumbnail={MyPageThumbnail}
-          title="마이페이지"
-          contents={
-            <>
-              {mypageItems.map((text) => (
-                <p className={style.tag} key={text}>
-                  {text}
-                </p>
-              ))}
-            </>
-          }
-        />
-        <NavItem
-          thumbnail={MissionStartThumbnail}
-          title="미션 수행하기"
-          contents={
-            <>
-              <p className={style.description}>AI가 추천해주는</p>
-              <p className={style.description}>미션을 즐기고</p>
-              <p className={style.description}>리워드를 받아보세요!</p>
-            </>
-          }
-        />
+      <div className={style.navArea}>
+        <div className={style.navTop}>
+          <NavItem thumbnail={ActivityImg} title="활동 내역" />
+          <NavItem thumbnail={RewardImg} title="리워드 샵" />
+          <NavItem thumbnail={WalletImg} title="내 지갑" />
+        </div>
+        <div className={style.navBottom} onClick={navigateToMission}>
+          <img src={MissionStartThumbnail} alt="썸네일" />
+          <div className={style.description}>
+            <p>미션탐방을 즐기고 리워드를 받아보세요!</p>
+            <div className={style.navTitle}>
+              <h4>미션 수행하기</h4>
+              <img src={Arrow} alt="이동" />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

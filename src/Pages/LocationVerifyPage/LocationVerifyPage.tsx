@@ -63,6 +63,7 @@ const LocationVerifyPage = () => {
         );
       });
     } catch (e) {
+      errorToast("사용자 위치를 찾을 수 없습니다.");
       console.log(e);
     }
 
@@ -77,7 +78,6 @@ const LocationVerifyPage = () => {
 
   const onError = (error: GeolocationPositionError) => {
     console.log(error.code);
-
     setIsModalOpen(true);
   };
 
@@ -91,7 +91,6 @@ const LocationVerifyPage = () => {
     const sendLocation = async () => {
       try {
         const res = await verifyLocation({ missionId, userLocation });
-        // console.log("응답", res.data.data);
         setImgUrl(res.data.data);
         setIsLocationVerified(true);
       } catch (error) {
