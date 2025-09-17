@@ -17,6 +17,7 @@ import {
   type SortType,
 } from "../../api/missionReviews";
 import pin from "../../assets/pin.svg";
+import { formatDate } from "../../utils/ToastUtil/functions";
 
 type SliderLevel = "closed" | "half" | "full";
 type Tab = "mission" | "review";
@@ -83,12 +84,11 @@ const MapPage: React.FC = () => {
   const toggleExpand = (id: string | number) =>
     setExpanded((p) => ({ ...p, [id]: !p[id] }));
 
-  const formatDate = (d: string | number | Date) => {
-    const dt = new Date(d);
-    const y = dt.getFullYear();
-    const m = String(dt.getMonth() + 1).padStart(2, "0");
-    const day = String(dt.getDate()).padStart(2, "0");
-    return `${y}.${m}.${day}`;
+  const date = (d: string) => {
+    const { year, month, day } = formatDate(d);
+    const padMonth = month.padStart(2, "0");
+    const padDay = day.padStart(2, "0");
+    return `${year}.${padMonth}.${padDay}`;
   };
 
   const truncate = (t: string, n = 80) =>
@@ -466,7 +466,7 @@ const MapPage: React.FC = () => {
                                   <div className="rv-name">{r.memberName}</div>
                                 </div>
                                 <time className="rv-date">
-                                  {formatDate(r.reviewDate)}
+                                  {date(r.reviewDate)}
                                 </time>
                               </div>
                               <p

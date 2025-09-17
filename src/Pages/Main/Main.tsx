@@ -14,6 +14,7 @@ import { getMypageData } from "../../api/user";
 import type { UserProfileData } from "../../types/userInfo";
 import { useNavigate } from "react-router-dom";
 import { errorToast } from "../../utils/ToastUtil/toastUtil";
+import { formatDate } from "../../utils/ToastUtil/functions";
 
 const Main = () => {
   const [point, setPoint] = useState(0);
@@ -28,10 +29,7 @@ const Main = () => {
     useState<UserProfileData | null>(null);
   const navigate = useNavigate();
 
-  const date = new Date();
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
+  const { year, month, day } = formatDate();
 
   const navigiateToProfile = () => {
     navigate("/editProfile", { state: { userProfileData } });
