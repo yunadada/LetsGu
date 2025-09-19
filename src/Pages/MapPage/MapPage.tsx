@@ -54,6 +54,8 @@ const MapPage: React.FC = () => {
   const [hasNext, setHasNext] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
 
+  const [tip, setTip] = useState<string>("여기는 저녁이 예뻐요!");
+
   const navigate = useNavigate();
 
   // ===== Helpers: mission states =====
@@ -514,26 +516,32 @@ const MapPage: React.FC = () => {
               </>
             )
           ) : selectedMission ? (
-            <div className="mission-card">
-              <div className="mission-pin" aria-hidden>
-                <img src={pin} alt="" width={20} height={30} />
-              </div>
+            <>
+              <div className="mission-card">
+                <div className="mission-pin" aria-hidden>
+                  <img src={pin} alt="" width={20} height={30} />
+                </div>
 
-              {/* 상태 뱃지 표시 */}
-              <div className="mission-state" aria-live="polite">
-                {isMissionCompleted(selectedMission) ? (
-                  <span className="badge badge-done">완료</span>
-                ) : isMissionAccepted(selectedMission) ? (
-                  <span className="badge badge-accepted">수락됨</span>
-                ) : null}
-              </div>
+                {/* 상태 뱃지 표시 */}
+                <div className="mission-state" aria-live="polite">
+                  {isMissionCompleted(selectedMission) ? (
+                    <span className="badge badge-done">완료</span>
+                  ) : isMissionAccepted(selectedMission) ? (
+                    <span className="badge badge-accepted">수락됨</span>
+                  ) : null}
+                </div>
 
-              <h3 className="mission-title" style={{ marginTop: 4 }}>
-                {selectedMission.description}
-              </h3>
-              <p className="mission-address">{selectedMission.placeName}</p>
-              <p className="mission-address">{selectedMission.address}</p>
-            </div>
+                <h3 className="mission-title" style={{ marginTop: 4 }}>
+                  {selectedMission.description}
+                </h3>
+                <p className="mission-address">{selectedMission.placeName}</p>
+                <p className="mission-address">{selectedMission.address}</p>
+              </div>
+              <div className="tip-warapper">
+                <div className="tip-badge">Tip</div>
+                <div className="tip-content">{tip}</div>
+              </div>
+            </>
           ) : (
             <div className="mission-card">
               <p className="mission-empty">마커를 눌러 미션을 선택하세요.</p>
