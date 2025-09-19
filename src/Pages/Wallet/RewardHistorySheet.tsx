@@ -109,7 +109,6 @@ const RewardHistorySheet: React.FC<Props> = ({
   const panelStyle: React.CSSProperties = {
     transform: `translateY(${dragY}px)`,
     transition: dragging ? "none" : "transform 200ms ease",
-    
   };
   const backdropOpacity = Math.max(
     0,
@@ -117,14 +116,13 @@ const RewardHistorySheet: React.FC<Props> = ({
   );
 
   return (
-       <div
+    <div
       className="rhs-root"
       role="dialog"
       aria-modal="true"
-    onClick={onClose}
-    style={{ backgroundColor: `rgba(0,0,0,${backdropOpacity})` }}
-  >
-
+      onClick={onClose}
+      style={{ backgroundColor: `rgba(0,0,0,${backdropOpacity})` }}
+    >
       <div
         className={`rhs-panel ${dragging ? "dragging" : ""}`}
         style={panelStyle}
