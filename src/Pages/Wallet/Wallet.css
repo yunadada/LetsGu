@@ -587,7 +587,7 @@
   align-items: center;
   color: #888;
   font-size: 14px;
-  height: 100px;
+  /* height: px; */
   margin-top: 20px;
   background-color: #f3f4f7;
 }
@@ -601,11 +601,11 @@
   align-items: center;
   color: #888;
   font-size: 14px;
-  height: 150px;
+  height: 100px;
 }
 
 .barcode-placeholder {
-  aspect-ratio: 280 / 80; /* 바코드 비율에 맞게 조정 */
+  /* aspect-ratio: 280 / 80; 바코드 비율에 맞게 조정 */
 }
 
 .coupon-image,

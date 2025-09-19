@@ -73,7 +73,6 @@ const MapPage: React.FC = () => {
     if ((m as any).isAccepted === true) return true;
     if ((m as any).accepted === true) return true;
     if ((m as any).joined === true) return true;
-    // Fallback via status
     if ((m as any).status === "ACCEPTED" || (m as any).progress === "ACCEPTED")
       return true;
     return false;
