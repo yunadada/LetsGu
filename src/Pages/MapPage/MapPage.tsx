@@ -537,7 +537,7 @@ const MapPage: React.FC = () => {
                 <p className="mission-address">{selectedMission.placeName}</p>
                 <p className="mission-address">{selectedMission.address}</p>
               </div>
-              <div className="tip-warapper">
+              <div className="tip-wrapper">
                 <div className="tip-badge">Tip</div>
                 <div className="tip-content">{tip}</div>
               </div>
