@@ -1,6 +1,6 @@
 // src/api/auth.ts
 import axiosInstance from "../lib/axiosInstance";
-import type { LoginInput } from "../types/userInfo";
+// import type { LoginInput } from "../types/userInfo";
 
 export interface SignupReq {
   email: string;
@@ -23,6 +23,10 @@ export const signup = async (payload: SignupReq): Promise<SignupRes> => {
   return data;
 };
 
-export const requestLogin = async (userInfo: LoginInput) => {
-  return await axiosInstance.post("/api/v1/auth/login", userInfo);
-};
+// export const requestLogin = async (userInfo: LoginInput) => {
+//   return await axiosInstance.post("/api/v1/auth/login", userInfo);
+// };
+
+export const tokenExchange = async (code:string) => {
+  return await axiosInstance.post("/auth/token",{code});
+}

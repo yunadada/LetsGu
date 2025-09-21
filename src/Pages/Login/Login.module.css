@@ -1,7 +1,9 @@
 .wrapper {
-  width: 402px;
+  width: 100%; /* 너비를 402px 고정값 대신 100%로 변경 */
+  max-width: 402px; /* 최대 너비 설정 */
   height: 100%;
-  position: absolute;
+  margin: 0 auto; /* 중앙 정렬 */
+  position: relative; /* position을 absolute에서 relative로 변경 */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -14,6 +16,7 @@
   font-size: 12px;
   top: 124px;
   width: 210px;
+  text-align: center;
 }
 
 .logo {
@@ -77,4 +80,75 @@
     transform: scale(0.9);
     transform-origin: top center;
   }
+}
+.line {
+  width: 100%;
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.5); /* 선 색상을 반투명 흰색으로 */
+}
+/* 👆 [추가된 부분] */
+
+/* 👇 [추가된 부분] SNS 로그인 관련 스타일 */
+.snsLogin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 80%;
+  margin-top: 260px; /* 로고와의 간격 조정 */
+  
+}
+
+.snsLogin > span {
+  color: white;
+  font-size: 12px;
+  white-space: nowrap; /* 텍스트가 줄바꿈되지 않도록 설정 */
+}
+
+.kakaoButton {
+  margin-top: 20px; /* 'SNS로 시작하기'와의 간격 */
+}
+
+
+.formBox {
+  display: flex;
+  gap: 16px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form > input {
+  width: 100%;
+  height: 54px;
+  padding: 0 22px;
+  box-sizing: border-box;
+  color: white;
+  border: 1px solid white;
+  border-radius: 30px;
+  font-size: 14px;
+  background-color: transparent;
+  outline: none;
+}
+
+.form > input::placeholder {
+  color: white;
+}
+
+.loginButton {
+  outline: none;
+  width: 50px;
+  color: white;
+  background-color: #598eff;
+  border: 1px solid white;
+  border-radius: 38px;
+}
+
+
+.kakaoButton > img {
+  width: 40px; /* 원하는 버튼 크기로 조절하세요 */
+  height: auto; /* 비율에 맞게 높이 자동 조절 */
 }
