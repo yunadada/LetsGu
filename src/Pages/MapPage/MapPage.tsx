@@ -54,8 +54,6 @@ const MapPage: React.FC = () => {
   const [hasNext, setHasNext] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
 
-  const [tip, setTip] = useState<string>("여기는 저녁이 예뻐요!");
-
   const navigate = useNavigate();
 
   // ===== Helpers: mission states =====
@@ -539,7 +537,7 @@ const MapPage: React.FC = () => {
               </div>
               <div className="tip-wrapper">
                 <div className="tip-badge">Tip</div>
-                <div className="tip-content">{tip}</div>
+                <div className="tip-content">{selectedMission.tip}</div>
               </div>
             </>
           ) : (
