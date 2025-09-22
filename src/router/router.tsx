@@ -9,6 +9,7 @@ import PhotoVerifyPage from "../Pages/PhotoVerifyPage/PhotoVerifyPage";
 import RewardShop from "../Pages/RewardShop/RewardShop";
 import Wallet from "../Pages/Wallet/Wallet";
 import ReviewWrite from "../Pages/Review/ReviewWrite/ReviewWrite";
+import KakaoCallback from "../Pages/Auth/KakaoCallback";
 
 export interface RouteConfig {
   path: string;
@@ -19,6 +20,10 @@ const publicRoutes: RouteConfig[] = [
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/auth/callback",
+    element: <KakaoCallback />,
   },
 ];
 
