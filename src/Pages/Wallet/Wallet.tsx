@@ -66,8 +66,6 @@ const getMsg = (err: unknown, fb = "네트워크 오류가 발생했습니다.")
   return fb;
 };
 
-
-
 const validityText = (name?: string) =>
   /상품권|지역사랑|모바일\s*상품권|기프트\s*카드|gift\s*card|전자\s*상품권/i.test(
     name ?? ""
@@ -306,8 +304,6 @@ const Wallet: React.FC = () => {
 
   /** 렌더 */
   return (
-
-    
     <div className="shop-container">
       {/* 헤더 */}
       <header className="shop-header">
@@ -373,9 +369,20 @@ const Wallet: React.FC = () => {
                 <li
                   key={`${it.itemId}-${it.createdAt ?? idx}`}
                   className={`w-item w-ticket-row ${isUsed ? "is-used" : ""}`}
-                  // ⭐️ 변경: 사용된 아이템의 경우 li 전체를 클릭하여 모달을 열 수 있도록 함
                   onClick={
                     isUsed ? () => handleShowCouponModal(it, true) : undefined
+                  }
+                  role={isUsed ? "button" : undefined}
+                  tabIndex={isUsed ? 0 : undefined}
+                  onKeyDown={
+                    isUsed
+                      ? (e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            handleShowCouponModal(it, true);
+                          }
+                        }
+                      : undefined
                   }
                 >
                   <div className="w-ticket">
