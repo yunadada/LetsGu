@@ -14,7 +14,7 @@ import { getMypageData } from "../../api/user";
 import type { UserProfileData } from "../../types/userInfo";
 import { useNavigate } from "react-router-dom";
 import { errorToast } from "../../utils/ToastUtil/toastUtil";
-import { formatDate } from "../../utils/ToastUtil/functions";
+import { formatDate } from "../../utils/dateUtils";
 
 const Main = () => {
   const [point, setPoint] = useState(0);

@@ -1,3 +1,4 @@
+import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import type { Mission } from "../../api/mission";
 import { categoryIcons } from "../../assets/icons/markerIcons";
 import type { MarkerCategory } from "../../assets/icons/markerIcons";
@@ -12,7 +13,8 @@ type Props = {
   badgeText?: string; // 기본: 수행중인 미션
   selectedMission: Mission | null;
 };
-export default function MissionActiveCard({
+
+const MissionActiveCard = ({
   description,
   collapsed = false,
   onToggle,
@@ -20,28 +22,32 @@ export default function MissionActiveCard({
   onCertify,
   badgeText = "수행중인 미션",
   selectedMission,
-}: Props) {
-  const raw = selectedMission?.placeCategory as
-    | keyof typeof categoryIcons
-    | undefined;
-  const catKey: MarkerCategory = (
-    raw && raw in categoryIcons ? raw : "LIFE_CONVENIENCE"
-  ) as MarkerCategory;
+}: Props) => {
+  const missionCategory = selectedMission?.placeCategory;
+  const categoryKey: MarkerCategory =
+    missionCategory && missionCategory in categoryIcons
+      ? missionCategory
+      : "LIFE_CONVENIENCE";
 
   return (
     <section className="mission-active-card" aria-live="polite">
       <div className="mac-top">
         <span className="mac-badge">{badgeText}</span>
         <button className="mac-fold" type="button" onClick={onToggle}>
-          접기 <span className="mac-chevron">{collapsed ? "▾" : "▴"}</span>
+          {collapsed ? <IoIosArrowDown /> : <IoIosArrowUp />}
+          접기
         </button>
       </div>
 
       {!collapsed && (
         <>
-          {/* 핀 래퍼로 감싸기 */}
           <div className="mac-pin">
-            <img src={categoryIcons[catKey]} alt="" width={40} height={60} />
+            <img
+              src={categoryIcons[categoryKey]}
+              alt=""
+              width={40}
+              height={60}
+            />
           </div>
 
           <p className="mac-desc">{description}</p>
@@ -59,4 +65,6 @@ export default function MissionActiveCard({
       )}
     </section>
   );
-}
+};
+
+export default MissionActiveCard;

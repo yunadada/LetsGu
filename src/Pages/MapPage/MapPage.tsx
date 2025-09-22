@@ -1,88 +1,65 @@
-// src/Pages/MapPage/MapPage.tsx
-import React, { useEffect, useRef, useState, useCallback } from "react";
-import "./MapPage.css";
+import style from "./MapPage.module.css";
+import { useEffect, useRef, useState } from "react";
 import BottomSlider from "../../components/BottomSlider/BottomSlider";
 import MissionActiveCard from "../../components/MissionActiveCard/MissionActiveCard";
 import { getMarkerIcons } from "../../assets/icons/markerIcons";
-import type { MarkerCategory } from "../../assets/icons/markerIcons";
-import { fetchMissions, type Mission } from "../../api/mission";
 import duck from "../../assets/duck.png";
 import { ReviewHero } from "./Review";
 import { useNavigate } from "react-router-dom";
-import alert from "../../assets/alert.png";
-import {
-  fetchMissionReviewsPreview,
-  fetchMissionReviewsScroll,
-  type Review,
-  type SortType,
-} from "../../api/missionReviews";
 import pin from "../../assets/pin.svg";
-import { formatDate } from "../../utils/ToastUtil/functions";
+import { formatDate } from "../../utils/dateUtils";
+import { getFirstChar, truncate } from "../../utils/stringUtils";
+import { useMissions } from "../../hooks/useMissions";
+import { useReviews } from "../../hooks/useReviews";
+import { IoChevronBack } from "react-icons/io5";
+import GuideBox from "../../components/GuideBox/GuideBox";
 
-type SliderLevel = "closed" | "half" | "full";
-type Tab = "mission" | "review";
+export type Tab = "mission" | "review";
 
-const MapPage: React.FC = () => {
+const MapPage = () => {
+  const [tab, setTab] = useState<Tab>("mission");
+  const [isShowGuideOpen, setIsShowGuideOpen] = useState(true);
+  const [isShowGuideExiting, setIsShowGuideExiting] = useState(false);
+
   // Refs
   const mapDivRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<google.maps.Marker[]>([]);
 
   // Page state
-  const [missions, setMissions] = useState<Mission[]>([]);
-  const [selectedMission, setSelectedMission] = useState<Mission | null>(null);
-  const [activeMission, setActiveMission] = useState<Mission | null>(null);
-  const [activeCollapsed, setActiveCollapsed] = useState(false);
-  const [sliderLevel, setSliderLevel] = useState<SliderLevel>("closed");
-  const [tab, setTab] = useState<Tab>("mission");
-  const isOpen = sliderLevel !== "closed";
-  const [showTip, setShowTip] = useState(true);
+  const {
+    missions,
+    selectedMission,
+    setSelectedMission,
+    activeMission,
+    setActiveMission,
+    activeCollapsed,
+    setActiveCollapsed,
+    isMissionCompleted,
+    isMissionAccepted,
+    // acceptMission,
+    startMission,
+    errorMsg,
+    sliderLevel,
+    setSliderLevel,
+  } = useMissions();
 
-  // Reviews state
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [reviewsLoading, setReviewsLoading] = useState(false);
-  const [reviewsError, setReviewsError] = useState<string | null>(null);
-  const [reviewsNotFound, setReviewsNotFound] = useState(false);
-  const [sortOrder, setSortOrder] = useState<"latest" | "oldest">("latest");
-  const [expanded, setExpanded] = useState<Record<string | number, boolean>>(
-    {}
-  );
-  // Error banner
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  // Pagination (button-only)
-  const [nextId, setNextId] = useState<number | undefined>();
-  const [hasNext, setHasNext] = useState(false);
-  const [loadingMore, setLoadingMore] = useState(false);
+  const {
+    data,
+    // error,
+    // nextPage,
+    sortedReviews,
+    hasReviews,
+    reviewsLoading,
+    reviewsError,
+    sortOrder,
+    setSortOrder,
+    expanded,
+    toggleExpand,
+    // loadMore,
+  } = useReviews({ selectedMission, tab });
 
   const navigate = useNavigate();
-
-  // ===== Helpers: mission states =====
-  const isMissionCompleted = (m?: Mission | null) => {
-    if (!m) return false;
-    // Case A: boolean flag from API
-    if ((m as any).isCompleted === true) return true;
-    // Case B: status strings (fallback)
-    if ((m as any).status === "COMPLETED" || (m as any).progress === "DONE")
-      return true;
-    return false;
-  };
-
-  const isMissionAccepted = (m?: Mission | null) => {
-    if (!m) return false;
-    // Common boolean field names
-    if ((m as any).isAccepted === true) return true;
-    if ((m as any).accepted === true) return true;
-    if ((m as any).joined === true) return true;
-    // Fallback via status
-    if ((m as any).status === "ACCEPTED" || (m as any).progress === "ACCEPTED")
-      return true;
-    return false;
-  };
-
-  const hasReviews = reviews.length > 0;
-  const toggleExpand = (id: string | number) =>
-    setExpanded((p) => ({ ...p, [id]: !p[id] }));
 
   const date = (d: string) => {
     const { year, month, day } = formatDate(d);
@@ -91,21 +68,13 @@ const MapPage: React.FC = () => {
     return `${year}.${padMonth}.${padDay}`;
   };
 
-  const truncate = (t: string, n = 80) =>
-    t.length > n ? t.slice(0, n) + "…" : t;
-  const initials = (name?: string) => (name ?? "").trim().slice(0, 1) || "?";
+  const handleGuideOut = () => {
+    if (isShowGuideExiting) {
+      setIsShowGuideOpen(false);
+    }
+  };
 
-  const sortedReviews = React.useMemo(() => {
-    const arr = [...reviews];
-    arr.sort((a, b) => {
-      const ta = new Date(a.reviewDate).getTime();
-      const tb = new Date(b.reviewDate).getTime();
-      return sortOrder === "latest" ? tb - ta : ta - tb;
-    });
-    return arr;
-  }, [reviews, sortOrder]);
-
-  // Map init
+  // 지도 초기화
   useEffect(() => {
     if (!mapDivRef.current || !window.google?.maps) return;
     mapRef.current = new google.maps.Map(mapDivRef.current, {
@@ -115,11 +84,6 @@ const MapPage: React.FC = () => {
       styles: [
         {
           featureType: "poi",
-          elementType: "labels",
-          stylers: [{ visibility: "off" }],
-        },
-        {
-          featureType: "poi.business",
           elementType: "labels",
           stylers: [{ visibility: "off" }],
         },
@@ -145,6 +109,7 @@ const MapPage: React.FC = () => {
         },
       ],
     });
+
     return () => {
       markersRef.current.forEach((m) => m.setMap(null));
       markersRef.current = [];
@@ -152,25 +117,7 @@ const MapPage: React.FC = () => {
     };
   }, []);
 
-  // fetch missions
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const list = await fetchMissions();
-        if (!cancelled) {
-          setMissions(list);
-        }
-      } catch (e) {
-        console.error("[MapPage][Mission] fetch error:", e);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  // draw markers
+  // 미션 데이터를 기반으로 지도 위에 마커 표시
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !window.google?.maps) return;
@@ -182,8 +129,7 @@ const MapPage: React.FC = () => {
     const bounds = new google.maps.LatLngBounds();
 
     missions.forEach((m) => {
-      const cat = toIconCategory(m.placeCategory);
-      const icon = icons[cat];
+      const icon = icons[m.placeCategory];
       const marker = new google.maps.Marker({
         position: { lat: m.latitude, lng: m.longitude },
         map,
@@ -212,160 +158,47 @@ const MapPage: React.FC = () => {
     }
   }, [missions]);
 
-  // fetch reviews when tab=review
   useEffect(() => {
-    if (tab !== "review" || !selectedMission) return;
-    let alive = true;
-    (async () => {
-      setReviewsLoading(true);
-      setReviewsError(null);
-      setReviews([]);
-      setReviewsNotFound(false);
-      try {
-        const { list, notFound, hasNext, nextId } =
-          await fetchMissionReviewsPreview(
-            selectedMission.missionId,
-            sortOrder === "latest" ? "DESC" : "ASC"
-          );
-        if (!alive) return;
-
-        if (notFound) {
-          setReviewsNotFound(true);
-          return;
-        }
-        setReviews(list);
-        setHasNext(hasNext);
-        setNextId(nextId);
-      } catch (e) {
-        if (!alive) return;
-        setReviewsError("리뷰를 불러오지 못했어요.");
-      } finally {
-        if (alive) setReviewsLoading(false);
-      }
-    })();
-    return () => {
-      alive = false;
-    };
-  }, [tab, selectedMission, sortOrder]);
-
-  // "더 보기" 버튼으로만 페이지 추가
-  const loadMoreReviews = useCallback(async () => {
-    if (!selectedMission || !hasNext || loadingMore) return;
-    try {
-      setLoadingMore(true);
-      const res = await fetchMissionReviewsScroll({
-        missionId: selectedMission.missionId,
-        lastReviewId: nextId,
-        sortType: (sortOrder === "latest" ? "DESC" : "ASC") as SortType,
-      });
-      setReviews((prev) => [...prev, ...res.items]);
-      setHasNext(res.hasNext);
-      setNextId(res.nextId);
-    } catch (e) {
-      console.error("[More] error", e);
-    } finally {
-      setLoadingMore(false);
-    }
-  }, [selectedMission, hasNext, loadingMore, nextId, sortOrder]);
-
-  // Tip auto-hide
-  useEffect(() => {
-    if (!showTip) return;
-    const t = setTimeout(() => setShowTip(false), 2500);
-    return () => clearTimeout(t);
-  }, [showTip]);
-
-  // accept mission (guarded)
-  const acceptMission = useCallback(() => {
-    if (!selectedMission) return;
-
-    if (isMissionCompleted(selectedMission)) {
-      setErrorMsg("이미 완료한 미션이에요.");
-      setSliderLevel("half");
-      return;
-    }
-    if (isMissionAccepted(selectedMission)) {
-      setErrorMsg("이미 수락한 미션이에요.");
-      setSliderLevel("half");
-      return;
-    }
-
-    setActiveMission(selectedMission);
-    setActiveCollapsed(false);
-    setSliderLevel("closed");
-    setShowTip(false);
-  }, [selectedMission]);
-
-  // certify navigation (guarded)
-  const dropMission = () => {
-    const mission = activeMission ?? selectedMission;
-    if (!mission) return;
-    if (isMissionCompleted(mission)) {
-      setErrorMsg("이미 완료한 미션은 인증할 수 없어요.");
-      setSliderLevel("half");
-      return;
-    }
-    // 정책에 따라: 수락된 미션이면 인증 이동 허용 (일반적)
-    navigate("/locationVerification", {
-      state: {
-        missionId: mission.missionId,
-        placeName: mission.placeName,
-      },
-    });
-  };
+    if (!isShowGuideOpen) return;
+    const timer = setTimeout(() => setIsShowGuideExiting(true), 2000);
+    return () => clearTimeout(timer);
+  }, [isShowGuideOpen]);
 
   return (
-    <div className="mapPage">
-      <div className="mapContainer">
-        <div className="googleMap" ref={mapDivRef} />
+    <div className={style.mapPage}>
+      <div className={style.mapContainer}>
+        <div className={style.googleMap} ref={mapDivRef} />
       </div>
 
-      <div className={`overlay-root ${isOpen ? "sheet-open" : ""}`}>
-        <div className="app-bar">
+      <div
+        className={`${style.mapOverlay} ${
+          activeCollapsed ? style.activeCardOpen : ""
+        }`}
+      >
+        <div className={style.mapHeader}>
           <button
-            className="app-bar__back"
+            className={style.backButton}
             aria-label="뒤로가기"
             onClick={() => navigate("/")}
           >
-            <svg width="24" height="24" viewBox="0 0 24 24">
-              <path
-                d="M15 18l-6-6 6-6"
-                stroke="currentColor"
-                strokeWidth="2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <IoChevronBack />
           </button>
 
           {errorMsg && (
             <div className="error-banner" role="alert">
               {errorMsg}
-              <button className="error-close" onClick={() => setErrorMsg(null)}>
-                ×
-              </button>
+              <button className="error-close">×</button>
             </div>
           )}
 
-          {showTip && (
-            <div className={`tip-floating ${activeMission ? "with-card" : ""}`}>
-              <img
-                className="tip-floating__icon"
-                src={alert}
-                alt=""
-                aria-hidden
-              />
-              <p className="tip-floating__text">
-                지도위의 핀을 눌러 여러 미션을 확인해 보세요!
-              </p>
-              <button
-                className="tip-floating__close"
-                aria-label="닫기"
-                onClick={() => setShowTip(false)}
-              >
-                ×
-              </button>
+          {isShowGuideOpen && (
+            <div
+              className={`${style.guideContainer} ${
+                isShowGuideExiting ? style.exit : style.enter
+              }`}
+              onAnimationEnd={handleGuideOut}
+            >
+              <GuideBox text="지도 위의 핀을 눌러 여러 미션을 확인해 보세요!" />
             </div>
           )}
         </div>
@@ -377,7 +210,7 @@ const MapPage: React.FC = () => {
               collapsed={activeCollapsed}
               onToggle={() => setActiveCollapsed((v) => !v)}
               onQuit={() => setActiveMission(null)}
-              onCertify={() => dropMission()}
+              onCertify={() => startMission()}
               selectedMission={activeMission ?? selectedMission}
             />
           </div>
@@ -385,7 +218,7 @@ const MapPage: React.FC = () => {
       </div>
 
       <BottomSlider
-        isOpen={isOpen}
+        isOpen={activeCollapsed}
         onClose={() => setSliderLevel("closed")}
         onOpen={() => setSliderLevel("half")}
         sliderLevel={sliderLevel}
@@ -419,7 +252,7 @@ const MapPage: React.FC = () => {
               <>
                 <div className="rv-toolbar">
                   <span className="rv-toolbar__count">
-                    리뷰 수 <strong>{reviews.length}</strong>
+                    리뷰 수 <strong>{data.count}</strong>
                   </span>
                   <button
                     className="rv-toolbar__sort"
@@ -438,7 +271,7 @@ const MapPage: React.FC = () => {
                     <p className="mission-empty">불러오는 중…</p>
                   ) : reviewsError ? (
                     <p className="mission-empty">{reviewsError}</p>
-                  ) : reviewsNotFound || !hasReviews ? (
+                  ) : !hasReviews ? (
                     <div
                       className="review-empty"
                       style={{ textAlign: "center" }}
@@ -460,7 +293,7 @@ const MapPage: React.FC = () => {
                             <article key={r.reviewId} className="rv-card">
                               <div className="rv-top">
                                 <div className="rv-avatar" aria-hidden>
-                                  {initials(r.memberName)}
+                                  {getFirstChar(r.memberName)}
                                 </div>
                                 <div className="rv-meta">
                                   <div className="rv-name">{r.memberName}</div>
@@ -494,10 +327,10 @@ const MapPage: React.FC = () => {
                         })}
                       </div>
 
-                      {hasNext && (
+                      {/* {hasNext && (
                         <button
                           className="rv-more-btn"
-                          onClick={loadMoreReviews}
+                          onClick={loadMore}
                           disabled={loadingMore}
                           style={{
                             width: "100%",
@@ -507,7 +340,7 @@ const MapPage: React.FC = () => {
                         >
                           {loadingMore ? "불러오는 중..." : "더 보기"}
                         </button>
-                      )}
+                      )} */}
                     </>
                   )}
                 </div>
@@ -552,21 +385,21 @@ const MapPage: React.FC = () => {
                 : accepted
                 ? "이미 수락함"
                 : "미션 수락하기";
-              const onClick = disabled
-                ? () => {
-                    setErrorMsg(
-                      completed
-                        ? "이미 완료한 미션이에요."
-                        : "이미 수락한 미션이에요."
-                    );
-                    setSliderLevel("half");
-                  }
-                : acceptMission;
+              // const onClick = disabled
+              //   ? () => {
+              //       // setErrorMsg(
+              //       //   completed
+              //       //     ? "이미 완료한 미션이에요."
+              //       //     : "이미 수락한 미션이에요."
+              //       // );
+              //       setSliderLevel("half");
+              //     }
+              //   : activeMission;
 
               return (
                 <button
                   className={`cta ${disabled ? "is-disabled" : ""}`}
-                  onClick={onClick}
+                  // onClick={onClick}
                   disabled={disabled}
                   aria-disabled={disabled}
                 >
@@ -581,15 +414,3 @@ const MapPage: React.FC = () => {
 };
 
 export default MapPage;
-
-// utils
-function toIconCategory(c: Mission["placeCategory"]): MarkerCategory {
-  const table: Record<string, MarkerCategory> = {
-    ART_EXHIBITION_EXPERIENCE: "ART_EXHIBITION",
-    CULTURE_HISTORY: "CULTURE_HISTORY",
-    NATURE_PARK: "NATURE_PARK",
-    FOOD_CAFE: "FOOD_CAFE",
-    LIFE_CONVENIENCE: "LIFE_CONVENIENCE",
-  };
-  return table[c] ?? "LIFE_CONVENIENCE";
-}
