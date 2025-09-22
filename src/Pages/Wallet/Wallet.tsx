@@ -66,6 +66,8 @@ const getMsg = (err: unknown, fb = "네트워크 오류가 발생했습니다.")
   return fb;
 };
 
+
+
 const validityText = (name?: string) =>
   /상품권|지역사랑|모바일\s*상품권|기프트\s*카드|gift\s*card|전자\s*상품권/i.test(
     name ?? ""
@@ -304,6 +306,8 @@ const Wallet: React.FC = () => {
 
   /** 렌더 */
   return (
+
+    
     <div className="shop-container">
       {/* 헤더 */}
       <header className="shop-header">

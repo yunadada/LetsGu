@@ -30,6 +30,8 @@ const fmtDate = (iso?: string) => {
   return `${y}.${m}.${day}`;
 };
 
+
+
 const typeMeta = (t: string): { icon: React.ReactNode; title: string } => {
   const T = t.toUpperCase();
   switch (T) {
@@ -54,7 +56,7 @@ const typeMeta = (t: string): { icon: React.ReactNode; title: string } => {
 
 /** 드래그 UX 상수 (ExchangeSheet와 동일) */
 const DRAG_CLOSE_THRESHOLD = 120; // px
-const MAX_BACKDROP_OPACITY = 0.4;
+
 
 const RewardHistorySheet: React.FC<Props> = ({
   open,
@@ -110,10 +112,7 @@ const RewardHistorySheet: React.FC<Props> = ({
     transform: `translateY(${dragY}px)`,
     transition: dragging ? "none" : "transform 200ms ease",
   };
-  const backdropOpacity = Math.max(
-    0,
-    MAX_BACKDROP_OPACITY * (1 - Math.min(dragY / 300, 1))
-  );
+
 
   return (
     <div
@@ -121,7 +120,6 @@ const RewardHistorySheet: React.FC<Props> = ({
       role="dialog"
       aria-modal="true"
       onClick={onClose}
-      style={{ backgroundColor: `rgba(0,0,0,${backdropOpacity})` }}
     >
       <div
         className={`rhs-panel ${dragging ? "dragging" : ""}`}
