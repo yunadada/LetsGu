@@ -203,7 +203,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 .mission-pin {
   font-size: 22px;
@@ -463,4 +463,22 @@
   font-size: 18px;
   cursor: pointer;
   color: inherit;
+}
+
+.tip-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  font-size: 16px;
+  color: #333;
+}
+
+.tip-badge {
+  background-color: #e0e0e0;
+  font-weight: bold;
+  font-size: 14px;
+  padding: 5px 30px;
+  margin-right: 8px;
+  margin-left: 20px;
+  border-radius: 20px;
 }

@@ -9,7 +9,7 @@ export type Mission = {
   description: string;
   latitude: number;
   longitude: number;
-  // 서버 키 그대로 둠 (UI 아이콘 키와 매핑은 화면단에서 처리)
+  tip?: string | null;
   placeCategory:
     | "CULTURE_HISTORY"
     | "NATURE_PARK"
@@ -30,11 +30,14 @@ export const fetchMissions = async (): Promise<Mission[]> => {
   const { data } = await axiosInstance.get<MissionsResponse>(
     "/api/v1/missions"
   );
- 
-   if (process.env.NODE_ENV !== "production") {
-  console.debug("[mission] Fetched missions:", {
-   success: data?.success,    count: Array.isArray(data?.data) ? data.data.length : 0,
-  }); }
 
-  return data?.data ?? [];
+  if (process.env.NODE_ENV !== "production") {
+    console.debug("[mission] Fetched missions:", {
+      success: data?.success,
+      count: Array.isArray(data?.data) ? data.data.length : 0,
+    });
+  }
+
+  const missions = data?.data ?? [];
+  return missions.map((m) => ({ ...m, tip: m.tip ?? "" }));
 };
