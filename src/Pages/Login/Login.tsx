@@ -2,10 +2,11 @@ import style from "./Login.module.css";
 import LogoImg from "../../assets/Logo.svg";
 import Kakao from "../../assets/Kakao.svg";
 
+const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
+
 const Login = () => {
   const handleKakaoLogin = () => {
-    const kakaoAuthUrl =
-      "https://letsggu.duckdns.org/oauth2/authorization/kakao";
+    const kakaoAuthUrl = `${BASE_URL}/oauth2/authorization/kakao`;
     window.location.href = kakaoAuthUrl;
   };
 
