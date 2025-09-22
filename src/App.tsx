@@ -10,13 +10,14 @@ import MapPage from "./Pages/MapPage/MapPage";
 import { useEffect, useState } from "react";
 import { ProtectedRoute } from "./components/ProtectedRoute/ProtectedRoute";
 import { AuthContext } from "./contexts/auth";
+import Loading from "./components/Loading/Loading";
 
 const render = (status: Status) => {
   switch (status) {
     case Status.LOADING:
-      return <h1>Loading...</h1>;
+      return <Loading text="페이지를 불러오고 있습니다." />;
     case Status.FAILURE:
-      return <h1>Error loading map</h1>;
+      return <Loading text="페이지를 불러오는데 실패했습니다." />;
     case Status.SUCCESS:
       return <MapPage></MapPage>; // No need to render anything here, as the map is handled in the
   }

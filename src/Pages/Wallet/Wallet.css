@@ -381,6 +381,7 @@
   left: 50%;
   transform: translateX(-50%);
   animation: rhs-fade-in 0.18s ease;
+  
 }
 .rhs-panel {
   width: 100%;
