@@ -1,16 +1,17 @@
-// assets/icons/markerIcons.ts
-import brownPin from "./brownPin.png";
-import greenPin from "./greenPin.png";
-import redPin from "./redPin.png";
-import purplePin from "./purplePin.png";
-import bluePin from "./bluePin.png";
+import CulturePin from "./CulturePin.png";
+import NaturePin from "./NaturePin.png";
+import FoodPin from "./FoodPin.png";
+import ArtExhibitionPin from "./ArtExhibitionPin.png";
+import LifeConveniencePin from "./LifeConveniencePin.png";
+import ClearPin from "../../assets/ClearPin.svg";
 
 export const categoryIcons = {
-  CULTURE_HISTORY: brownPin,
-  NATURE_PARK: greenPin,
-  FOOD_CAFE: redPin,
-  ART_EXHIBITION_EXPERIENCE: purplePin,
-  LIFE_CONVENIENCE: bluePin,
+  CULTURE_HISTORY: CulturePin,
+  NATURE_PARK: NaturePin,
+  FOOD_CAFE: FoodPin,
+  ART_EXHIBITION_EXPERIENCE: ArtExhibitionPin,
+  LIFE_CONVENIENCE: LifeConveniencePin,
+  COMPLETED: ClearPin,
 } as const;
 
 export type MarkerCategory = keyof typeof categoryIcons;
@@ -37,6 +38,10 @@ export function getMarkerIcons(
     },
     LIFE_CONVENIENCE: {
       url: categoryIcons.LIFE_CONVENIENCE,
+      scaledSize: new google.maps.Size(50, 50),
+    },
+    COMPLETED: {
+      url: categoryIcons.COMPLETED,
       scaledSize: new google.maps.Size(50, 50),
     },
   };

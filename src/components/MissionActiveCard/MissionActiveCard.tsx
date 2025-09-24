@@ -2,68 +2,93 @@ import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import type { Mission } from "../../api/mission";
 import { categoryIcons } from "../../assets/icons/markerIcons";
 import type { MarkerCategory } from "../../assets/icons/markerIcons";
-import "./MissionActiveCard.css";
+import style from "./MissionActiveCard.module.css";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
-  description: string;
-  collapsed?: boolean;
-  onToggle?: () => void;
-  onQuit?: () => void;
-  onCertify?: () => void;
+  mission: Mission | null;
+  collapsed: boolean;
+  setActiveCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+  setActiveMission: React.Dispatch<React.SetStateAction<Mission | null>>;
+  setSelectedMission: React.Dispatch<React.SetStateAction<Mission | null>>;
   badgeText?: string; // 기본: 수행중인 미션
-  selectedMission: Mission | null;
 };
 
 const MissionActiveCard = ({
-  description,
+  mission,
   collapsed = false,
-  onToggle,
-  onQuit,
-  onCertify,
+  setActiveCollapsed,
+  setActiveMission,
+  setSelectedMission,
   badgeText = "수행중인 미션",
-  selectedMission,
 }: Props) => {
-  const missionCategory = selectedMission?.placeCategory;
+  const missionCategory = mission?.placeCategory;
   const categoryKey: MarkerCategory =
     missionCategory && missionCategory in categoryIcons
       ? missionCategory
       : "LIFE_CONVENIENCE";
 
+  const navigate = useNavigate();
+
+  const handleToggle = () => {
+    setActiveCollapsed(!collapsed);
+  };
+
+  const handleQuit = () => {
+    setActiveMission(null);
+    setSelectedMission(null);
+    console.log("현재 선택된 미션", mission);
+  };
+
+  const handleCertify = () => {
+    if (!mission) return;
+
+    navigate("/locationVerification", {
+      state: { missionId: mission.missionId, placeName: mission.placeName },
+    });
+  };
+
   return (
-    <section className="mission-active-card" aria-live="polite">
-      <div className="mac-top">
-        <span className="mac-badge">{badgeText}</span>
-        <button className="mac-fold" type="button" onClick={onToggle}>
-          {collapsed ? <IoIosArrowDown /> : <IoIosArrowUp />}
-          접기
+    <div className={style.activeBox} aria-live="polite">
+      <div className={style.activeBoxHeader}>
+        <span className={style.badgeText}>{badgeText}</span>
+        <button
+          className={style.toggleButton}
+          type="button"
+          onClick={handleToggle}
+        >
+          {collapsed ? (
+            <>
+              <IoIosArrowDown /> 펼치기
+            </>
+          ) : (
+            <>
+              <IoIosArrowUp />
+              접기
+            </>
+          )}
         </button>
       </div>
 
       {!collapsed && (
         <>
-          <div className="mac-pin">
-            <img
-              src={categoryIcons[categoryKey]}
-              alt=""
-              width={40}
-              height={60}
-            />
+          <div className={style.missionContents}>
+            <img src={categoryIcons[categoryKey]} alt="" />
+            <p className={style.missionDescription}>{mission?.description}</p>
           </div>
 
-          <p className="mac-desc">{description}</p>
-
-          <div className="mac-footer">
-            <button className="mac-ghost" type="button" onClick={onQuit}>
+          <div className={style.activeBoxFooter}>
+            <button type="button" onClick={handleQuit}>
               미션 그만두기
             </button>
-            <i className="mac-divider" />
-            <button className="mac-ghost" type="button" onClick={onCertify}>
+            <div className={style.verticalLine} />
+            <button type="button" onClick={handleCertify}>
               미션 인증하기
             </button>
           </div>
         </>
       )}
-    </section>
+    </div>
   );
 };
 

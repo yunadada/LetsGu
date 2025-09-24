@@ -41,10 +41,6 @@ const authenticateRoutes: RouteConfig[] = [
     path: "/photoVerification",
     element: <PhotoVerifyPage />,
   },
-  // {
-  //   path: "/myPage",
-  //   element: <MyPage />,
-  // },
   {
     path: "/editProfile",
     element: <EditProfile />,

@@ -10,8 +10,8 @@ export type Mission = {
   description: string;
   latitude: number;
   longitude: number;
-  // 서버 키 그대로 둠 (UI 아이콘 키와 매핑은 화면단에서 처리)
   placeCategory: MarkerCategory;
+  tip: string;
   isCompleted: boolean;
 };
 

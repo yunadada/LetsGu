@@ -2,11 +2,9 @@ import style from "./Login.module.css";
 import LogoImg from "../../assets/Logo.svg";
 import Kakao from "../../assets/Kakao.svg";
 
-const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
-
 const Login = () => {
   const handleKakaoLogin = () => {
-    const kakaoAuthUrl = `${BASE_URL}/oauth2/authorization/kakao`;
+    const kakaoAuthUrl = import.meta.env.VITE_REACT_APP_KAKAO_AUTH_URL;
     window.location.href = kakaoAuthUrl;
   };
 
