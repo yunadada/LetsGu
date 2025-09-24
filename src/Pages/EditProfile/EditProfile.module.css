@@ -29,10 +29,3 @@
 .infoSection > :last-child {
   border-bottom: none;
 }
-
-@media (max-width: 390px) and (min-height: 650px) {
-  .wrapper {
-    transform: scale(0.98);
-    transform-origin: top center;
-  }
-}

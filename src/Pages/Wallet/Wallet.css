@@ -381,7 +381,6 @@
   left: 50%;
   transform: translateX(-50%);
   animation: rhs-fade-in 0.18s ease;
-  
 }
 .rhs-panel {
   width: 100%;
@@ -532,11 +531,4 @@
   border-radius: 999px;
   font-size: 12px;
   z-index: 160;
-}
-
-@media (max-width: 390px) and (min-height: 700px) {
-  .wrapper {
-    transform: scale(0.98);
-    transform-origin: top center;
-  }
 }

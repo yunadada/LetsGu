@@ -29,10 +29,3 @@
   width: 30px;
   height: 30px;
 }
-
-@media (max-width: 390px) and (min-height: 890px) {
-  .modalOverlay {
-    transform: scale(0.8);
-    transform-origin: top center;
-  }
-}

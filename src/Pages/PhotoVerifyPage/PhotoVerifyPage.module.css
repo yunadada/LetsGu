@@ -24,7 +24,6 @@
   display: flex;
   gap: 16px;
   align-items: center;
-  /* justify-content: flex-start; */
 }
 
 .subTitle p {
@@ -91,15 +90,4 @@
 
 .input {
   display: none;
-}
-
-@media (max-width: 390px) and (min-height: 650px) {
-  .wrapper {
-    transform: scale(0.98);
-    transform-origin: top center;
-  }
-  .contents {
-    transform: scale(0.8);
-    transform-origin: top center;
-  }
 }
