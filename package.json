@@ -13,6 +13,7 @@
     "@googlemaps/react-wrapper": "^1.2.0",
     "@types/google.maps": "^3.58.1",
     "axios": "^1.11.0",
+    "event-source-polyfill": "^1.0.31",
     "react": "^19.1.0",
     "react-confetti-explosion": "^3.0.3",
     "react-dom": "^19.1.0",
