@@ -28,7 +28,7 @@ const BottomSheet = ({
       <ToggleTab tab={tab} setTab={setTab} setSliderLevel={setSliderLevel} />
       <div className={style.contents}>
         {tab === "review" ? (
-          <ReviewSection />
+          <ReviewSection missionId={selectedMission.missionId} />
         ) : (
           <MissionSection
             selectedMission={selectedMission}

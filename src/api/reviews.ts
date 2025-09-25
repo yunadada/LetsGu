@@ -1,15 +1,6 @@
 // src/api/reviews.ts
-
-import type { MissionReview } from "../hooks/useReviews";
 import axiosInstance from "../lib/axiosInstance";
 import type { ReviewData } from "../types/review";
-
-export type ReviewsResponse = {
-  success: "true" | "false";
-  data?: MissionReview[];
-  code?: string;
-  message?: string;
-};
 
 // 활동 내역 리뷰 프리뷰
 export const getActivityOverview = async () => {
@@ -19,7 +10,7 @@ export const getActivityOverview = async () => {
 // 미션 리뷰 프리뷰
 export const getMissionReviewsPreview = async (missionId: number) => {
   return await axiosInstance.get(
-    `/api/v1/missions/${missionId},reviews/preview`
+    `/api/v1/missions/${missionId}/reviews/preview`
   );
 };
 

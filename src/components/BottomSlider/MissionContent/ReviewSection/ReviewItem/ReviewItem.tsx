@@ -1,26 +1,31 @@
 import style from "./ReviewItem.module.css";
-import Profile from "../../../../../assets/defaultProfileImg.svg";
 import { formatDate } from "../../../../../utils/dateUtils";
+import type { MissionReview } from "../../../../../types/review";
 
-const ReviewItem = () => {
-  const { year, month, day } = formatDate();
+type Props = {
+  review: MissionReview;
+};
+
+const ReviewItem = ({ review }: Props) => {
+  const { year, month, day } = formatDate(review.reviewDate);
 
   return (
     <div className={style.container}>
       <div className={style.infoHeader}>
         <div className={style.userInfo}>
-          <img src={Profile} alt="프로필" className={style.profileImg} />
-          <p className={style.name}>홍길동</p>
+          <img
+            src={review.profileImageUrl}
+            alt="프로필"
+            className={style.profileImg}
+          />
+          <p className={style.name}>{review.memberName}</p>
         </div>
         <p className={style.date}>
           {`${year}.${month.padStart(2, "0")}.${day.padStart(2, "0")}`}
         </p>
       </div>
-      <div className={style.review}>리뷰를 작성합니다.</div>
-      <img
-        src="https://picsum.photos/seed/picsum/200/300"
-        className={style.missionImg}
-      />
+      <div className={style.review}>{review.reviewContent}</div>
+      <img src={review.reviewImageUrl} className={style.missionImg} />
     </div>
   );
 };

@@ -11,12 +11,14 @@ import type {
   WrittenLogType,
 } from "../../types/review";
 import { errorToast } from "../../utils/ToastUtil/toastUtil";
+import { useIntersectionObserver } from "../../hooks/useIntersectionObserver";
 
 const ActivityLog = () => {
   const [reviewCount, setReviewCount] = useState<ReviewCount>({
     unWrittenReviewCount: 0,
     writtenReviewCount: 0,
   });
+
   const [unwrittenLog, setUnwrittenLog] = useState<UnwrittenLogType[]>([]);
   const [unwrittenHasNext, setUnwrittenHasNext] = useState<
     Omit<PageResponse, "data">
@@ -35,62 +37,71 @@ const ActivityLog = () => {
     nextId: 0,
   });
 
-  const unwrittenLoader = useRef<HTMLDivElement | null>(null);
-  const writtenLoader = useRef<HTMLDivElement | null>(null);
-
   const [activeTab, setActiveTab] = useState<"unwritten" | "written">(
     "unwritten"
   );
 
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+
   // 작성 가능한 리뷰
-  const [isFetchingUnwritten, setIsFetchingUnwritten] = useState(false);
   const fetchUnwrittenMore = async () => {
-    if (isFetchingUnwritten || !unwrittenHasNext.hasNext) return;
-    setIsFetchingUnwritten(true);
+    if (!unwrittenHasNext.hasNext) return;
 
     try {
       const res = await loadMore(
         "/api/v1/reviews/unwritten/page",
-        unwrittenHasNext.nextId
+        unwrittenHasNext.nextId!
       );
-      const moreData = res.data.data;
-      setUnwrittenLog((prev) => [...prev, ...moreData.data]);
+      const { data, hasNext, nextCreatedAt, nextId } = res.data.data;
+
+      setUnwrittenLog((prev) => [...prev, ...data]);
       setUnwrittenHasNext({
-        hasNext: moreData.hasNext,
-        nextCreatedAt: moreData.nextCreatedAt,
-        nextId: moreData.nextId,
+        hasNext,
+        nextCreatedAt,
+        nextId,
       });
     } catch (e) {
       console.error(e);
-    } finally {
-      setIsFetchingUnwritten(false);
     }
   };
 
   // 작성한 리뷰
-  const [isFetchingWritten, setIsFetchingWritten] = useState(false);
   const fetchWrittenMore = async () => {
-    if (isFetchingWritten || !writtenHasNext.hasNext) return;
-    setIsFetchingWritten(true);
+    if (!writtenHasNext.hasNext) return;
 
     try {
       const res = await loadMore(
         "/api/v1/reviews/written/page",
-        writtenHasNext.nextId
+        writtenHasNext.nextId!
       );
-      const moreData = res.data.data;
-      setWrittenLog((prev) => [...prev, ...moreData.data]);
+      const { data, hasNext, nextCreatedAt, nextId } = res.data.data;
+
+      setWrittenLog((prev) => [...prev, ...data]);
       setWrittenHasNext({
-        hasNext: moreData.hasNext,
-        nextCreatedAt: moreData.nextCreatedAt,
-        nextId: moreData.nextId,
+        hasNext,
+        nextCreatedAt,
+        nextId,
       });
     } catch (e) {
       console.error(e);
-    } finally {
-      setIsFetchingWritten(false);
     }
   };
+
+  // 작성 가능한 리뷰
+  const { ref: unwrittenRef, isIntersecting: isUnwrittenIntersecting } =
+    useIntersectionObserver(() => {
+      if (isUnwrittenIntersecting) {
+        if (activeTab === "unwritten") fetchUnwrittenMore();
+      }
+    }, scrollRef);
+
+  // 작성한 리뷰
+  const { ref: writtenRef, isIntersecting: isWrittenIntersecting } =
+    useIntersectionObserver(() => {
+      if (isWrittenIntersecting) {
+        if (activeTab === "written") fetchWrittenMore();
+      }
+    }, scrollRef);
 
   useEffect(() => {
     const getOverview = async () => {
@@ -119,45 +130,6 @@ const ActivityLog = () => {
     getOverview();
   }, []);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const target = entries[0];
-        if (target.isIntersecting) {
-          if (
-            activeTab === "unwritten" &&
-            unwrittenHasNext.hasNext &&
-            !isFetchingUnwritten
-          ) {
-            fetchUnwrittenMore();
-          } else if (
-            activeTab === "written" &&
-            writtenHasNext.hasNext &&
-            !isFetchingWritten
-          ) {
-            fetchWrittenMore();
-          }
-        }
-      },
-      { threshold: 0 }
-    );
-
-    if (activeTab === "unwritten" && unwrittenLoader.current) {
-      observer.observe(unwrittenLoader.current);
-    }
-    if (activeTab === "written" && writtenLoader.current) {
-      observer.observe(writtenLoader.current);
-    }
-
-    return () => observer.disconnect();
-  }, [
-    activeTab,
-    unwrittenHasNext,
-    writtenHasNext,
-    isFetchingUnwritten,
-    +isFetchingWritten,
-  ]);
-
   return (
     <div className={style.wrapper}>
       <Header title="활동 내역" />
@@ -179,7 +151,7 @@ const ActivityLog = () => {
           작성한 리뷰({reviewCount?.writtenReviewCount})
         </button>
       </div>
-      <div className={style.contents}>
+      <div className={style.contents} ref={scrollRef}>
         {activeTab === "unwritten" ? (
           reviewCount.unWrittenReviewCount === 0 ? (
             <EmptyText type="unwritten" />
@@ -193,11 +165,7 @@ const ActivityLog = () => {
                 />
               ))}
               {unwrittenHasNext.hasNext && (
-                <div
-                  ref={unwrittenLoader}
-                  className={style.loaderBox}
-                  aria-hidden="true"
-                />
+                <div ref={unwrittenRef} className={style.loaderBox} />
               )}
             </div>
           )
@@ -212,7 +180,9 @@ const ActivityLog = () => {
                 data={item}
               />
             ))}
-            {writtenHasNext.hasNext && <div ref={writtenLoader} />}
+            {writtenHasNext.hasNext && (
+              <div ref={writtenRef} className={style.loaderBox} />
+            )}
           </div>
         )}
       </div>

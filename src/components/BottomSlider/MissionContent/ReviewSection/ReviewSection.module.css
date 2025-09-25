@@ -16,13 +16,18 @@
   color: #7c7c7c;
 }
 
-.reviewContentsScroll {
-  max-height: 400px;
+.contentsScroll {
+  height: 400px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
 }
 
-.reviewContentsScroll::-webkit-scrollbar {
+.contentsScroll::-webkit-scrollbar {
   display: none;
+}
+
+.loaderBox {
+  flex-shrink: 0;
+  height: 1px;
 }
