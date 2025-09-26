@@ -30,7 +30,6 @@ const MapPage = () => {
     activeCollapsed,
     setActiveCollapsed,
     acceptMission,
-    errorMsg,
     sliderLevel,
     setSliderLevel,
   } = useMissions();
@@ -172,13 +171,6 @@ const MapPage = () => {
           >
             <IoChevronBack />
           </button>
-
-          {errorMsg && (
-            <div className="error-banner" role="alert">
-              {errorMsg}
-              <button className="error-close">×</button>
-            </div>
-          )}
 
           {isShowGuideOpen && (
             <div

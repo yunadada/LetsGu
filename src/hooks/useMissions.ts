@@ -1,6 +1,7 @@
 // src/hooks/useMissions.ts
 import { useEffect, useState, useCallback } from "react";
 import { fetchMissions, type Mission } from "../api/mission";
+import { errorToast } from "../utils/ToastUtil/toastUtil";
 
 export type SliderLevel = "closed" | "half" | "full";
 
@@ -10,7 +11,6 @@ export function useMissions() {
   const [activeMission, setActiveMission] = useState<Mission | null>(null); // 지도에서 실제로 수락한 미션
   const [activeCollapsed, setActiveCollapsed] = useState(false); // 하단 슬라이더 창
 
-  const [errorMsg, setErrorMsg] = useState("");
   const [sliderLevel, setSliderLevel] = useState<SliderLevel>("closed");
 
   // 미션 목록 불러오기
@@ -38,7 +38,7 @@ export function useMissions() {
     if (!selectedMission) return;
 
     if (activeMission) {
-      setErrorMsg("이미 완료한 미션이에요.");
+      errorToast("이미 완료한 미션이에요.");
       setSliderLevel("half");
       return;
     }
@@ -63,7 +63,6 @@ export function useMissions() {
     activeCollapsed,
     setActiveCollapsed,
     acceptMission,
-    errorMsg,
     sliderLevel,
     setSliderLevel,
   };
