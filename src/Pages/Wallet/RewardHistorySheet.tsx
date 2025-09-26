@@ -1,6 +1,6 @@
 import React from "react";
 import "./Wallet.css";
-import Giftbox from "../../assets/Giftbox.png";
+import Giftbox from "../../assets/Giftbox.svg";
 import Bag3D from "../../assets/b3D.png";
 import Heart3D from "../../assets/Heart3D.png";
 
@@ -30,8 +30,6 @@ const fmtDate = (iso?: string) => {
   return `${y}.${m}.${day}`;
 };
 
-
-
 const typeMeta = (t: string): { icon: React.ReactNode; title: string } => {
   const T = t.toUpperCase();
   switch (T) {
@@ -56,7 +54,6 @@ const typeMeta = (t: string): { icon: React.ReactNode; title: string } => {
 
 /** 드래그 UX 상수 (ExchangeSheet와 동일) */
 const DRAG_CLOSE_THRESHOLD = 120; // px
-
 
 const RewardHistorySheet: React.FC<Props> = ({
   open,
@@ -113,14 +110,8 @@ const RewardHistorySheet: React.FC<Props> = ({
     transition: dragging ? "none" : "transform 200ms ease",
   };
 
-
   return (
-    <div
-      className="rhs-root"
-      role="dialog"
-      aria-modal="true"
-      onClick={onClose}
-    >
+    <div className="rhs-root" role="dialog" aria-modal="true" onClick={onClose}>
       <div
         className={`rhs-panel ${dragging ? "dragging" : ""}`}
         style={panelStyle}
