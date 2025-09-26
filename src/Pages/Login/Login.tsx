@@ -12,7 +12,7 @@ const Login = () => {
 
   return (
     <div className={style.wrapper}>
-      <p className={style.logoText}>구미, AI 미션형 지역 탐방</p>
+      <p}>구미, AI 미션형 지역 탐방</p>
       <img className={style.logo} src={LogoImg} alt="레츠꾸 로고" />
       <div className={style.login}>
         <div className={style.loginDescription}>
