@@ -47,7 +47,7 @@ const MapPage = () => {
     if (!mapDivRef.current || !window.google?.maps) return;
     mapRef.current = new google.maps.Map(mapDivRef.current, {
       center: { lat: 36.1195, lng: 128.3446 },
-      zoom: 13,
+      zoom: 16,
       disableDefaultUI: true,
       styles: [
         {
@@ -73,7 +73,7 @@ const MapPage = () => {
         {
           featureType: "administrative",
           elementType: "labels",
-          stylers: [{ visibility: "off" }],
+          stylers: [{ visibility: "on" }],
         },
       ],
     });

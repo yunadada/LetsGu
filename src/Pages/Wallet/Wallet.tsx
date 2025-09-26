@@ -4,10 +4,10 @@ import "../RewardShop/RewardsShop.css";
 import axiosInstance from "../../lib/axiosInstance";
 import axios, { type AxiosError } from "axios";
 import RewardHistorySheet from "./RewardHistorySheet";
-import rewardIcon from "../../assets/RewardHistory.png";
+import rewardIcon from "../../assets/RewardHistory.svg";
 import Header from "../../components/Header/Header";
 import Coin from "../../assets/Coin.svg";
-import barcode from "../../assets/barCode.png";
+import barcode from "../../assets/barCode.svg";
 
 /** ===== 타입 (새 스키마 대응) ===== */
 type ApiOk<T> = { success: true; data: T };

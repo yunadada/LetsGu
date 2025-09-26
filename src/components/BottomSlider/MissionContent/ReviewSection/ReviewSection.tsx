@@ -1,10 +1,14 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import EmptyReview from "./EmptyReview/EmptyReview";
 import ReviewItem from "./ReviewItem/ReviewItem";
 import style from "./ReviewSection.module.css";
 import { getMissionReviewsPreview, loadMore } from "../../../../api/reviews";
 import type { MissionReview, PageResponse } from "../../../../types/review";
 import { useIntersectionObserver } from "../../../../hooks/useIntersectionObserver";
+import {
+  HiOutlineArrowNarrowDown,
+  HiOutlineArrowNarrowUp,
+} from "react-icons/hi";
 
 type Props = {
   missionId: number;
@@ -18,6 +22,7 @@ const ReviewSection = ({ missionId }: Props) => {
     nextId: null,
     nextCreatedAt: null,
   });
+  const [sortOrder, setSortOrder] = useState<"DESC" | "ASC">("DESC");
 
   const getPreReview = useCallback(async () => {
     try {
@@ -28,7 +33,7 @@ const ReviewSection = ({ missionId }: Props) => {
       setReviewCount(count);
       setReviewData(missionReviewResponse);
       setNextPage(reviewPage);
-      console.log(reviewPage);
+      // console.log(reviewPage);
     } catch (e) {
       console.error(e);
     }
@@ -44,17 +49,17 @@ const ReviewSection = ({ missionId }: Props) => {
     isLoadingMoreRef.current = true;
 
     try {
-      console.log("=================================");
+      // console.log("=================================");
       const res = await loadMore(
         `/api/v1/missions/${missionId}/reviews/scroll`,
         undefined,
         nextPageRef.current.nextId!
       );
 
-      console.log("데이터 불러오기");
+      // console.log("데이터 불러오기");
       if (res.data.success === "true") {
         const { data, hasNext, nextCreatedAt, nextId } = res.data.data;
-        console.log(data, hasNext, nextCreatedAt, nextId);
+        // console.log(data, hasNext, nextCreatedAt, nextId);
 
         setReviewData((prev) => [...prev, ...data]);
         setNextPage({ hasNext, nextCreatedAt, nextId });
@@ -73,14 +78,23 @@ const ReviewSection = ({ missionId }: Props) => {
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const { ref, isIntersecting } = useIntersectionObserver(() => {
-    console.log("넥스트", nextPage);
+    // console.log("넥스트", nextPage);
     if (isIntersecting) {
       if (nextPageRef.current.hasNext && nextPageRef.current.nextId) {
-        console.log("데이터 more!!");
+        // console.log("데이터 more!!");
         getMoreReviewData();
       }
     }
   }, scrollRef);
+
+  const sortedReviewData = useMemo(() => {
+    return [...reviewData].sort((a, b) => {
+      const dateA = new Date(a.reviewDate).getTime();
+      const dateB = new Date(b.reviewDate).getTime();
+
+      return sortOrder === "DESC" ? dateB - dateA : dateA - dateB;
+    });
+  }, [reviewData, sortOrder]);
 
   return (
     <div className={style.container}>
@@ -88,16 +102,35 @@ const ReviewSection = ({ missionId }: Props) => {
         <p>
           리뷰 수 <strong>{reviewCount}</strong>
         </p>
-        <div>
-          <p>최신순</p>
+        <div
+          className={style.sort}
+          onClick={() =>
+            setSortOrder((prev) => (prev === "DESC" ? "ASC" : "DESC"))
+          }
+        >
+          <span
+            className={`${style.upArrow} ${
+              sortOrder === "DESC" ? style.active : ""
+            }`}
+          >
+            <HiOutlineArrowNarrowUp />
+          </span>
+          <span
+            className={`${style.downArrow} ${
+              sortOrder === "ASC" ? style.active : ""
+            }`}
+          >
+            <HiOutlineArrowNarrowDown />
+          </span>
+          <p>{sortOrder === "DESC" ? "최신순" : "오래된순"}</p>
         </div>
       </div>
       <div className={style.contentsScroll} ref={scrollRef}>
-        {reviewData.length === 0 ? (
+        {sortedReviewData.length === 0 ? (
           <EmptyReview />
         ) : (
-          reviewData.map((review) => (
-            <ReviewItem key={review.reviewId} review={review} />
+          sortedReviewData.map((review, idx) => (
+            <ReviewItem key={idx} review={review} />
           ))
         )}
         {nextPage.hasNext && <div ref={ref} className={style.loaderBox} />}
