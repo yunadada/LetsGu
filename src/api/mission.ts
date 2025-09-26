@@ -33,5 +33,13 @@ export const fetchMissions = async (): Promise<Mission[]> => {
   //   });
   // }
 
-  return data?.data ?? [];
+  if (process.env.NODE_ENV !== "production") {
+    console.debug("[mission] Fetched missions:", {
+      success: data?.success,
+      count: Array.isArray(data?.data) ? data.data.length : 0,
+    });
+  }
+
+  const missions = data?.data ?? [];
+  return missions.map((m) => ({ ...m, tip: m.tip ?? "" }));
 };
