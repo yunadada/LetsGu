@@ -24,14 +24,13 @@
   position: sticky;
   top: 0;
   height: 56px;
-  display: grid;
-  grid-template-columns: 56px 1fr 56px;
-  align-items: center;
   padding: 0 8px;
+  box-sizing: border-box;
   width: 100%;
 }
 
 .backButton {
+  all: unset;
   cursor: pointer;
   background-color: #ffbc2b;
   border-radius: 50%;
@@ -60,16 +59,8 @@
 }
 
 .mapHeader,
-.mapOverlay .mission-active-floating {
+.mapOverlay {
   pointer-events: auto;
-}
-
-.mission-active-floating {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  top: calc(env(safe-area-inset-top, 0px) + 64px);
-  animation: dropIn 0.18s ease;
 }
 
 .guideContainer {
