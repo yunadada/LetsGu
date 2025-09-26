@@ -65,6 +65,7 @@ const Main = () => {
       try {
         const res = await getMypageData();
         if (res.data.success) {
+          console.log("프로필 사진:", res.data.data);
           setUserProfileData(res.data.data);
         }
       } catch (e) {
