@@ -29,6 +29,7 @@ const ReviewSection = ({ missionId }: Props) => {
       const res = await getMissionReviewsPreview(missionId);
       const { count, missionReviewResponse, reviewPage } = res.data.data;
 
+      console.log("미션 리뷰 데이터:", missionReviewResponse);
       setReviewCount(count);
       setReviewData(missionReviewResponse);
       setNextPage(reviewPage);

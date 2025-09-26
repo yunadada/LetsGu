@@ -8,10 +8,17 @@
 }
 
 .header > button {
+  all: unset;
+  cursor: pointer;
   position: absolute;
   left: 26px;
   display: flex;
   align-items: center;
+}
+
+.header svg {
+  width: 22px;
+  height: 22px;
 }
 
 .header p {
