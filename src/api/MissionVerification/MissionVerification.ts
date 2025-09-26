@@ -5,6 +5,7 @@ import type {
   LocationAuthRequest,
   MissionImageUploadRequest,
 } from "../../types/verification";
+import { EventSourcePolyfill } from "event-source-polyfill";
 
 export const verifyLocation = async ({
   missionId,
@@ -46,80 +47,37 @@ export const verifyImage = (
       import.meta.env.VITE_REACT_APP_BASE_URL
     }/api/v1/missions/analyze/${jobId}/events`;
 
-    const run = async () => {
+    const eventSource = new EventSourcePolyfill(url, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    eventSource.addEventListener("verification", (event) => {
       try {
-        const controller = new AbortController();
-        const response = await fetch(url, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-          signal: controller.signal,
-        });
+        const data = JSON.parse(event.data);
+        console.log("📨 SSE verification:", data);
 
-        if (!response.ok || !response.body) {
-          reject(new Error(`❌ SSE 연결 실패: ${response.status}`));
-          return;
+        if (data.eventType === "completed") {
+          resolve("COMPLETED");
+          eventSource.close(); // 연결 닫기
+        } else if (data.eventType === "failed" || data.eventType === "error") {
+          reject(data);
+          eventSource.close();
         }
-
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder("utf-8");
-        let buffer = "";
-
-        while (true) {
-          const { value, done } = await reader.read();
-          if (done) {
-            controller.abort();
-            reject(new Error("SSE 스트림이 서버 측에서 종료되었습니다."));
-            return;
-          }
-
-          buffer += decoder.decode(value, { stream: true });
-          const events = buffer.split("\n\n");
-          buffer = events.pop() || "";
-
-          for (const rawEvent of events) {
-            const lines = rawEvent.split("\n");
-            let eventType = "";
-            let dataStr = "";
-
-            for (const line of lines) {
-              if (line.startsWith("event:")) {
-                eventType = line.slice(6).trim();
-              } else if (line.startsWith("data:")) {
-                dataStr += line.slice(5).trim();
-              }
-            }
-
-            if (!dataStr) continue;
-
-            try {
-              const data = JSON.parse(dataStr);
-              // console.log("📨 SSE 메시지 수신:", { eventType, data });
-
-              if (eventType === "verification") {
-                if (data.eventType === "completed") {
-                  resolve("COMPLETED");
-                  controller.abort();
-                  return;
-                } else if (
-                  data.eventType === "failed" ||
-                  data.eventType === "error"
-                ) {
-                  reject(data);
-                  controller.abort();
-                  return;
-                }
-              }
-            } catch (e) {
-              console.error("❌ SSE 데이터 파싱 오류:", e);
-            }
-          }
-        }
-      } catch (error) {
-        reject(error);
+      } catch (e) {
+        console.error("❌ SSE 데이터 파싱 오류:", e);
       }
+    });
+
+    eventSource.onerror = (error) => {
+      console.error("❌ SSE 연결 오류:", error);
+      reject(error);
+      eventSource.close();
     };
 
-    run(); // async 함수 실행
+    return () => {
+      eventSource.close();
+    };
   });
 };

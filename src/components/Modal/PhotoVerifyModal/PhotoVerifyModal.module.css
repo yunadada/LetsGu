@@ -69,10 +69,3 @@
 .description p:last-child {
   font-size: 13px;
 }
-
-@media (max-width: 390px) and (min-height: 890px) {
-  .modalOverlay {
-    transform: scale(0.8);
-    transform-origin: top center;
-  }
-}

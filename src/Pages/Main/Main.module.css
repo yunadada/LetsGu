@@ -1,6 +1,7 @@
 .wrapper {
   width: 402px;
   height: 100%;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -41,6 +42,7 @@
   width: 46px;
   height: 46px;
   border-radius: 50%;
+  overflow: hidden;
   background-color: rgba(0, 0, 0, 0.3);
 }
 
@@ -96,19 +98,4 @@
 .navTitle > img {
   width: 18px;
   height: 12px;
-}
-
-@media (max-width: 390px) and (min-height: 650px) {
-  .wrapper {
-    transform: scale(0.98);
-    transform-origin: top center;
-  }
-  .header {
-    transform: scale(0.8);
-    transform-origin: top center;
-  }
-  .navArea {
-    transform: scale(0.8);
-    transform-origin: top center;
-  }
 }

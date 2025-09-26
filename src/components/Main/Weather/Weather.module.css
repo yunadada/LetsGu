@@ -43,14 +43,3 @@ hr {
   align-items: center;
   justify-content: space-between;
 }
-
-@media (max-width: 390px) and (min-height: 650px) {
-  .container {
-    height: 200px;
-  }
-
-  .inner {
-    transform: scale(0.7); /* 80% 크기로 축소 */
-    transform-origin: top center;
-  }
-}

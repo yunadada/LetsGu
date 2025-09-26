@@ -1,4 +1,5 @@
 // src/api/mission.ts
+import type { MarkerCategory } from "../assets/icons/markerIcons";
 import axiosInstance from "../lib/axiosInstance";
 
 /** 서버가 내려주는 미션 타입 */
@@ -9,14 +10,8 @@ export type Mission = {
   description: string;
   latitude: number;
   longitude: number;
-  tip?: string | null;
-  placeCategory:
-    | "CULTURE_HISTORY"
-    | "NATURE_PARK"
-    | "FOOD_CAFE"
-    | "ART_EXHIBITION_EXPERIENCE"
-    | "LIFE_CONVENIENCE"
-    | string;
+  placeCategory: MarkerCategory;
+  tip: string;
   isCompleted: boolean;
 };
 
@@ -30,6 +25,13 @@ export const fetchMissions = async (): Promise<Mission[]> => {
   const { data } = await axiosInstance.get<MissionsResponse>(
     "/api/v1/missions"
   );
+
+  // if (process.env.NODE_ENV !== "production") {
+  //   console.debug("[mission] Fetched missions:", {
+  //     success: data?.success,
+  //     count: Array.isArray(data?.data) ? data.data.length : 0,
+  //   });
+  // }
 
   if (process.env.NODE_ENV !== "production") {
     console.debug("[mission] Fetched missions:", {

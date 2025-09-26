@@ -1,0 +1,111 @@
+.mapPage {
+  width: 402px;
+  height: 100vh;
+  margin: 0 auto; /* 화면 중앙 정렬 */
+  position: relative; /* 내부 absolute 기준 */
+}
+
+.mapContainer {
+  height: 100%;
+  position: relative;
+}
+
+.googleMap {
+  width: 402px;
+  height: 100dvh;
+}
+
+.googleMap .gm-style {
+  width: 100%;
+  height: 100%;
+}
+
+.mapHeader {
+  position: sticky;
+  top: 0;
+  height: 56px;
+  display: grid;
+  grid-template-columns: 56px 1fr 56px;
+  align-items: center;
+  padding: 0 8px;
+  width: 100%;
+}
+
+.backButton {
+  cursor: pointer;
+  background-color: #ffbc2b;
+  border-radius: 50%;
+  margin-top: 8px;
+  margin-left: 8px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.backButton > svg {
+  font-size: 24px;
+}
+
+.mapOverlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 402px;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+.mapHeader,
+.mapOverlay .mission-active-floating {
+  pointer-events: auto;
+}
+
+.mission-active-floating {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: calc(env(safe-area-inset-top, 0px) + 64px);
+  animation: dropIn 0.18s ease;
+}
+
+.guideContainer {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + 70px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+}
+
+.guideContainer.enter {
+  animation: fadeUp 2s ease forwards;
+}
+
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(14%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.guideContainer.exit {
+  animation: fadeOut 2s ease forwards;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20%);
+  }
+}

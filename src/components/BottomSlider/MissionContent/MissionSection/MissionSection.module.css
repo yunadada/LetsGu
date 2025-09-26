@@ -1,0 +1,77 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 6%;
+  margin-bottom: 6%;
+}
+
+.content {
+  width: 100%;
+  height: 170px;
+  background-color: white;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.description {
+  width: 22ch;
+  font-size: 18px;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  text-align: center;
+  font-weight: 500;
+}
+
+.location {
+  font-size: 14px;
+  color: #787878;
+}
+
+.tip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10%;
+  padding-left: 8px;
+  box-sizing: border-box;
+}
+
+.tip > p {
+  font-size: 12px;
+  margin: 0;
+}
+
+.tipTag {
+  background-color: #383838;
+  border-radius: 12px;
+  width: 40px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: white;
+}
+
+.acceptButton {
+  width: 100%;
+  height: 54px;
+  background-color: #ffbc2b;
+  color: white;
+  border-radius: 48px;
+  font-size: 18px;
+  margin-top: auto;
+}
+
+.acceptButton:disabled {
+  background-color: #c2c2c2;
+}

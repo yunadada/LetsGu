@@ -25,13 +25,23 @@ export type ReviewData = {
 };
 
 export type PageResponse = {
-  data: [];
+  data?: [];
   hasNext: boolean;
-  nextCreatedAt: string;
-  nextId: number;
+  nextCreatedAt: string | null;
+  nextId: number | null;
 };
 
 export type ReviewWriteState = {
   missionId?: number;
   placeName?: string;
+};
+
+// 지도 리뷰
+export type MissionReview = {
+  reviewId: number;
+  memberName: string;
+  reviewContent: string;
+  reviewImageUrl: string;
+  reviewDate: string;
+  profileImageUrl: string;
 };

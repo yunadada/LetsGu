@@ -1,0 +1,26 @@
+.guideWrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  box-sizing: border-box;
+  background-color: white;
+  border: 4px solid #fbead0;
+  border-radius: 30px;
+  font-size: 14px;
+  max-width: min(92vw, 402px);
+  width: 366px;
+  height: 69px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.guideIcon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.guideText {
+  margin: 0;
+  font-size: 14px;
+}

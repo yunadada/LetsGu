@@ -381,7 +381,6 @@
   left: 50%;
   transform: translateX(-50%);
   animation: rhs-fade-in 0.18s ease;
-  
 }
 .rhs-panel {
   width: 100%;
@@ -558,7 +557,7 @@
   width: 100%;
   max-width: 400px;
   position: relative;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   gap: 20px; /* 요소들 사이의 간격 */
@@ -578,8 +577,7 @@
 }
 
 /* 쿠폰/바코드 이미지 영역 (회색 박스) */
-.coupon-image-placeholder
-{ 
+.coupon-image-placeholder {
   width: 100%;
   aspect-ratio: 16 / 9;
   border-radius: 8px;
@@ -593,7 +591,6 @@
   background-color: #f3f4f7;
 }
 .barcode-placeholder {
-  
   width: 100%;
   aspect-ratio: 16 / 9;
   border-radius: 8px;
@@ -615,7 +612,6 @@
   height: 100%;
   object-fit: contain;
 }
-
 
 /* 쿠폰 상세 정보 */
 .coupon-details {
@@ -654,7 +650,12 @@
   transform: translate(-50%, -50%); /* 정중앙에 위치시키기 */
   width: 120px;
   height: 120px;
-  background-color: rgba(3, 115, 101, 0.8); /* 이미지와 비슷한 반투명한 청록색 */
+  background-color: rgba(
+    3,
+    115,
+    101,
+    0.8
+  ); /* 이미지와 비슷한 반투명한 청록색 */
   border-radius: 50%; /* 원 모양으로 만들기 */
   display: flex;
   justify-content: center;

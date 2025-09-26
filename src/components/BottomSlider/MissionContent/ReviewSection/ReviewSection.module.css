@@ -1,0 +1,33 @@
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.reviewHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px;
+  margin-bottom: 10px;
+}
+
+.reviewHeader p {
+  font-size: 12px;
+  color: #7c7c7c;
+}
+
+.contentsScroll {
+  height: 400px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.contentsScroll::-webkit-scrollbar {
+  display: none;
+}
+
+.loaderBox {
+  flex-shrink: 0;
+  height: 1px;
+}

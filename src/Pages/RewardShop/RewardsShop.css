@@ -900,12 +900,6 @@
   cursor: not-allowed;
 }
 
-@media (max-width: 390px) and (min-height: 650px) {
-  .shop-container {
-    transform: scale(0.98);
-    transform-origin: top center;
-  }
-}
 /* 백드롭 */
 .xs-backdrop {
   position: fixed;
