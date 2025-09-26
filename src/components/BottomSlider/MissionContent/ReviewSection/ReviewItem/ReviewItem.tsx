@@ -9,6 +9,7 @@ type Props = {
 const ReviewItem = ({ review }: Props) => {
   const { year, month, day } = formatDate(review.reviewDate);
 
+  console.log("리뷰 프로필: ", review.memberName, review.profileImageUrl);
   return (
     <div className={style.container}>
       <div className={style.infoHeader}>

@@ -2,6 +2,7 @@ import style from "./Login.module.css";
 import LogoImg from "../../assets/Logo.svg";
 import Kakao from "../../assets/Kakao.svg";
 import { errorToast } from "../../utils/ToastUtil/toastUtil";
+import { useEffect } from "react";
 
 const Login = () => {
   const handleKakaoLogin = () => {
@@ -15,6 +16,12 @@ const Login = () => {
 
     window.location.href = kakaoAuthUrl;
   };
+
+  useEffect(() => {
+    if (localStorage.getItem("accessToken")) {
+      localStorage.removeItem("accessToken");
+    }
+  }, []);
 
   return (
     <div className={style.wrapper}>

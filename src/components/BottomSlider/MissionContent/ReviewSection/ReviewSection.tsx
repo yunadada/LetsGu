@@ -24,6 +24,7 @@ const ReviewSection = ({ missionId }: Props) => {
       const res = await getMissionReviewsPreview(missionId);
       const { count, missionReviewResponse, reviewPage } = res.data.data;
 
+      console.log("미션 리뷰 데이터:", missionReviewResponse);
       setReviewCount(count);
       setReviewData(missionReviewResponse);
       setNextPage(reviewPage);
@@ -95,8 +96,8 @@ const ReviewSection = ({ missionId }: Props) => {
         {reviewData.length === 0 ? (
           <EmptyReview />
         ) : (
-          reviewData.map((review, idx) => (
-            <ReviewItem key={idx} review={review} />
+          reviewData.map((review) => (
+            <ReviewItem key={review.reviewId} review={review} />
           ))
         )}
         {nextPage.hasNext && <div ref={ref} className={style.loaderBox} />}
