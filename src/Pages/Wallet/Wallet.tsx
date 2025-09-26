@@ -7,7 +7,7 @@ import RewardHistorySheet from "./RewardHistorySheet";
 import rewardIcon from "../../assets/RewardHistory.png";
 import Header from "../../components/Header/Header";
 import Coin from "../../assets/Coin.svg";
-import barcode from "../../assets/barcode.png";
+import barcode from "../../assets/barCode.png";
 
 /** ===== 타입 (새 스키마 대응) ===== */
 type ApiOk<T> = { success: true; data: T };
