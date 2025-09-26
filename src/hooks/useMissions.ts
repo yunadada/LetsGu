@@ -46,7 +46,13 @@ export function useMissions() {
     setActiveMission(selectedMission);
     setActiveCollapsed(false);
     setSliderLevel("closed");
-  }, [selectedMission]);
+  }, [
+    selectedMission,
+    activeMission,
+    setActiveMission,
+    setActiveCollapsed,
+    setSliderLevel,
+  ]);
 
   return {
     missions,

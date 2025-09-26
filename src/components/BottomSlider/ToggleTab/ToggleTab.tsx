@@ -10,8 +10,9 @@ type Props = {
 
 const ToggleTab = ({ tab, setTab, setSliderLevel }: Props) => {
   return (
-    <div className={style.toggleBox} role="tablist" aria-label="미션/리뷰 토글">
+    <div className={style.toggleBox} aria-label="미션/리뷰 토글">
       <button
+        type="button"
         className={`${style.toggleButton} ${
           tab === "mission" ? style.selected : ""
         }`}
@@ -21,6 +22,7 @@ const ToggleTab = ({ tab, setTab, setSliderLevel }: Props) => {
       </button>
       <div className={style.verticalLine} />
       <button
+        type="button"
         className={`${style.toggleButton} ${
           tab === "review" ? style.selected : ""
         }`}

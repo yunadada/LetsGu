@@ -31,12 +31,12 @@ const LocationVerifyPage = () => {
   };
 
   const getLocation = async () => {
-    setUserLocation({ latitude: 36.2558861, longitude: 128.3982031 }); // 도리사
+    // setUserLocation({ latitude: 36.2558861, longitude: 128.3982031 }); // 도리사
     // setUserLocation({ latitude: 36.1307032, longitude: 128.4223197 }); // 다온숲
     // setUserLocation({ latitude: 36.1817657, longitude: 128.350103 }); // 모에누
     // setUserLocation({ latitude: 36.3534358, longitude: 128.3534358 }); // 토몽도
     // setUserLocation({ latitude: 36.1305388, longitude: 128.3299076 }); // 구미 새마을 중앙시장
-    return;
+    // return;
 
     if (!navigator.geolocation) {
       errorToast("Geolocation API를 지원하지 않는 브라우저입니다.");

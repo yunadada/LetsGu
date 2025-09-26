@@ -19,12 +19,7 @@ const ReviewSection = ({ missionId }: Props) => {
     nextCreatedAt: null,
   });
 
-  const [isFetching, setIsFetching] = useState(false);
-
   const getPreReview = useCallback(async () => {
-    if (isFetching) return;
-    setIsFetching(true);
-
     try {
       const res = await getMissionReviewsPreview(missionId);
       const { count, missionReviewResponse, reviewPage } = res.data.data;
@@ -35,8 +30,6 @@ const ReviewSection = ({ missionId }: Props) => {
       console.log(reviewPage);
     } catch (e) {
       console.error(e);
-    } finally {
-      setIsFetching(false);
     }
   }, [missionId]);
 
@@ -44,7 +37,11 @@ const ReviewSection = ({ missionId }: Props) => {
     getPreReview();
   }, [getPreReview]);
 
+  const isLoadingMoreRef = useRef(false);
   const getMoreReviewData = useCallback(async () => {
+    if (isLoadingMoreRef.current) return;
+    isLoadingMoreRef.current = true;
+
     try {
       console.log("=================================");
       const res = await loadMore(
@@ -63,6 +60,8 @@ const ReviewSection = ({ missionId }: Props) => {
       }
     } catch (e) {
       console.log(e);
+    } finally {
+      isLoadingMoreRef.current = false;
     }
   }, [missionId]);
 

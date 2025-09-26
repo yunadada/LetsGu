@@ -194,7 +194,7 @@ const MapPage = () => {
 
         {activeMission && (
           <MissionActiveCard
-            mission={selectedMission}
+            mission={activeMission}
             collapsed={activeCollapsed}
             setActiveCollapsed={setActiveCollapsed}
             setActiveMission={setActiveMission}

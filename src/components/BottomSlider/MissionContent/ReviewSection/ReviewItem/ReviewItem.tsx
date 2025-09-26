@@ -25,7 +25,11 @@ const ReviewItem = ({ review }: Props) => {
         </p>
       </div>
       <div className={style.review}>{review.reviewContent}</div>
-      <img src={review.reviewImageUrl} className={style.missionImg} />
+      <img
+        src={review.reviewImageUrl}
+        className={style.missionImg}
+        alt="리뷰 이미지"
+      />
     </div>
   );
 };

@@ -13,10 +13,12 @@ const MissionSection = ({ selectedMission, acceptMission }: Props) => {
         <div className={style.description}>{selectedMission.description}</div>
         <p className={style.location}>{selectedMission.address}</p>
       </div>
-      <div className={style.tip}>
-        <div className={style.tipTag}>TMI</div>
-        <p>{selectedMission.tip}</p>
-      </div>
+      {selectedMission.tip.trim() && (
+        <div className={style.tip}>
+          <div className={style.tipTag}>TMI</div>
+          <p>{selectedMission.tip}</p>
+        </div>
+      )}
       <button
         className={style.acceptButton}
         onClick={acceptMission}

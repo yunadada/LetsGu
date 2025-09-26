@@ -20,6 +20,7 @@ const ActivityLog = () => {
   });
 
   const [unwrittenLog, setUnwrittenLog] = useState<UnwrittenLogType[]>([]);
+  const [isFetchingUnwritten, setIsFetchingUnwritten] = useState(false);
   const [unwrittenHasNext, setUnwrittenHasNext] = useState<
     Omit<PageResponse, "data">
   >({
@@ -29,6 +30,7 @@ const ActivityLog = () => {
   });
 
   const [writtenLog, setWrittenLog] = useState<WrittenLogType[]>([]);
+  const [isFetchingWritten, setIsFetchingWritten] = useState(false);
   const [writtenHasNext, setWrittenHasNext] = useState<
     Omit<PageResponse, "data">
   >({
@@ -45,9 +47,10 @@ const ActivityLog = () => {
 
   // 작성 가능한 리뷰
   const fetchUnwrittenMore = async () => {
-    if (!unwrittenHasNext.hasNext) return;
+    if (isFetchingUnwritten || !unwrittenHasNext.hasNext) return;
 
     try {
+      setIsFetchingUnwritten(true);
       const res = await loadMore(
         "/api/v1/reviews/unwritten/page",
         unwrittenHasNext.nextId!
@@ -62,14 +65,17 @@ const ActivityLog = () => {
       });
     } catch (e) {
       console.error(e);
+    } finally {
+      setIsFetchingUnwritten(false);
     }
   };
 
   // 작성한 리뷰
   const fetchWrittenMore = async () => {
-    if (!writtenHasNext.hasNext) return;
+    if (isFetchingWritten || !writtenHasNext.hasNext) return;
 
     try {
+      setIsFetchingWritten(true);
       const res = await loadMore(
         "/api/v1/reviews/written/page",
         writtenHasNext.nextId!
@@ -84,6 +90,8 @@ const ActivityLog = () => {
       });
     } catch (e) {
       console.error(e);
+    } finally {
+      setIsFetchingWritten(false);
     }
   };
 
