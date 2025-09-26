@@ -59,7 +59,7 @@
 }
 
 .mapHeader,
-.mapOverlay {
+.mapOverlay > * {
   pointer-events: auto;
 }
 

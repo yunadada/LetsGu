@@ -7,6 +7,7 @@ import { useEffect } from "react";
 const Login = () => {
   const handleKakaoLogin = () => {
     const kakaoAuthUrl = import.meta.env.VITE_REACT_APP_KAKAO_AUTH_URL;
+
     if (!kakaoAuthUrl) {
       errorToast(
         "카카오 로그인에 일시적인 문제가 발생했습니다. 관리자에게 문의해주세요."

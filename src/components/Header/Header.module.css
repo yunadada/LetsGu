@@ -9,7 +9,7 @@
 
 .header > button {
   all: unset;
-  cursor: po;
+  cursor: pointer;
   position: absolute;
   left: 26px;
   display: flex;
