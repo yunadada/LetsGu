@@ -114,6 +114,7 @@ textarea:focus-visible {
 .toastContainerCustom {
   top: 0;
   width: 402px;
+  z-index: 99999;
 }
 
 .Toastify__toast {

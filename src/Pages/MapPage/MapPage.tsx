@@ -7,6 +7,7 @@ import { useMissions } from "../../hooks/useMissions";
 import { IoChevronBack } from "react-icons/io5";
 import GuideBox from "../../components/GuideBox/GuideBox";
 import BottomSheet from "../../components/BottomSlider/BottomSheet/BottomSheet";
+import { warningToast } from "../../utils/ToastUtil/toastUtil";
 export type Tab = "mission" | "review";
 
 const MapPage = () => {
@@ -19,6 +20,7 @@ const MapPage = () => {
   const mapRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<google.maps.Marker[]>([]);
   const activeMissionRef = useRef<HTMLDivElement>(null);
+  const topActiveBoxRef = useRef(false);
 
   // Page state
   const {
@@ -32,6 +34,8 @@ const MapPage = () => {
     acceptMission,
     sliderLevel,
     setSliderLevel,
+    setTopActiveBox,
+    topActiveBox,
   } = useMissions();
 
   const navigate = useNavigate();
@@ -41,6 +45,10 @@ const MapPage = () => {
       setIsShowGuideOpen(false);
     }
   };
+
+  useEffect(() => {
+    topActiveBoxRef.current = topActiveBox;
+  }, [topActiveBox]);
 
   // 지도 초기화
   useEffect(() => {
@@ -106,6 +114,14 @@ const MapPage = () => {
       });
       marker.addListener("click", () => {
         setSelectedMission(m);
+        console.log(topActiveBox);
+        if (topActiveBoxRef.current) {
+          warningToast(
+            "이미 수락한 미션이 있습니다. 새로운 미션을 시작하려면 현재 미션을 종료해 주세요."
+          );
+          return;
+        }
+
         setTab("mission");
         setSliderLevel("half");
       });
@@ -184,13 +200,14 @@ const MapPage = () => {
           )}
         </div>
 
-        {activeMission && (
+        {activeMission && topActiveBox && (
           <MissionActiveCard
             mission={activeMission}
             collapsed={activeCollapsed}
             setActiveCollapsed={setActiveCollapsed}
             setActiveMission={setActiveMission}
             setSelectedMission={setSelectedMission}
+            setTopActiveBox={setTopActiveBox}
           />
         )}
       </div>

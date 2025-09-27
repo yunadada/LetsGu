@@ -15,7 +15,7 @@ const Weather = ({ weatherInfo, hourlyWeather }: Props) => {
   return (
     <div className={style.container}>
       <div className={style.inner}>
-        <p>구미시</p>
+        <p>서울특별시</p>
         <span>{Math.round(weatherInfo?.temp)}°</span>
         <div className={style.weatherIcon}>
           <img

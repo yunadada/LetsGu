@@ -10,7 +10,7 @@ export function useMissions() {
   const [selectedMission, setSelectedMission] = useState<Mission | null>(null); // 지도에서 선택한 미션
   const [activeMission, setActiveMission] = useState<Mission | null>(null); // 지도에서 실제로 수락한 미션
   const [activeCollapsed, setActiveCollapsed] = useState(false); // 하단 슬라이더 창
-
+  const [topActiveBox, setTopActiveBox] = useState(false);
   const [sliderLevel, setSliderLevel] = useState<SliderLevel>("closed");
 
   // 미션 목록 불러오기
@@ -43,6 +43,7 @@ export function useMissions() {
       return;
     }
 
+    setTopActiveBox(true);
     setActiveMission(selectedMission);
     setActiveCollapsed(false);
     setSliderLevel("closed");
@@ -52,6 +53,7 @@ export function useMissions() {
     setActiveMission,
     setActiveCollapsed,
     setSliderLevel,
+    setTopActiveBox,
   ]);
 
   return {
@@ -65,5 +67,7 @@ export function useMissions() {
     acceptMission,
     sliderLevel,
     setSliderLevel,
+    setTopActiveBox,
+    topActiveBox,
   };
 }

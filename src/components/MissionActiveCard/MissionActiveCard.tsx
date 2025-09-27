@@ -11,6 +11,7 @@ type Props = {
   setActiveCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
   setActiveMission: React.Dispatch<React.SetStateAction<Mission | null>>;
   setSelectedMission: React.Dispatch<React.SetStateAction<Mission | null>>;
+  setTopActiveBox: React.Dispatch<React.SetStateAction<boolean>>;
   badgeText?: string; // 기본: 수행중인 미션
 };
 
@@ -20,6 +21,7 @@ const MissionActiveCard = ({
   setActiveCollapsed,
   setActiveMission,
   setSelectedMission,
+  setTopActiveBox,
   badgeText = "수행중인 미션",
 }: Props) => {
   const missionCategory = mission?.placeCategory;
@@ -37,12 +39,14 @@ const MissionActiveCard = ({
   const handleQuit = () => {
     setActiveMission(null);
     setSelectedMission(null);
+    setTopActiveBox(false);
     console.log("현재 선택된 미션", mission);
   };
 
   const handleCertify = () => {
     if (!mission) return;
 
+    setTopActiveBox(false);
     navigate("/locationVerification", {
       state: { missionId: mission.missionId, placeName: mission.placeName },
     });
