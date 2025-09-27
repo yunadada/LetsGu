@@ -40,7 +40,7 @@ const MissionActiveCard = ({
     setActiveMission(null);
     setSelectedMission(null);
     setTopActiveBox(false);
-    console.log("현재 선택된 미션", mission);
+    // console.log("현재 선택된 미션", mission);
   };
 
   const handleCertify = () => {

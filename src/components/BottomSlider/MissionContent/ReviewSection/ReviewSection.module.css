@@ -16,6 +16,37 @@
   color: #7c7c7c;
 }
 
+.sort {
+  display: flex;
+  align-items: center;
+}
+
+/* .upArrow > svg {
+  width: 6px;
+  height: 12px;
+  transform: scale(1.8, 2);
+  transform-origin: center;
+  color: #7c7c7c;
+} */
+
+.upArrow > svg,
+.downArrow > svg {
+  width: 6px;
+  height: 12px;
+  transform: scale(1.8, 2);
+  transform-origin: center;
+  color: #7c7c7c;
+}
+
+.upArrow.active > svg,
+.downArrow.active > svg {
+  color: black;
+}
+
+.sort p {
+  margin-left: 6px;
+}
+
 .contentsScroll {
   height: 400px;
   overflow-y: auto;

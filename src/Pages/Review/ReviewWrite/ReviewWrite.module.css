@@ -12,7 +12,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 50px 38px;
+  padding: 10% 4%;
   box-sizing: border-box;
 }
 
@@ -55,7 +55,7 @@
 }
 
 .textareaWrapper {
-  width: 326px;
+  width: 90%;
   height: 392px;
   display: flex;
   flex-direction: column;

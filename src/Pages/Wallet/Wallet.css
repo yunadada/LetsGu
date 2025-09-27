@@ -71,7 +71,7 @@
 }
 .ws-amount .num {
   font-size: 24px;
-  font-weight: 900;
+  font-weight: 700;
   letter-spacing: 0.2px;
   color: #111;
 }
@@ -116,14 +116,14 @@
   background: transparent;
   border: 0;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
   color: #666;
   padding: 10px 6px 12px;
   border-radius: 10px;
 }
 .tab-btn.active {
   color: #111;
-  font-weight: 800;
+  font-weight: 500;
 }
 .tab-btn.active::after {
   content: "";
@@ -144,8 +144,7 @@
   border: 1px solid #e7e8ec;
   color: #5b6170;
   font-size: 12px;
-  font-weight: 800;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
 }
@@ -234,7 +233,7 @@
 }
 .w-name {
   font-size: 14px;
-  font-weight: 900;
+  font-weight: 500;
   line-height: 1.25;
   color: #1e1e1e;
   display: -webkit-box;
@@ -283,7 +282,7 @@
   border: none;
   border-radius: 10px;
   font-size: 10px;
-  font-weight: 900;
+  font-weight: 500;
   cursor: pointer;
 }
 .w-stub-btn:hover {
@@ -295,7 +294,7 @@
 }
 .w-stub.done .w-stub-text {
   color: var(--brand);
-  font-weight: 900;
+  font-weight: 500;
   font-size: 10px;
 }
 
@@ -421,7 +420,7 @@
 }
 .rhs-title {
   margin: 0;
-  font-weight: 900;
+  font-weight: 500;
   font-size: 16px;
   letter-spacing: 0.1px;
 }
@@ -485,7 +484,7 @@
   min-width: 0;
 }
 .rh-title {
-  font-weight: 900;
+  font-weight: 500;
   font-size: 14px;
   color: #1c1c1c;
   white-space: nowrap;
@@ -502,7 +501,7 @@
   text-align: right;
 }
 .rh-amount {
-  font-weight: 900;
+  font-weight: 500;
   font-size: 14px;
   letter-spacing: 0.1px;
   white-space: nowrap;
